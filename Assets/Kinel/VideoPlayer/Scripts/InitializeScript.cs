@@ -18,7 +18,7 @@ public class InitializeScript : UdonSharpBehaviour
     private double start = 0, now = 0;
     
 
-    private int userUpdateCount = 0;
+    private int userUpdateCount = 100;
     
     public void Start()
     {
