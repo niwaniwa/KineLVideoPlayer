@@ -74,7 +74,7 @@ namespace Kinel.VideoPlayer.Scripts
         {
             if (kinelVideoPlayer.isPlaying)
             {
-                kinelVideoPlayer.videoPlayer.Stop();
+                kinelVideoPlayer.GetVideoPlayer().Stop();
                 return;
             }
             
@@ -83,7 +83,7 @@ namespace Kinel.VideoPlayer.Scripts
                 return;
             }
             
-            kinelVideoPlayer.videoPlayer.Play();
+            kinelVideoPlayer.GetVideoPlayer().Play();
         }
         
     }
