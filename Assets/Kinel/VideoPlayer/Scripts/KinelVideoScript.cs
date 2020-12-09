@@ -5,130 +5,74 @@ using UnityEngine.UI;
 using VRC.Core;
 using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
+using VRC.SDK3.Video.Components.AVPro;
 using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
+using VRC.Udon.Common.Interfaces;
 using VRC.Udon.Wrapper.Modules;
 
 namespace Kinel.VideoPlayer.Scripts
 {
     public class KinelVideoScript : UdonSharpBehaviour
     {
-        public BaseVRCVideoPlayer videoPlayer;
+        public BaseVRCVideoPlayer stream, video;
         public VideoTimeSliderController sliderController;
         public InitializeScript initializeSystemObject; 
         public VRCUrlInputField url;
         public VideoLoadErrorController videoLoadErrorController;
+        public CountDown globalProcess, localProcess;
+        public Toggle streamButton;
         public Text debugTextComponant;
         public GameObject inputFieldLoadMessage;
-        public bool isStream = false;
         
-        private const int SyncWaitSeconds = 3;
-        private bool globalSync = false, localSync = false, joinSync = false, sliderTimeSync = false;
+
+        private BaseVRCVideoPlayer videoPlayer;
         private float lastSyncTime, syncFrequency = 0.5f, deleyLimit = 0.5f;
-        private int globalSyncUpdateWaitCount = 0, joinSyncUpdateWaitCount = 0, sliderTimeSyncUpdateWaitCount = 0;
-        private int syncCount = 0, joinSyncCount = 0;
+        private int joinSyncActCount = 0;
+        private int syncCount = 0;
         private int[] videoTime = new int[3];
         private string debugText;
-        
-        [UdonSynced] private VRCUrl syncedURL;
+
         [UdonSynced] public bool isPlaying = false;
         [UdonSynced] public bool isPause = false;
+        
+        [UdonSynced] private VRCUrl syncedURL;
         [UdonSynced] private float videoStartGlobalTime = 0;
         [UdonSynced] private float pausedTime = 0;
         [UdonSynced] private float pauseElapsedTime = 0;
         [UdonSynced] private int activePlayerID;
+        [UdonSynced] private bool isStream = false;
+        [UdonSynced] private bool isSync = false;
+
+        public void Start()
+        {
+            videoPlayer = video;
+        }
 
         public void FixedUpdate()
         {
-            debugTextComponant.text = debugText + $"\n sync count {syncCount} \n UpdateCount {initializeSystemObject.UserUpdateCount()}";
+            debugTextComponant.text = $"isStream : {isStream} \n UserUpdateCount {initializeSystemObject.UserUpdateCount()} " +
+                                      $"\n isPlaying(global) {isPlaying}" +
+                                      $"\n isPlaying(local)  {video.IsPlaying}";
             
-            if (globalSync)
-            {
-                globalSyncUpdateWaitCount++;
-                if (globalSyncUpdateWaitCount >= initializeSystemObject.UserUpdateCount() * SyncWaitSeconds)
-                {
-                    SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "StartFirstSync");
-                    globalSyncUpdateWaitCount = 0;
-                    globalSync = false;
-                }
-                debugTextComponant.text = debugText + $"\n end";
-                return;
-            }
-            
-            /// 追加
-
-            if (activePlayerID.Equals(Networking.LocalPlayer.playerId))
-            {
-                if (IsSyncTiming())
-                {
-                    this.Sync();
-                }
-                return;
-            }
-            
-            if (localSync)
-            {
-                if (isPlaying)
-                {
-                    if (!videoPlayer.IsPlaying)
-                    {
-                        videoPlayer.Play();
-                    }
-                    localSync = false;
-                    this.Sync();
-                }
-                return;
-            }
-
-            if (joinSync)
-            {
-                joinSyncUpdateWaitCount++;
-                if (joinSyncUpdateWaitCount >= 30)
-                {
-                    if (!isPlaying)
-                    {
-                        if (joinSyncCount >= 10)
-                        {
-                            joinSync = false;
-                        }
-                        joinSyncUpdateWaitCount = 0;
-                        joinSyncCount++;
-                        return;
-                    }
-                    videoPlayer.LoadURL(syncedURL);
-
-                    joinSyncUpdateWaitCount = 0;
-                    joinSync = false;
-                    localSync = true;
-                    return;
-                }
-
-                return;
-            }
-
             if (IsSyncTiming())
             {
                 this.Sync();;
             }
-            
         }
         
         public void OnURLChanged()
         {
-            if (String.IsNullOrEmpty(url.GetUrl().Get()))
+            if (String.IsNullOrEmpty(url.GetUrl().Get()) || isSync)
             {
                 return;
             }
 
-            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
-            }
-
+            ChangeOwner(Networking.LocalPlayer);
+            isSync = true;
             syncedURL = url.GetUrl();
-            globalSync = true;
-            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "URLInputFieldSetInactibe");
-
+            globalProcess.StartSyncWaitCountdown(2, "GlobalSync", true);
+            SendCustomNetworkEvent(NetworkEventTarget.All, "URLInputFieldSetInactibe");
         }
         
         public void URLInputFieldSetInactibe()
@@ -137,13 +81,14 @@ namespace Kinel.VideoPlayer.Scripts
             videoLoadErrorController.hide();
         }
 
-        public void StartFirstSync()
+        public void GlobalSync()
         {
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 videoPlayer.Stop();
                 videoPlayer.LoadURL(syncedURL);
                 isPlaying = true;
+                isSync = false;
                 return;
             }
 
@@ -163,39 +108,39 @@ namespace Kinel.VideoPlayer.Scripts
                 return;
             }
 
-            if (isPlaying)
+            if (isPlaying && !videoPlayer.IsPlaying)
             {
                 videoPlayer.Play();
-                // 変更
                 return;
             }
-            // 変更
-            localSync = true;
-            
+
+            localProcess.StartSyncWaitCountdown(2, "LocalSync", false);
         }
 
         public override void OnVideoStart()
         {
-
             if (isPause)
             {
                 isPause = false;
                 isPlaying = true;
                 return;
             }
-
-            if (!isStream)
-            {
-                int videoTimeSeconds = (int) (videoPlayer.GetDuration());
-                videoTime[2] = ((int) videoTimeSeconds / 60) / 60;
-                videoTime[1] = ((int) videoTimeSeconds / 60 ) - (videoTime[2] * 60) ; // minute
-                videoTime[0] = videoTimeSeconds - (videoTime[2] * 60 * 60) - (videoTime[1] * 60); // seconds// hour
-
-                sliderController.SetSliderLength(videoPlayer.GetDuration());
-            }
             
             inputFieldLoadMessage.SetActive(false);
             videoLoadErrorController.hide();
+            
+            if (isStream)
+            {
+                videoTime = new int[] {0, 0, 0};
+                isPlaying = true;
+                return;
+            }
+            
+            int videoTimeSeconds = isStream ? 0 : (int) (videoPlayer.GetDuration());
+            videoTime[2] = (videoTimeSeconds / 60) / 60;
+            videoTime[1] = (videoTimeSeconds / 60 ) - (videoTime[2] * 60) ; // minute
+            videoTime[0] = videoTimeSeconds - (videoTime[2] * 60 * 60) - (videoTime[1] * 60); // seconds// hour
+            sliderController.SetSliderLength(videoPlayer.GetDuration());
 
             float time = 0;
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
@@ -218,33 +163,24 @@ namespace Kinel.VideoPlayer.Scripts
                     time = Convert.ToSingle(raw.Replace("t=", "").Replace("s", ""));
                     SetVideoTime(Convert.ToSingle(time));
                 }  
-                
-                debugText =
-                    $"Playing URL \n {syncedURL} \n, Play? {isPlaying}, \n" +
-                    $"\n ?t = {time}, now owner {Networking.GetOwner(this.gameObject).displayName}\n" +
-                    $"";
+
                 
                 return;
             }
-            
-            // 変更
-            //videoPlayer.Pause();
-            localSync = true;
-
+            localProcess.StartSyncWaitCountdown(2, "LocalSync", false);
         }
         
         //********** Sync **********//
 
         public bool IsSyncTiming()
         {
-            if (!isPlaying)
+            if (!isPlaying || isStream)
             {
                 return false;
             }
 
             if (Time.realtimeSinceStartup - lastSyncTime >= syncFrequency)
             {
-                
                 return true;
             }
 
@@ -253,27 +189,65 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void SyncForUnityHierarchy()
         {
-            localSync = true;
+            localProcess.StartSyncWaitCountdown(2, "LocalSync", false);
         }
         
         public void Sync()
         {
             lastSyncTime = Time.realtimeSinceStartup;
             float globalVideoTime = Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration());
+
             if (Mathf.Clamp(Mathf.Abs(videoPlayer.GetTime() - globalVideoTime), 0, videoPlayer.GetDuration()) > deleyLimit)
             {
                 videoPlayer.SetTime(globalVideoTime);
             }
             syncCount++;
         }
+
+        public void LocalSync()
+        {
+            if (!videoPlayer.IsPlaying && isPlaying)
+            {
+                videoPlayer.LoadURL(syncedURL);
+            }
+        }
         
+        public void JoinSync()
+        {
+            streamButton.isOn = isStream;
+            videoPlayer = (isStream ? stream : video);
+            sliderController.Freeze();
+            if (!isPlaying)
+            {
+                if (joinSyncActCount >= 3)
+                {
+                    isSync = false;
+                    return;
+                }
+
+                var isSuccess = localProcess.StartSyncWaitCountdown(1, "JoinSync", false);
+                joinSyncActCount++;
+                return;
+            }
+
+            if (String.IsNullOrEmpty(syncedURL.Get()))
+            {
+                localProcess.StartSyncWaitCountdown(1, "JoinSync", false);
+                return;
+            }
+            isSync = false;
+            videoPlayer.LoadURL(syncedURL);
+
+        }
+
         public override void OnPlayerJoined(VRCPlayerApi player)
         {
+            videoPlayer = video;
             if (Networking.LocalPlayer == player)
             {
-                joinSync = true;
+                isSync = true;
+                localProcess.StartSyncWaitCountdown(10, "JoinSync", false);
             }
-            
         }
         
         public override void OnVideoEnd()
@@ -295,34 +269,29 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void SetVideoTime(float seconds)
         {
-            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
-            }
+            ChangeOwner(Networking.LocalPlayer);
             
             videoStartGlobalTime += videoPlayer.GetTime() - seconds;
             videoPlayer.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration()));
             videoStartGlobalTime += 0.02f;
-            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "Sync");
-            localSync = true;
+            SendCustomNetworkEvent(NetworkEventTarget.All, "Sync");
+            
+            localProcess.StartSyncWaitCountdown(20, "LocalSync", false);
         }
 
         public void OwnerPause()
         {
-            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
-            }
+            ChangeOwner(Networking.LocalPlayer);
 
             if (isPause)
             {
-                SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "PauseExit");
+                SendCustomNetworkEvent(NetworkEventTarget.All, "PauseExit");
                 
                 return;
             }
             videoPlayer.Pause();
             pausedTime = (float) Networking.GetServerTimeInSeconds();
-            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "GlobalPause");
+            SendCustomNetworkEvent(NetworkEventTarget.All, "GlobalPause");
             isPlaying = false;
             isPause = true;
         }
@@ -338,35 +307,82 @@ namespace Kinel.VideoPlayer.Scripts
             videoPlayer.Play();
             videoPlayer.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration()));
             videoStartGlobalTime += 0.02f;
-            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "Sync");
-            localSync = true;
+            
+            SendCustomNetworkEvent(NetworkEventTarget.All, "Sync");
+            localProcess.StartSyncWaitCountdown(2, "LocalSync", false);
         }
 
         public void Reset()
         {
-            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "ResetGlobal");
-            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
-            }
+            SendCustomNetworkEvent(NetworkEventTarget.All, "ResetGlobal");
+            ChangeOwner(Networking.LocalPlayer);
             
             syncedURL = VRCUrl.Empty;
             isPlaying = false;
-            localSync = false;
 
         }
         
         public void ResetGlobal()
         {
             videoPlayer.Stop();
-            
+            inputFieldLoadMessage.SetActive(false);
+            videoLoadErrorController.hide();
+            url.SetUrl(VRCUrl.Empty);
         }
 
         public int[] GetVideoTime()
         {
             return videoTime;
         }
-        
-        
+
+        public BaseVRCVideoPlayer GetVideoPlayer()
+        {
+            return videoPlayer;
+        }
+
+        public void ChangeStreamMode()
+        {
+            if (isSync)
+            {
+                streamButton.isOn = isStream;
+                return;
+            }
+            isSync = true;
+            Reset();
+            ChangeOwner(Networking.LocalPlayer);
+            isStream = isStream ? false : true;
+            globalProcess.StartSyncWaitCountdown(2,"ChangeStreamModeGlobal", true);
+        }
+
+        public void ChangeStreamModeGlobal()
+        {
+            streamButton.isOn = isStream;
+            this.videoPlayer = (isStream ? stream : video);
+            sliderController.Freeze();
+            if (Networking.IsOwner(gameObject))
+            {
+                isSync = false;
+            }
+        }
+
+        public void SetIsStreamSettingsGlobal()
+        {
+            isStream = isStream ? false : true;
+        }
+
+        private void ChangeOwner(VRCPlayerApi player)
+        {
+            if (!Networking.IsOwner(player, this.gameObject))
+            {
+                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
+            }
+        }
+
+        public bool IsStream()
+        {
+            return isStream;
+        }
+
+
     }
 }

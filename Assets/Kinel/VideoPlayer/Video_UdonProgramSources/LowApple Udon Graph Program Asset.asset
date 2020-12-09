@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f11136daadff0b44ac2278a314682ab, type: 3}
   m_Name: LowApple Udon Graph Program Asset
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 0}
-  udonAssembly: 
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 7807fa4085653a54a846f3682b3d60a2,
+    type: 2}
+  udonAssembly: ".data_start\r\n\r\n    \r\n\r\n.data_end\r\n\r\n.code_start\r\n\r\n\r\n.code_end\r\n"
   assemblyError: 
   graphData:
     name: 
@@ -21,7 +22,7 @@ MonoBehaviour:
     nodes: []
   graphElementData: []
   viewTransform:
-    position: {x: 0, y: 0}
-    scale: 1
+    position: {x: 85.4805, y: 49.799988}
+    scale: 0.8695652
   version: 1.0.0
   showAssembly: 0

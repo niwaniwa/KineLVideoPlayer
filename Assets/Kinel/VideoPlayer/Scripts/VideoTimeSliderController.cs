@@ -12,7 +12,7 @@ namespace Kinel.VideoPlayer.Scripts
         public KinelVideoScript kinelVideoPlayer;
         public Slider slider;
         public InitializeScript initializeSystemObject;
-        
+
         private const int waitTimeSeconds = 1; // seconds
 
         private bool isDrag = false;
@@ -26,12 +26,21 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void OnSliderDrop()
         {
+            if (kinelVideoPlayer.IsStream())
+            {
+                return;
+            }
             kinelVideoPlayer.SetVideoTime(slider.value);
             isWait = true;
         }
         
         public void FixedUpdate()
         {
+            if (kinelVideoPlayer.IsStream())
+            {
+                return;
+            }
+           
             if (isWait)
             {
                 waitCount++;
@@ -47,7 +56,7 @@ namespace Kinel.VideoPlayer.Scripts
 
             if (!isDrag)
             {
-                slider.value = kinelVideoPlayer.videoPlayer.GetTime();
+                slider.value = kinelVideoPlayer.GetVideoPlayer().GetTime();
             }
             
         }
@@ -55,6 +64,20 @@ namespace Kinel.VideoPlayer.Scripts
         public void SetSliderLength(float time)
         {
             this.slider.maxValue = time;
+        }
+
+        public bool IsDrag()
+        {
+            return isDrag;
+        }
+
+        public void Freeze()
+        {
+            slider.interactable = !kinelVideoPlayer.IsStream();
+            if (kinelVideoPlayer.IsStream())
+            {
+                slider.value = slider.maxValue;
+            }
         }
     }
 }

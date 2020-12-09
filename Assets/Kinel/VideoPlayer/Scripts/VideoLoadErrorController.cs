@@ -11,12 +11,11 @@ public class VideoLoadErrorController : UdonSharpBehaviour
 
     public GameObject rootObject;
     public Text textComponent;
-    private string message;
 
     public void show(VideoError errorMessage)
     {
         rootObject.SetActive(true);
-        textComponent.text = message + errorMessage;
+        textComponent.text = errorMessage.ToString();
     }
 
     public void hide()
