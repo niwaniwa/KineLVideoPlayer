@@ -33,9 +33,8 @@ namespace Kinel.VideoPlayer.Scripts
         private int[] videoTime = new int[3];
         private string debugText;
 
-        [UdonSynced] public bool isPlaying = false;
-        [UdonSynced] public bool isPause = false;
-        
+        [UdonSynced] private bool isPlaying = false;
+        [UdonSynced] private bool isPause = false;
         [UdonSynced] private VRCUrl syncedURL;
         [UdonSynced] private float videoStartGlobalTime = 0;
         [UdonSynced] private float pausedTime = 0;
@@ -43,12 +42,13 @@ namespace Kinel.VideoPlayer.Scripts
         [UdonSynced] private int activePlayerID;
         [UdonSynced] private bool isStream = false;
         [UdonSynced] private bool isSync = false;
+        
 
         public void Start()
         {
             videoPlayer = video;
         }
-
+        
         public void FixedUpdate()
         {
             debugTextComponant.text = $"isStream : {isStream} \n UserUpdateCount {initializeSystemObject.UserUpdateCount()} " +
@@ -102,6 +102,7 @@ namespace Kinel.VideoPlayer.Scripts
         
         public override void OnVideoReady()
         {
+
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 videoPlayer.Play();
@@ -141,7 +142,6 @@ namespace Kinel.VideoPlayer.Scripts
             videoTime[1] = (videoTimeSeconds / 60 ) - (videoTime[2] * 60) ; // minute
             videoTime[0] = videoTimeSeconds - (videoTime[2] * 60 * 60) - (videoTime[1] * 60); // seconds// hour
             sliderController.SetSliderLength(videoPlayer.GetDuration());
-
             float time = 0;
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
@@ -194,6 +194,7 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void Sync()
         {
+
             lastSyncTime = Time.realtimeSinceStartup;
             float globalVideoTime = Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration());
 
@@ -202,6 +203,7 @@ namespace Kinel.VideoPlayer.Scripts
                 videoPlayer.SetTime(globalVideoTime);
             }
             syncCount++;
+
         }
 
         public void LocalSync()
@@ -269,6 +271,7 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void SetVideoTime(float seconds)
         {
+
             ChangeOwner(Networking.LocalPlayer);
             
             videoStartGlobalTime += videoPlayer.GetTime() - seconds;
@@ -337,7 +340,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public BaseVRCVideoPlayer GetVideoPlayer()
         {
-            return videoPlayer;
+            return videoPlayer ?? video;
         }
 
         public void ChangeStreamMode()
@@ -383,6 +386,15 @@ namespace Kinel.VideoPlayer.Scripts
             return isStream;
         }
 
+        public bool IsPlaying()
+        {
+            return isPlaying;
+        }
 
+        public bool IsPause()
+        {
+            return isPause;
+        }
+        
     }
 }
