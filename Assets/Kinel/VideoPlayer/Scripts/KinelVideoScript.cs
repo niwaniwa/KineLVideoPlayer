@@ -390,6 +390,11 @@ namespace Kinel.VideoPlayer.Scripts
         {
             return isPlaying;
         }
+
+        public bool IsPause()
+        {
+            return isPause;
+        }
         
     }
 }
