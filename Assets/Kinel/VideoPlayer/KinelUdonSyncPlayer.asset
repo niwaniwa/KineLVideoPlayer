@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f11136daadff0b44ac2278a314682ab, type: 3}
   m_Name: KinelUdonSyncPlayer
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 4957119334ca52d43ae7b1a644f5bf8f,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 810f70bd2ffa12447ab2c91516d7efdb,
     type: 2}
   udonAssembly: ".data_start\r\n\r\n    .export videoPlayer\r\n    .export videoURLInputField\r\n
     \   .export syncFrequency\r\n    .export syncThreshold\r\n    .sync _videoStartNetworkTime,
