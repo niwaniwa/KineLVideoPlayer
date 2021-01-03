@@ -21,17 +21,18 @@ namespace Kinel.VideoPlayer.Scripts
         public VRCUrlInputField url;
         public VideoLoadErrorController videoLoadErrorController;
         public CountDown globalProcess, localProcess;
-        public Toggle streamButton;
+        public ModeChanger modeChanger;
         public Text debugTextComponant;
         public GameObject inputFieldLoadMessage;
         
 
         private BaseVRCVideoPlayer videoPlayer;
-        private float lastSyncTime, syncFrequency = 0.5f, deleyLimit = 0.5f;
+        private float lastSyncTime, syncFrequency = 3f, deleyLimit = 0.5f;
         private int joinSyncActCount = 0;
         private int syncCount = 0;
         private int[] videoTime = new int[3];
         private string debugText;
+        private bool isStreamLocal = false;
 
         [UdonSynced] private bool isPlaying = false;
         [UdonSynced] private bool isPause = false;
@@ -51,7 +52,7 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void FixedUpdate()
         {
-            debugTextComponant.text = $"isStream : {isStreamGlobal} \n UserUpdateCount {initializeSystemObject.UserUpdateCount()} " +
+            debugTextComponant.text = $"isStreamGlobal : {isStreamGlobal} \n UserUpdateCount {initializeSystemObject.UserUpdateCount()} " +
                                       $"\n isPlaying(global) {isPlaying}" +
                                       $"\n isPlaying(local)  {video.IsPlaying}";
             
@@ -71,6 +72,7 @@ namespace Kinel.VideoPlayer.Scripts
             ChangeOwner(Networking.LocalPlayer);
             isSync = true;
             syncedURL = url.GetUrl();
+            url.SetUrl(VRCUrl.Empty);
             globalProcess.StartSyncWaitCountdown(2, "GlobalSync", true);
             SendCustomNetworkEvent(NetworkEventTarget.All, "URLInputFieldSetInactibe");
         }
@@ -130,14 +132,14 @@ namespace Kinel.VideoPlayer.Scripts
             inputFieldLoadMessage.SetActive(false);
             videoLoadErrorController.hide();
             
-            if (isStreamGlobal)
+            if (isStreamLocal)
             {
                 videoTime = new int[] {0, 0, 0};
                 isPlaying = true;
                 return;
             }
             
-            int videoTimeSeconds = isStreamGlobal ? 0 : (int) (videoPlayer.GetDuration());
+            int videoTimeSeconds = isStreamLocal ? 0 : (int) (videoPlayer.GetDuration());
             videoTime[2] = (videoTimeSeconds / 60) / 60;
             videoTime[1] = (videoTimeSeconds / 60 ) - (videoTime[2] * 60) ; // minute
             videoTime[0] = videoTimeSeconds - (videoTime[2] * 60 * 60) - (videoTime[1] * 60); // seconds// hour
@@ -174,7 +176,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public bool IsSyncTiming()
         {
-            if (!isPlaying || isStreamGlobal)
+            if (!isPlaying || isStreamLocal)
             {
                 return false;
             }
@@ -216,8 +218,8 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void JoinSync()
         {
-            streamButton.isOn = isStreamGlobal;
-            videoPlayer = (isStreamGlobal ? stream : video);
+            modeChanger.SetToggleActive();
+            videoPlayer = (isStreamLocal ? stream : video);
             sliderController.Freeze();
             if (!isPlaying)
             {
@@ -244,9 +246,9 @@ namespace Kinel.VideoPlayer.Scripts
 
         public override void OnPlayerJoined(VRCPlayerApi player)
         {
-            videoPlayer = video;
             if (Networking.LocalPlayer == player)
             {
+                videoPlayer = video;
                 isSync = true;
                 localProcess.StartSyncWaitCountdown(10, "JoinSync", false);
             }
@@ -279,7 +281,7 @@ namespace Kinel.VideoPlayer.Scripts
             videoStartGlobalTime += 0.02f;
             SendCustomNetworkEvent(NetworkEventTarget.All, "Sync");
             
-            localProcess.StartSyncWaitCountdown(20, "LocalSync", false);
+            //localProcess.StartSyncWaitCountdown(20, "LocalSync", false);
         }
 
         public void OwnerPause()
@@ -343,9 +345,19 @@ namespace Kinel.VideoPlayer.Scripts
             return videoPlayer ?? video;
         }
 
-        public void SetStreamModeFlag(bool isStream)
+        public void SetStreamModeFlagGlobal(bool isStream)
         {
             this.isStreamGlobal = isStream;
+        }
+        
+        public void SetStreamModeFlagLocal(bool isStream)
+        {
+            this.isStreamLocal = isStream;
+        }
+
+        public void SetVideoInstance(bool isStream)
+        {
+            videoPlayer = (isStreamLocal ? stream : video);
         }
 
         private void ChangeOwner(VRCPlayerApi player)
@@ -356,9 +368,14 @@ namespace Kinel.VideoPlayer.Scripts
             }
         }
 
-        public bool IsStream()
+        public bool IsStreamGlobal()
         {
             return isStreamGlobal;
+        }
+
+        public bool IsStreamLocal()
+        {
+            return isStreamLocal;
         }
 
         public bool IsPlaying()

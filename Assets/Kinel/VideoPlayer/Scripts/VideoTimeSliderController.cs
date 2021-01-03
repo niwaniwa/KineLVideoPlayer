@@ -26,7 +26,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void OnSliderDrop()
         {
-            if (kinelVideoPlayer.IsStream())
+            if (kinelVideoPlayer.IsStreamLocal())
             {
                 return;
             }
@@ -36,7 +36,7 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void FixedUpdate()
         {
-            if (kinelVideoPlayer.IsStream())
+            if (kinelVideoPlayer.IsStreamLocal())
             {
                 return;
             }
@@ -73,8 +73,8 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void Freeze()
         {
-            slider.interactable = !kinelVideoPlayer.IsStream();
-            if (kinelVideoPlayer.IsStream())
+            slider.interactable = !kinelVideoPlayer.IsStreamLocal();
+            if (kinelVideoPlayer.IsStreamLocal())
             {
                 slider.value = slider.maxValue;
             }

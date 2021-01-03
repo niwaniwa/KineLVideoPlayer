@@ -13,11 +13,29 @@ public class ModeChanger : UdonSharpBehaviour
     public KinelVideoScript videoPlayer;
     public VideoTimeSliderController sliderController;
     public Toggle video, stream;
+    public GameObject timeText;
+
+    public void ChangeStreamModeForVideoButton()
+    {
+        if (video.isOn)
+        {
+            return;
+        }
+
+        ChangeStreamMode();
+    }
     
-    private bool isStreamLocal = false;
-    
-    
-    public void ChangeStreamMode()
+    public void ChangeStreamModeForStreamButton()
+    {
+        if (stream.isOn)
+        {
+            return;
+        }
+
+        ChangeStreamMode();
+    }
+
+    private void ChangeStreamMode()
     {
         videoPlayer.Reset();
         Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
@@ -26,24 +44,23 @@ public class ModeChanger : UdonSharpBehaviour
 
     public void ChangeStreamModeGlobal()
     {
-        if (isStreamLocal != videoPlayer.IsStream())
-        {
-            if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                return;
-            }
-        }
-
-        isStreamLocal = !isStreamLocal;
-        
+        videoPlayer.SetStreamModeFlagLocal(!videoPlayer.IsStreamLocal());
+        videoPlayer.SetVideoInstance(videoPlayer.IsStreamLocal());
+        SetToggleActive();
         if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
         {
-            videoPlayer.SetStreamModeFlag(isStreamLocal);
+            videoPlayer.SetStreamModeFlagGlobal(videoPlayer.IsStreamLocal());
+            sliderController.Freeze();
+            return;
         }
-
-        stream.isOn = isStreamLocal;
-        video.isOn = !isStreamLocal;
         sliderController.Freeze();
+    }
+
+    public void SetToggleActive()
+    {
+        stream.isOn = videoPlayer.IsStreamLocal();
+        video.isOn = !videoPlayer.IsStreamLocal();
+        timeText.SetActive(!timeText.activeSelf);
     }
     
 }
