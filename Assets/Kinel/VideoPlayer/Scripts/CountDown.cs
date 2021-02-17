@@ -8,12 +8,11 @@ using VRC.Udon.Common.Interfaces;
 
 public class CountDown : UdonSharpBehaviour
 {
-    public InitializeScript init;
     public UdonSharpBehaviour target;
 
     private bool isSyncWaitCountdown = false;
-    private float setCountTime = 0;
-    private int count = 0;
+    private float limitTime = 0;
+    private float elapsedTime = 0;
     private String methodName = "";
     private bool isGlobalCountDown;
 
@@ -21,11 +20,11 @@ public class CountDown : UdonSharpBehaviour
     {
         if (isSyncWaitCountdown)
         {
-            count++;
-            if (count >= setCountTime * init.UserUpdateCount())
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= limitTime)
             {
                 isSyncWaitCountdown = false;
-                count = 0;
+                limitTime = 0;
                 if (isGlobalCountDown)
                 {
                     target.SendCustomNetworkEvent(NetworkEventTarget.All, methodName);
@@ -38,7 +37,7 @@ public class CountDown : UdonSharpBehaviour
         }
     }
 
-    public bool StartSyncWaitCountdown(int time, String methodName, bool isGlobalCountDown)
+    public bool StartSyncWaitCountdown(float time, String methodName, bool isGlobalCountDown)
     {
         if (isSyncWaitCountdown)
         {
@@ -47,7 +46,7 @@ public class CountDown : UdonSharpBehaviour
 
         this.isGlobalCountDown = isGlobalCountDown;
         this.methodName = methodName;
-        setCountTime = time;
+        limitTime = time;
         isSyncWaitCountdown = true;
         return true;
     }
