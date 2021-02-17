@@ -11,25 +11,25 @@ namespace Kinel.VideoPlayer.Scripts
 
         public KinelVideoScript kinelVideoPlayer;
         public GameObject pauseObject, playObject;
-        public bool isPlaying = false;
-        public bool isStream;
+        
+        private bool isPlaying = false;
+        private const int VIDEO_MODE = 0;
+        private const int STREAM_MODE = 1;
 
         public void Start()
         {
-            if (isStream)
-            {
+            if (kinelVideoPlayer.GetPlayMode() == STREAM_MODE)
                 return;
-            }
+            
             pauseObject.SetActive(kinelVideoPlayer.IsPlaying());
             playObject.SetActive(!kinelVideoPlayer.IsPlaying());
         }
 
         public void FixedUpdate()
         {
-            if (isStream)
-            {
+            if (kinelVideoPlayer.GetPlayMode() == STREAM_MODE)
                 return;
-            }
+            
             if (kinelVideoPlayer.IsPlaying() != isPlaying)
             {
                 pauseObject.SetActive(kinelVideoPlayer.IsPlaying());
@@ -40,15 +40,14 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void OnPlayStateButtonClick()
         {
-            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
-            }
-
-            if (isStream)
-            {
+            if (kinelVideoPlayer.GetPlayMode() == STREAM_MODE || kinelVideoPlayer.masterOnly)
                 return;
-            }
+
+            if (!kinelVideoPlayer.IsPlaying() && !kinelVideoPlayer.IsPause())
+                return;
+            
+            if (!Networking.IsOwner(Networking.LocalPlayer, kinelVideoPlayer.gameObject))
+                Networking.SetOwner(Networking.LocalPlayer, kinelVideoPlayer.gameObject);
             
             kinelVideoPlayer.OwnerPause();
             
@@ -63,21 +62,5 @@ namespace Kinel.VideoPlayer.Scripts
             playObject.SetActive(!isPlaying);
         }
 
-        public void SetPlay()
-        {
-            if (kinelVideoPlayer.IsPlaying())
-            {
-                kinelVideoPlayer.GetVideoPlayer().Stop();
-                return;
-            }
-            
-            if (isStream)
-            {
-                return;
-            }
-            
-            kinelVideoPlayer.GetVideoPlayer().Play();
-        }
-        
     }
 }

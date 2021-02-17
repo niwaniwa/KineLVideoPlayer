@@ -12,6 +12,7 @@ public class TargetSetTransform : UdonSharpBehaviour
     public void Move()
     {
         targetObject.transform.position = toTransformObject.transform.position;
+        targetObject.transform.rotation = toTransformObject.transform.rotation;
     }
     
 }
