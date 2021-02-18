@@ -2734,7 +2734,7 @@ PrefabInstance:
     - target: {fileID: 7617626876185960011, guid: 9fb0335651020764cbfc04d1d4bca0b1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7617626876190103111, guid: 9fb0335651020764cbfc04d1d4bca0b1,
         type: 3}
@@ -2764,7 +2764,7 @@ PrefabInstance:
     - target: {fileID: 7617626876348062703, guid: 9fb0335651020764cbfc04d1d4bca0b1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7617626876546985626, guid: 9fb0335651020764cbfc04d1d4bca0b1,
         type: 3}
@@ -2831,10 +2831,20 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7617626876690645719, guid: 9fb0335651020764cbfc04d1d4bca0b1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7617626876845680443, guid: 9fb0335651020764cbfc04d1d4bca0b1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7617626876984315800, guid: 9fb0335651020764cbfc04d1d4bca0b1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7617626877320081697, guid: 9fb0335651020764cbfc04d1d4bca0b1,
         type: 3}
@@ -7501,7 +7511,6 @@ GameObject:
   - component: {fileID: 6759095420044892193}
   - component: {fileID: 1055321711679937795}
   - component: {fileID: 1415578912069899892}
-  - component: {fileID: 1094421957876372724}
   m_Layer: 0
   m_Name: VRCWorld
   m_TagString: Untagged
@@ -7509,19 +7518,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1094421957876372724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094421957876372723}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 229740497, guid: 4ecd63eff847044b68db9453ce219299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  contentType: 1
 --- !u!4 &1094421957876643275
 Transform:
   m_ObjectHideFlags: 0
