@@ -37,6 +37,8 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 prefab.name = $"Video ({i})";
                 prefab.transform.SetParent(content);
                 prefab.transform.localScale = Vector3.one;
+                prefab.transform.localRotation = Quaternion.identity;
+                prefab.transform.localPosition = Vector3.one;
 
                 var descriptionComponent = prefab.transform.GetChild(1).GetChild(0).GetComponent<Text>();
                 descriptionComponent.text = descriptionComponent.text.Replace("$NAME$", titles[i])
