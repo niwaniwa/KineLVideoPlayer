@@ -248,7 +248,8 @@ namespace Kinel.VideoPlayer.Scripts
             {
                 if (coolTime <= 1)
                     return;
-
+    
+                Debug.Log("[Kinel] video mode synced.");
                 coolTime = 0;
                 localPlayMode = globalPlayMode;
                 modeChanger.ChangeMode(globalPlayMode);
@@ -259,7 +260,7 @@ namespace Kinel.VideoPlayer.Scripts
                 return;
 
             localVideoID = globalVideoID;
-            Debug.Log($"[KineL] Synced video. # {syncedURL.Get()}");
+            Debug.Log($"[KineL] Synced. # {syncedURL.Get()}");
             videoPlayer.Stop();
             PlayVideo(syncedURL);
         }
@@ -401,6 +402,14 @@ namespace Kinel.VideoPlayer.Scripts
         public int GetGlobalPlayMode()
         {
             return globalPlayMode;
+        }
+
+        public void SetGlobalPlayMode(int playMode)
+        {
+            if(Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+                ChangeOwner(Networking.LocalPlayer);
+
+            globalPlayMode = playMode;
         }
 
         public void SetVideoInstance(BaseVRCVideoPlayer instance)

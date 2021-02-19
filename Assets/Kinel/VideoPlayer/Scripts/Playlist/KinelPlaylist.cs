@@ -58,6 +58,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 num = i;
                 button.interactable = true;
             }
+            videoPlayer.SetGlobalPlayMode(playMode[num]);
             videoPlayer.GetModeChangeInstance().ChangeMode(playMode[num]);
             videoPlayer.PlayVideo(urls[num]);
         }
