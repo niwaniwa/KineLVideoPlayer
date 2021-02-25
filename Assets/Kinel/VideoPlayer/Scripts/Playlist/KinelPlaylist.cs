@@ -28,6 +28,8 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
 
         public GameObject videoPrefab;
         public RectTransform content;
+
+        public GameObject warningUI;
         public void Start()
         {
             for (var i = 0; i < urls.Length; i++)
@@ -36,9 +38,9 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
 
                 prefab.name = $"Video ({i})";
                 prefab.transform.SetParent(content);
-                prefab.transform.localScale = Vector3.one;
+                prefab.transform.localPosition = Vector3.zero;
                 prefab.transform.localRotation = Quaternion.identity;
-                prefab.transform.localPosition = Vector3.one;
+                prefab.transform.localScale    = Vector3.one;
 
                 var descriptionComponent = prefab.transform.GetChild(1).GetChild(0).GetComponent<Text>();
                 descriptionComponent.text = descriptionComponent.text.Replace("$NAME$", titles[i])
@@ -65,7 +67,19 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             videoPlayer.PlayVideo(urls[num]);
         }
 
-
+        public void FixedUpdate()
+        {
+            if (!videoPlayer)
+                return;
+            
+            if (videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
+                warningUI.SetActive(true);
+                
+            if (!videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
+                warningUI.SetActive(false);
+                
+            
+        }
     }
 
 #if UNITY_EDITOR && !COMPILER_UDONSHARP
@@ -80,6 +94,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         private SerializedProperty videoPrefab;
 
         private SerializedProperty urlString;
+        private SerializedProperty warningUI;
 
         private void OnEnable()
         {
@@ -88,7 +103,8 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelPlaylist.videoPlayer));
             content = serializedObject.FindProperty(nameof(KinelPlaylist.content));
             videoPrefab = serializedObject.FindProperty(nameof(KinelPlaylist.videoPrefab));
-            urlString = serializedObject.FindProperty(nameof(kinelPlaylist.urlString));
+            urlString = serializedObject.FindProperty(nameof(KinelPlaylist.urlString));
+            warningUI = serializedObject.FindProperty(nameof(KinelPlaylist.warningUI));
 
             var dummyList = serializedObject.FindProperty(nameof(KinelPlaylist.dummy));
             var titles = serializedObject.FindProperty(nameof(KinelPlaylist.titles));
@@ -186,6 +202,8 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             EditorGUILayout.PropertyField(content);
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(videoPrefab);
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(warningUI);
             EditorGUILayout.Space();
             list.DoLayoutList();
             EditorGUILayout.Space();

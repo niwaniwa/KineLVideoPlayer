@@ -9,6 +9,7 @@ using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
+using VRC.Udon.Serialization.OdinSerializer.Utilities;
 
 public class ModeChanger : UdonSharpBehaviour
 {
@@ -24,6 +25,9 @@ public class ModeChanger : UdonSharpBehaviour
 
     [SerializeField] private GameObject videoScreen;
     [SerializeField] private GameObject streamScreen;
+    [SerializeField] private GameObject subVideoScree;
+    [SerializeField] private GameObject subStreanScreen;
+    [SerializeField] private GameObject[] masterOnlyToggleUIObjects;
     
     private const int VIDEO_MODE = 0;
     private const int STREAM_MODE = 1;
@@ -39,7 +43,9 @@ public class ModeChanger : UdonSharpBehaviour
             videoPlayer.SetVideoInstance(video);
             textUpdater.SetActive(true);
             videoScreen.SetActive(true);
+            subVideoScree.SetActive(true);
             streamScreen.SetActive(false);
+            subStreanScreen.SetActive(false);
             sliderController.UnFreeze();
             togglePlayButton.gameObject.SetActive(true);
             animator.SetInteger("PlayMode", VIDEO_MODE);
@@ -50,7 +56,9 @@ public class ModeChanger : UdonSharpBehaviour
             videoPlayer.SetVideoInstance(stream);
             textUpdater.SetActive(false);
             videoScreen.SetActive(false);
+            subVideoScree.SetActive(false);
             streamScreen.SetActive(true);
+            subStreanScreen.SetActive(true);
             sliderController.Freeze();
             togglePlayButton.gameObject.SetActive(false);
             animator.SetInteger("PlayMode", STREAM_MODE);
@@ -62,7 +70,7 @@ public class ModeChanger : UdonSharpBehaviour
 
     public void ChangeModeForSlider()
     {
-        if (videoPlayer.masterOnly)
+        if (videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
             return;
         
         if (videoPlayer.GetPlayMode() == VIDEO_MODE)
@@ -92,5 +100,56 @@ public class ModeChanger : UdonSharpBehaviour
         videoPlayer.GlobalChangeMode(STREAM_MODE);
     }
 
+
+    public void MasterOnlyForButton()
+    {
+        if (Networking.LocalPlayer.isMaster)
+        {
+            ToggleMasterOnly();
+        }
+    }
+    
+    public void ToggleMasterOnly()
+    {
+        if (videoPlayer.masterOnlyLocal)
+        {
+            if (Networking.LocalPlayer.isMaster)
+            {
+                Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
+                videoPlayer.masterOnly = false;
+            }
+            
+            videoPlayer.masterOnlyLocal = false;
+            animator.SetBool("MasterOnly", false);
+            if (!Networking.LocalPlayer.isMaster)
+            {
+                for (int i = 0; i < masterOnlyToggleUIObjects.Length; i++)
+                {
+                    masterOnlyToggleUIObjects[i].SetActive(false);
+                }
+            }
+
+            return;
+        }
+
+        if (!videoPlayer.masterOnlyLocal)
+        {
+            if (Networking.LocalPlayer.isMaster)
+            {
+                Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
+                videoPlayer.masterOnly = true;
+            }
+            
+            videoPlayer.masterOnlyLocal = true;
+            animator.SetBool("MasterOnly", true);
+            if (!Networking.LocalPlayer.isMaster)
+            {
+                for (int i = 0; i < masterOnlyToggleUIObjects.Length; i++)
+                {
+                    masterOnlyToggleUIObjects[i].SetActive(true);
+                }
+            }
+        }
+    }
 
 }

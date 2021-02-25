@@ -16,7 +16,7 @@ public class InformationManager : UdonSharpBehaviour
     [SerializeField] private Text masterTextComponent;
     [SerializeField] private Text ownerTextComponent;
 
-    [UdonSynced] private bool status = false;
+    //[UdonSynced] private bool status = false;
 
     private VRCPlayerApi master;
 

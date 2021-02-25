@@ -1,6 +1,7 @@
 using System;
 using UdonSharp;
 using UnityEngine;
+using UnityEngine.UI;
 using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
 using VRC.SDK3.Video.Components.Base;
@@ -13,39 +14,42 @@ namespace Kinel.VideoPlayer.Scripts
     {
 
         [SerializeField] private VideoTimeSliderController sliderController;
-        [SerializeField] private  VRCUrlInputField url;
-        [SerializeField] private  VideoLoadErrorController videoLoadErrorController;
-        [SerializeField] private  CountDown globalProcess, localProcess;
-        [SerializeField] private  ModeChanger modeChanger;
-        [SerializeField] private  GameObject inputFieldLoadMessage;
+        [SerializeField] private VRCUrlInputField url;
+        [SerializeField] private VideoLoadErrorController videoLoadErrorController;
+        [SerializeField] private CountDown globalProcess, localProcess;
+        [SerializeField] private ModeChanger modeChanger;
+        [SerializeField] private GameObject inputFieldLoadMessage;
         [SerializeField] private float syncFrequency = 3f, deleyLimit = 1f;
 
         private BaseVRCVideoPlayer videoPlayer;
         private float lastSyncTime;
         private int localVideoID = 0;
-        private string debugText;
         private int localPlayMode = 0;
         private bool isReady = false;
         private bool isPauseLocal = false;
-        private string localURL;
         
-        public bool masterOnly = false;
+        [NonSerialized]public bool masterOnlyLocal = false;
+        [UdonSynced] public bool masterOnly = false;
         
         //[SerializeField] private Animator playbackSpeed;
         //[SerializeField] private AnimationClip[] clips;
 
         [UdonSynced] private VRCUrl syncedURL = VRCUrl.Empty;
         [UdonSynced] private bool isPlaying = false;
-        [UdonSynced] private bool isPause;
+        [UdonSynced] private bool isPause = false;
         [UdonSynced] private float videoStartGlobalTime = 0;
         [UdonSynced] private float pausedTime = 0;
-        [UdonSynced] private float pauseElapsedTime = 0;
         [UdonSynced] private int globalVideoID = 0;
         [UdonSynced] private int globalPlayMode = 0;
         
         private const int VIDEO_MODE = 0;
         private const int STREAM_MODE = 1;
-        
+
+        public void Start()
+        {
+            
+        }
+
         public void FixedUpdate()
         {
             if (IsSyncTiming())
@@ -69,7 +73,10 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void OnURLChanged()
         {
-            if (String.IsNullOrEmpty(url.GetUrl().Get()) || masterOnly)
+            if (String.IsNullOrEmpty(url.GetUrl().Get()))
+                return;
+
+            if (masterOnly && !Networking.LocalPlayer.isMaster)
                 return;
             
             Debug.Log($"[KineL] Start process");
@@ -83,13 +90,16 @@ namespace Kinel.VideoPlayer.Scripts
             PlayVideo(syncedURL);
         }
 
-        public void PlayVideo(VRCUrl playURL)
+        public bool PlayVideo(VRCUrl playURL)
         {
+            if (masterOnly && !Networking.LocalPlayer.isMaster)
+                return false;
+            
             if (!IsValidURL(playURL.Get()))
             {
                 OnVideoError(VideoError.InvalidURL);
                 Debug.Log($"[KineL] Loading Error: URL invalid");
-                return;
+                return false;
             } 
             
             if(videoPlayer.IsPlaying)
@@ -114,12 +124,12 @@ namespace Kinel.VideoPlayer.Scripts
 
                 Debug.Log($"[KineL] Loading ... : now syncedURL {syncedURL}");
                 localProcess.StartSyncWaitCountdown(1.5f, nameof(OwnerPlayVideo), false);
-                return;
+                return true;
             }
             Debug.Log($"[KineL] Loading ... : now syncedURL {syncedURL}");
             videoPlayer.LoadURL(playURL);
             isPauseLocal = false;
-            
+            return true;
         }
 
         // 時間調整用
@@ -242,6 +252,13 @@ namespace Kinel.VideoPlayer.Scripts
                 return;
 
             coolTime += Time.deltaTime;
+
+            if (masterOnlyLocal != masterOnly)
+            {
+                modeChanger.ToggleMasterOnly();
+                Debug.Log("[Kinel] MasterOnly");
+            }
+                
 
             // play mode change
             if (localPlayMode != globalPlayMode)
@@ -377,6 +394,7 @@ namespace Kinel.VideoPlayer.Scripts
         public void ResetLocal()
         {
             videoPlayer.Stop();
+            videoPlayer.LoadURL(VRCUrl.Empty);
             inputFieldLoadMessage.SetActive(false);
             videoLoadErrorController.hide();
             url.SetUrl(VRCUrl.Empty);
