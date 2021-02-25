@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Screen
-  m_Shader: {fileID: 4800000, guid: 9788d723ed7eac946a9a599e4a6ba940, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: 5b1695935a951ba4b94124851e44bcb4, type: 3}
+  m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -76,4 +76,4 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.15094337, g: 0.16862746, b: 0.21176471, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
