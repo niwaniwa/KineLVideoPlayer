@@ -32,6 +32,37 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         public GameObject warningUI;
         public void Start()
         {
+            if (!videoPlayer)
+            {
+                Debug.LogError("[Kinel] Playlist init error. Video player is null.");
+                warningUI.transform.GetChild(0).GetComponent<Text>().text = "...Disabled...";
+                warningUI.SetActive(true);
+                videoPrefab.SetActive(false);
+                return;
+            }
+
+            if (urls.Length == 0)
+            {
+                Debug.LogError("[Kinel] URL is empty");
+                warningUI.transform.GetChild(0).GetComponent<Text>().text = "...Disabled...";
+                warningUI.SetActive(true);
+                videoPrefab.SetActive(false);
+                return;
+            }
+            Init();
+        }
+
+        public void PlayVideo()
+        {
+            Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
+            var i = GetSelectedItem();
+            videoPlayer.SetGlobalPlayMode(playMode[i]);
+            videoPlayer.GetModeChangeInstance().ChangeMode(playMode[i]);
+            videoPlayer.PlayVideo(urls[i]);
+        }
+
+        public void Init()
+        {
             for (var i = 0; i < urls.Length; i++)
             {
                 GameObject prefab = VRCInstantiate(videoPrefab);
@@ -50,26 +81,27 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             videoPrefab.SetActive(false);
         }
 
-        public void PlayVideo()
+        public int GetSelectedItem()
         {
-            Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
-            var num = 0;
-            for (var i = 0; i < content.transform.childCount; i++)
+            var select = 0;
+            for (int i = 0; i < content.transform.childCount; i++)
             {
                 var button = content.GetChild(i).GetComponent<Button>();
-                if (button.interactable)
-                    continue;
-                num = i;
-                button.interactable = true;
+                if (!button.interactable){
+                    select = i;
+                    button.interactable = true;
+                }
             }
-            videoPlayer.SetGlobalPlayMode(playMode[num]);
-            videoPlayer.GetModeChangeInstance().ChangeMode(playMode[num]);
-            videoPlayer.PlayVideo(urls[num]);
+
+            return select;
         }
 
         public void FixedUpdate()
         {
             if (!videoPlayer)
+                return;
+
+            if (urls.Length <= 0)
                 return;
             
             if (videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
