@@ -11,13 +11,14 @@ namespace Kinel.VideoPlayer.Scripts
 
         public KinelVideoScript kinelVideoPlayer;
         public Slider slider;
-        public InitializeScript initializeSystemObject;
-        
+
         private const int waitTimeSeconds = 1; // seconds
 
         private bool isDrag = false;
         private bool isWait = false;
-        private int waitCount = 0;
+        private float waitTiem = 0;
+        private const int VIDEO_MODE = 0;
+        private const int STREAM_MODE = 1;
 
         public void OnSliderDrag()
         {
@@ -26,29 +27,37 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void OnSliderDrop()
         {
+            if (kinelVideoPlayer.GetGlobalPlayMode() == STREAM_MODE)
+            {
+                return;
+            }
             kinelVideoPlayer.SetVideoTime(slider.value);
             isWait = true;
         }
         
         public void FixedUpdate()
         {
+            
+            if (!kinelVideoPlayer.GetVideoPlayer())
+                return;
+            
+            if (kinelVideoPlayer.GetGlobalPlayMode() == STREAM_MODE)
+                return;
+            
             if (isWait)
             {
-                waitCount++;
-                if (waitCount >= initializeSystemObject.UserUpdateCount() * waitTimeSeconds)
+                waitTiem += Time.deltaTime;
+                if (waitTiem >= waitTimeSeconds)
                 {
                     isDrag = false;
                     isWait = false;
-                    waitCount = 0;
+                    waitTiem = 0;
                 }
-
                 return;
             }
 
-            if (!isDrag)
-            {
-                slider.value = kinelVideoPlayer.videoPlayer.GetTime();
-            }
+            if (!isDrag/* && kinelVideoPlayer.IsReady()*/)
+                slider.value = kinelVideoPlayer.GetVideoPlayer().GetTime();
             
         }
 
@@ -56,5 +65,28 @@ namespace Kinel.VideoPlayer.Scripts
         {
             this.slider.maxValue = time;
         }
+
+        public bool IsDrag()
+        {
+            return isDrag;
+        }
+
+        public void Freeze()
+        {
+            slider.interactable = false;
+            slider.value = slider.maxValue;
+        }
+
+        public void UnFreeze()
+        {
+            slider.interactable = true;
+        }
+
+        public bool IsFreeze()
+        {
+            return slider.IsInteractable();
+        }
+
+        
     }
 }
