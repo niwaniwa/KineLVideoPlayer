@@ -25,10 +25,10 @@ namespace Kinel.VideoPlayer.Scripts
         private float lastSyncTime;
         private int localVideoID = 0;
         private int localPlayMode = 0;
-        private bool isReady = false;
+        //private bool isReady = false;
         private bool isPauseLocal = false;
         
-        [NonSerialized]public bool masterOnlyLocal = false;
+        [NonSerialized] public bool masterOnlyLocal = false;
         [UdonSynced] public bool masterOnly = false;
         
         //[SerializeField] private Animator playbackSpeed;
@@ -47,7 +47,8 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void Start()
         {
-            
+            modeChanger.ChangeMode(VIDEO_MODE);
+            //isReady = true;
         }
 
         public void FixedUpdate()
@@ -122,11 +123,11 @@ namespace Kinel.VideoPlayer.Scripts
                 syncedURL = playURL;
                 url.SetUrl(VRCUrl.Empty);
 
-                Debug.Log($"[KineL] Loading ... : now syncedURL {syncedURL}");
+                Debug.Log($"[KineL] Loading ... : {syncedURL}");
                 localProcess.StartSyncWaitCountdown(1.5f, nameof(OwnerPlayVideo), false);
                 return true;
             }
-            Debug.Log($"[KineL] Loading ... : now syncedURL {syncedURL}");
+            Debug.Log($"[KineL] Loading ... : {syncedURL}");
             videoPlayer.LoadURL(playURL);
             isPauseLocal = false;
             return true;
@@ -319,15 +320,6 @@ namespace Kinel.VideoPlayer.Scripts
             Debug.Log($"Reload completed. # {syncedURL}");
         }
 
-        public override void OnPlayerJoined(VRCPlayerApi player)
-        {
-            if (Networking.LocalPlayer == player)
-            {
-                modeChanger.ChangeMode(VIDEO_MODE);
-                isReady = true;
-            }
-        }
-        
 
         public void GlobalChangeMode(int mode)
         {
@@ -452,10 +444,7 @@ namespace Kinel.VideoPlayer.Scripts
             return isPause;
         }
 
-        public bool IsReady()
-        {
-            return isReady;
-        }
+
 
         private bool IsValidURL(String str)
         {

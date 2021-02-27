@@ -37,10 +37,13 @@ namespace Kinel.VideoPlayer.Scripts
         
         public void FixedUpdate()
         {
+            
+            if (!kinelVideoPlayer.GetVideoPlayer())
+                return;
+            
             if (kinelVideoPlayer.GetGlobalPlayMode() == STREAM_MODE)
                 return;
-
-
+            
             if (isWait)
             {
                 waitTiem += Time.deltaTime;
@@ -53,7 +56,7 @@ namespace Kinel.VideoPlayer.Scripts
                 return;
             }
 
-            if (!isDrag && kinelVideoPlayer.IsReady())
+            if (!isDrag/* && kinelVideoPlayer.IsReady()*/)
                 slider.value = kinelVideoPlayer.GetVideoPlayer().GetTime();
             
         }

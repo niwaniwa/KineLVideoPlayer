@@ -52,6 +52,12 @@ public class InformationManager : UdonSharpBehaviour
         foreach (var player in returnArrays)
             if (player.isMaster)
                 master = player;
+
+        if (master == null)
+        {
+            master = Networking.LocalPlayer;
+        }
+            
     }
 
     public override void OnPlayerLeft(VRCPlayerApi player)

@@ -15,7 +15,10 @@ namespace Kinel.VideoPlayer.Scripts
         public Text nowTime;
         public void FixedUpdate()
         {
-            if (!sliderController.IsDrag() && kinelVideoPlayer.IsReady())
+            if (!kinelVideoPlayer.GetVideoPlayer())
+                return;
+            
+            if (!sliderController.IsDrag() /*&& kinelVideoPlayer.IsReady()*/)
             {
                 UpdateVideoTimeText((int) (kinelVideoPlayer.GetVideoPlayer().GetTime()));
             }
