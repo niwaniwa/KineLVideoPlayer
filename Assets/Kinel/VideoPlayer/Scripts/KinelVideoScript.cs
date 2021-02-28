@@ -93,9 +93,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public bool PlayVideo(VRCUrl playURL)
         {
-            if (masterOnly && !Networking.LocalPlayer.isMaster)
-                return false;
-            
+
             if (!IsValidURL(playURL.Get()))
             {
                 OnVideoError(VideoError.InvalidURL);
@@ -283,6 +281,15 @@ namespace Kinel.VideoPlayer.Scripts
             PlayVideo(syncedURL);
         }
 
+        public override void OnPlayerLeft(VRCPlayerApi player)
+        {
+            if (masterOnly && player.playerId + 1 == Networking.LocalPlayer.playerId)
+            {
+                Debug.Log("[Kidel] Change masteronly flag");
+                modeChanger.ToggleMasterOnly();
+                modeChanger.ToggleWaringUIObject(false);
+            }
+        }
 
 
         //public void Paste()

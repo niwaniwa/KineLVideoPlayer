@@ -1,13 +1,17 @@
-# Video Player For VRChat 
+# Video Player For VRChat 1.0.1
 
 ## はじめに
 
 VRChatを対象としたビデオプレイヤーです。
 
+## 更新履歴
+- 1.0.0 初版
+- 1.0.1 MasterOnlyの不具合を修正
+
 ## 動作環境
 
-- VRChat SDK3(2021.01.28.19.07)
-- [Udon Sharp(v0.19.2)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.2)
+- VRChat SDK3(2021.02.23.11.40)
+- [Udon Sharp(v0.19.3)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.3)
 - Unity 2018.4.20f1
 
 ## 特徴
@@ -64,4 +68,3 @@ VRChatを対象としたビデオプレイヤーです。
 
 ## License
 - Mit License
-  
