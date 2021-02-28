@@ -93,9 +93,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public bool PlayVideo(VRCUrl playURL)
         {
-            if (masterOnly && !Networking.LocalPlayer.isMaster)
-                return false;
-            
+
             if (!IsValidURL(playURL.Get()))
             {
                 OnVideoError(VideoError.InvalidURL);
