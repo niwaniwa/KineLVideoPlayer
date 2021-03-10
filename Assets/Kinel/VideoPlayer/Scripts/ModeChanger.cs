@@ -123,10 +123,7 @@ public class ModeChanger : UdonSharpBehaviour
             animator.SetBool("MasterOnly", false);
             if (!Networking.LocalPlayer.isMaster)
             {
-                for (int i = 0; i < masterOnlyToggleUIObjects.Length; i++)
-                {
-                    masterOnlyToggleUIObjects[i].SetActive(false);
-                }
+                ToggleWaringUIObject(false);
             }
 
             return;
@@ -144,11 +141,16 @@ public class ModeChanger : UdonSharpBehaviour
             animator.SetBool("MasterOnly", true);
             if (!Networking.LocalPlayer.isMaster)
             {
-                for (int i = 0; i < masterOnlyToggleUIObjects.Length; i++)
-                {
-                    masterOnlyToggleUIObjects[i].SetActive(true);
-                }
+                ToggleWaringUIObject(true);
             }
+        }
+    }
+
+    public void ToggleWaringUIObject(bool b)
+    {
+        for (int i = 0; i < masterOnlyToggleUIObjects.Length; i++)
+        {
+            masterOnlyToggleUIObjects[i].SetActive(b);
         }
     }
 
