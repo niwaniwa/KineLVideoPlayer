@@ -30,6 +30,8 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         public RectTransform content;
 
         public GameObject warningUI;
+
+        private bool ready = false;
         public void Start()
         {
             if (!videoPlayer)
@@ -55,10 +57,10 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         public void PlayVideo()
         {
             Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
-            var i = GetSelectedItem();
-            videoPlayer.SetGlobalPlayMode(playMode[i]);
-            videoPlayer.GetModeChangeInstance().ChangeMode(playMode[i]);
-            videoPlayer.PlayVideo(urls[i]);
+            var num = GetSelectedItem();
+            videoPlayer.SetGlobalPlayMode(playMode[num]);
+            videoPlayer.GetModeChangeInstance().ChangeMode(playMode[num]);
+            videoPlayer.PlayVideo(urls[num]);
         }
 
         public void Init()
@@ -90,6 +92,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 if (!button.interactable){
                     select = i;
                     button.interactable = true;
+                    break;
                 }
             }
 
@@ -100,10 +103,16 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         {
             if (!videoPlayer)
                 return;
+            
+            if (!ready)
+                return;
 
             if (urls.Length <= 0)
                 return;
-            
+
+            if (Networking.LocalPlayer.isMaster && warningUI.activeSelf)
+                warningUI.SetActive(false);
+
             if (videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
                 warningUI.SetActive(true);
                 
@@ -111,6 +120,12 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 warningUI.SetActive(false);
                 
             
+        }
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            if(player == Networking.LocalPlayer)
+                ready = true;
         }
     }
 
