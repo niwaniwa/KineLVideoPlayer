@@ -106,9 +106,13 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             
             if (!ready)
                 return;
+            
+            if (!warningUI)
+                return;
 
             if (urls.Length <= 0)
                 return;
+            
 
             if (Networking.LocalPlayer.isMaster && warningUI.activeSelf)
                 warningUI.SetActive(false);
