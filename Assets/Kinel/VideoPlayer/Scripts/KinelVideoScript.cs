@@ -1,4 +1,5 @@
 using System;
+using Kinel.VideoPlayer.Scripts.Playlist;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ namespace Kinel.VideoPlayer.Scripts
         [SerializeField] private ModeChanger modeChanger;
         [SerializeField] private GameObject inputFieldLoadMessage;
         [SerializeField] private float syncFrequency = 3f, deleyLimit = 1f;
+        [SerializeField] private bool loop = true;
 
         private BaseVRCVideoPlayer videoPlayer;
         private float lastSyncTime;
@@ -27,6 +29,8 @@ namespace Kinel.VideoPlayer.Scripts
         private int localPlayMode = 0;
         //private bool isReady = false;
         private bool isPauseLocal = false;
+        private bool usePlaylist = false;
+        private KinelPlaylist list;
         
         [NonSerialized] public bool masterOnlyLocal = false;
         [UdonSynced] public bool masterOnly = false;
@@ -48,7 +52,7 @@ namespace Kinel.VideoPlayer.Scripts
         public void Start()
         {
             modeChanger.ChangeMode(VIDEO_MODE);
-            //isReady = true;
+            videoPlayer.Loop = loop;
         }
 
         public void FixedUpdate()
@@ -87,17 +91,21 @@ namespace Kinel.VideoPlayer.Scripts
                 videoLoadErrorController.showMessage("Input Error. Please check your URL length.");
                 return;
             }
+            
+            if(list != null)
+                if(list.autoPlay)
+                    list.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(KinelPlaylist.AutoPlayDisable));
+            
             syncedURL = url.GetUrl();
             PlayVideo(syncedURL);
         }
 
         public bool PlayVideo(VRCUrl playURL)
         {
-
             if (!IsValidURL(playURL.Get()))
             {
                 OnVideoError(VideoError.InvalidURL);
-                Debug.Log($"[KineL] Loading Error: URL invalid");
+                Debug.LogError($"[KineL] Loading Error: URL invalid");
                 return false;
             } 
             
@@ -215,19 +223,32 @@ namespace Kinel.VideoPlayer.Scripts
             }
 
             isPause = false;
+
+            
+            if(Networking.LocalPlayer.isMaster)
+                if (list != null)
+                    if (list.autoPlay)
+                        list.PlayNextVideo();
+
         }
 
         public override void OnVideoLoop()
         {
+            Debug.Log("[KineL] OnVideoLoop");
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
                 videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
-
+            
         }
 
         public override void OnVideoError(VideoError videoError)
         {
             videoLoadErrorController.show(videoError);
             inputFieldLoadMessage.SetActive(false);
+
+            if (list != null)
+                if(list.autoPlay)
+                    list.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(KinelPlaylist.AutoPlayDisable));
+            
         }
 
         //********** Sync **********//
@@ -255,17 +276,16 @@ namespace Kinel.VideoPlayer.Scripts
             if (masterOnlyLocal != masterOnly)
             {
                 modeChanger.ToggleMasterOnly();
-                Debug.Log("[Kinel] MasterOnly");
+                Debug.Log("[KineL] MasterOnly");
             }
-                
-
+            
             // play mode change
             if (localPlayMode != globalPlayMode)
             {
                 if (coolTime <= 1)
                     return;
     
-                Debug.Log("[Kinel] video mode synced.");
+                Debug.Log("[KineL] video mode synced.");
                 coolTime = 0;
                 localPlayMode = globalPlayMode;
                 modeChanger.ChangeMode(globalPlayMode);
@@ -311,7 +331,7 @@ namespace Kinel.VideoPlayer.Scripts
         {
             if (localVideoID == globalVideoID && isPlaying && !videoPlayer.IsPlaying)
             {
-                Debug.Log("[Kinel] Resynce");
+                Debug.Log("[KineL] Resynce");
                 PlayVideo(syncedURL);
                 return;
             }
@@ -320,7 +340,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void Reload()
         {
-            Debug.Log("[Kinel] Reloading...");
+            Debug.Log("[KineL] Reloading...");
             var lastVideoURL = syncedURL;
             ResetGlobal();
             PlayVideo(lastVideoURL);
@@ -368,7 +388,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void GlobalPause()
         {
-            Debug.Log("[Kinel] Paused.");
+            Debug.Log("[KineL] Paused.");
             videoPlayer.Pause();
             isPauseLocal = true;
         }
@@ -393,12 +413,11 @@ namespace Kinel.VideoPlayer.Scripts
         public void ResetLocal()
         {
             videoPlayer.Stop();
-            videoPlayer.LoadURL(VRCUrl.Empty);
+//            videoPlayer.LoadURL(VRCUrl.Empty);
             inputFieldLoadMessage.SetActive(false);
             videoLoadErrorController.hide();
             url.SetUrl(VRCUrl.Empty);
             isPauseLocal = false;
-            
         }
         
         public void ResetForButton()
@@ -466,6 +485,26 @@ namespace Kinel.VideoPlayer.Scripts
         public ModeChanger GetModeChangeInstance()
         {
             return modeChanger;
+        }
+
+        public void SetList(KinelPlaylist list)
+        {
+            this.list = list;
+        }
+
+        public KinelPlaylist GetList()
+        {
+            return list;
+        }
+
+        public bool IsLoop()
+        {
+            return list;
+        }
+
+        public void SetLoop(bool loop)
+        {
+            this.loop = loop;
         }
 
     }

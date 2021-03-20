@@ -36,7 +36,9 @@ public class ModeChanger : UdonSharpBehaviour
     public void ChangeMode(int playMode)
     {
         if (videoPlayer.GetVideoPlayer() != null)
-            videoPlayer.ResetLocal();
+            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                videoPlayer.ResetGlobal();
+            
 
         if (playMode == VIDEO_MODE)
         {
@@ -72,6 +74,9 @@ public class ModeChanger : UdonSharpBehaviour
     {
         if (videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
             return;
+        
+        if(videoPlayer.GetList() != null)
+            videoPlayer.GetList().AutoPlayDisable();
         
         if (videoPlayer.GetPlayMode() == VIDEO_MODE)
             ChangeStreamModeForStreamButton();
