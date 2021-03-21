@@ -2,12 +2,16 @@ using System;
 using Kinel.VideoPlayer.Scripts.Playlist;
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.UI;
 using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
 using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
+
+#if UNITY_EDITOR && !COMPILER_UDONSHARP// Editor拡張用
+using UnityEditor;
+using UdonSharpEditor;
+#endif
 
 namespace Kinel.VideoPlayer.Scripts
 {
@@ -96,12 +100,14 @@ namespace Kinel.VideoPlayer.Scripts
                 if(list.autoPlay)
                     list.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(KinelPlaylist.AutoPlayDisable));
             
+
             syncedURL = url.GetUrl();
             PlayVideo(syncedURL);
         }
 
         public bool PlayVideo(VRCUrl playURL)
         {
+
             if (!IsValidURL(playURL.Get()))
             {
                 OnVideoError(VideoError.InvalidURL);
@@ -133,6 +139,7 @@ namespace Kinel.VideoPlayer.Scripts
                 localProcess.StartSyncWaitCountdown(1.5f, nameof(OwnerPlayVideo), false);
                 return true;
             }
+
             Debug.Log($"[KineL] Loading ... : {syncedURL}");
             videoPlayer.LoadURL(playURL);
             isPauseLocal = false;
@@ -234,10 +241,9 @@ namespace Kinel.VideoPlayer.Scripts
 
         public override void OnVideoLoop()
         {
-            Debug.Log("[KineL] OnVideoLoop");
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
                 videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
-            
+
         }
 
         public override void OnVideoError(VideoError videoError)
@@ -507,5 +513,71 @@ namespace Kinel.VideoPlayer.Scripts
             this.loop = loop;
         }
 
+
+#if UNITY_EDITOR && !COMPILER_UDONSHARP
+        [CustomEditor(typeof(KinelVideoScript))]
+        internal class KinelVideoScriptEditor : Editor
+        {
+            private bool showReference = false;
+
+            private SerializedProperty sliderControllerProperty;
+            private SerializedProperty urlProperty;
+            private SerializedProperty videoLoadErrorControllerProperty;
+
+            private SerializedProperty globalProcessProperty;
+            private SerializedProperty localProcessProperty;
+            private SerializedProperty modeChangerProperty;
+            private SerializedProperty inputFieldLoadMessageProperty;
+            private SerializedProperty syncFrequencyProperty;
+            private SerializedProperty deleyLimitProperty;
+
+            private void OnEnable()
+            {
+                sliderControllerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.sliderController));
+                urlProperty = serializedObject.FindProperty(nameof(KinelVideoScript.url));
+                videoLoadErrorControllerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.videoLoadErrorController));
+                globalProcessProperty = serializedObject.FindProperty(nameof(KinelVideoScript.globalProcess));
+                localProcessProperty = serializedObject.FindProperty(nameof(KinelVideoScript.localProcess));
+                modeChangerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.modeChanger));
+                inputFieldLoadMessageProperty = serializedObject.FindProperty(nameof(KinelVideoScript.inputFieldLoadMessage));
+                syncFrequencyProperty = serializedObject.FindProperty(nameof(KinelVideoScript.syncFrequency));
+                deleyLimitProperty = serializedObject.FindProperty(nameof(KinelVideoScript.deleyLimit));
+
+            }
+
+            public override void OnInspectorGUI()
+            {
+                if (UdonSharpGUI.DrawConvertToUdonBehaviourButton(target) ||
+                    UdonSharpGUI.DrawProgramSource(target))
+                    return;
+
+                serializedObject.Update();
+
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(syncFrequencyProperty);
+                EditorGUILayout.PropertyField(deleyLimitProperty);
+                EditorGUILayout.Space();
+
+                showReference = EditorGUILayout.Foldout(showReference, "References");
+
+                if (showReference)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(sliderControllerProperty);
+                    EditorGUILayout.PropertyField(urlProperty);
+                    EditorGUILayout.PropertyField(videoLoadErrorControllerProperty);
+                    EditorGUILayout.PropertyField(globalProcessProperty);
+                    EditorGUILayout.PropertyField(localProcessProperty);
+                    EditorGUILayout.PropertyField(modeChangerProperty);
+                    EditorGUILayout.PropertyField(inputFieldLoadMessageProperty);
+                    EditorGUILayout.Space();
+                    EditorGUI.indentLevel--;
+                }
+                serializedObject.ApplyModifiedProperties();
+
+            }
+
+        }
+#endif
     }
 }
