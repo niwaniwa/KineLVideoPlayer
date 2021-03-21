@@ -1,12 +1,16 @@
 using System;
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.UI;
 using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
 using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
+
+#if UNITY_EDITOR && !COMPILER_UDONSHARP// Editor拡張用
+using UnityEditor;
+using UdonSharpEditor;
+#endif
 
 namespace Kinel.VideoPlayer.Scripts
 {
@@ -24,13 +28,15 @@ namespace Kinel.VideoPlayer.Scripts
         private BaseVRCVideoPlayer videoPlayer;
         private float lastSyncTime;
         private int localVideoID = 0;
+
         private int localPlayMode = 0;
+
         //private bool isReady = false;
         private bool isPauseLocal = false;
-        
+
         [NonSerialized] public bool masterOnlyLocal = false;
         [UdonSynced] public bool masterOnly = false;
-        
+
         //[SerializeField] private Animator playbackSpeed;
         //[SerializeField] private AnimationClip[] clips;
 
@@ -41,7 +47,7 @@ namespace Kinel.VideoPlayer.Scripts
         [UdonSynced] private float pausedTime = 0;
         [UdonSynced] private int globalVideoID = 0;
         [UdonSynced] private int globalPlayMode = 0;
-        
+
         private const int VIDEO_MODE = 0;
         private const int STREAM_MODE = 1;
 
@@ -54,12 +60,13 @@ namespace Kinel.VideoPlayer.Scripts
         public void FixedUpdate()
         {
             if (IsSyncTiming())
-                Sync();;
+                Sync();
+            ;
         }
 
         public void OnDisable()
         {
-            if(videoPlayer != null)
+            if (videoPlayer != null)
                 videoPlayer.Stop();
         }
 
@@ -71,7 +78,7 @@ namespace Kinel.VideoPlayer.Scripts
 //            playbackSpeed.SetFloat("PlaybackSpeed", speed);
 //            playbackSpeed.SetBool("IsChange", true);
 //        }
-        
+
         public void OnURLChanged()
         {
             if (String.IsNullOrEmpty(url.GetUrl().Get()))
@@ -79,7 +86,7 @@ namespace Kinel.VideoPlayer.Scripts
 
             if (masterOnly && !Networking.LocalPlayer.isMaster)
                 return;
-            
+
             Debug.Log($"[KineL] Start process");
             ChangeOwner(Networking.LocalPlayer);
             if (url.GetUrl().Get().Length >= 85)
@@ -87,6 +94,7 @@ namespace Kinel.VideoPlayer.Scripts
                 videoLoadErrorController.showMessage("Input Error. Please check your URL length.");
                 return;
             }
+
             syncedURL = url.GetUrl();
             PlayVideo(syncedURL);
         }
@@ -99,9 +107,9 @@ namespace Kinel.VideoPlayer.Scripts
                 OnVideoError(VideoError.InvalidURL);
                 Debug.Log($"[KineL] Loading Error: URL invalid");
                 return false;
-            } 
-            
-            if(videoPlayer.IsPlaying)
+            }
+
+            if (videoPlayer.IsPlaying)
                 videoPlayer.Stop();
 
             if (isPause)
@@ -125,6 +133,7 @@ namespace Kinel.VideoPlayer.Scripts
                 localProcess.StartSyncWaitCountdown(1.5f, nameof(OwnerPlayVideo), false);
                 return true;
             }
+
             Debug.Log($"[KineL] Loading ... : {syncedURL}");
             videoPlayer.LoadURL(playURL);
             isPauseLocal = false;
@@ -140,11 +149,11 @@ namespace Kinel.VideoPlayer.Scripts
         public override void OnVideoReady()
         {
             Debug.Log($"[KineL] Video ready # {syncedURL.Get()}");
-            
+
             inputFieldLoadMessage.SetActive(false);
             videoLoadErrorController.hide();
             sliderController.SetSliderLength(videoPlayer.GetDuration());
-            
+
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 videoPlayer.Play();
@@ -169,15 +178,15 @@ namespace Kinel.VideoPlayer.Scripts
 
             if (globalPlayMode == STREAM_MODE)
                 return;
-            
-            
+
+
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 float time = 0;
                 videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
 
                 var rawURL = syncedURL.Get();
-                
+
                 //urlConverter.ConvertURL(rawURL);
                 if (rawURL.Contains("youtube.com")
                     || rawURL.Contains("youtu.be"))
@@ -189,7 +198,7 @@ namespace Kinel.VideoPlayer.Scripts
                         var parameter = variables[i];
                         if (parameter.Contains("list=") || parameter.Contains("index="))
                             continue;
-                            
+
                         if (parameter.Contains("t="))
                         {
                             var str = parameter.Replace("t=", "").Replace("s", "");
@@ -203,7 +212,7 @@ namespace Kinel.VideoPlayer.Scripts
 
             }
         }
-        
+
         public override void OnVideoEnd()
         {
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
@@ -236,7 +245,7 @@ namespace Kinel.VideoPlayer.Scripts
         {
             if (!isPlaying || globalPlayMode == STREAM_MODE)
                 return false;
-            
+
             if (Time.realtimeSinceStartup - lastSyncTime >= syncFrequency)
                 return true;
 
@@ -257,14 +266,14 @@ namespace Kinel.VideoPlayer.Scripts
                 modeChanger.ToggleMasterOnly();
                 Debug.Log("[Kinel] MasterOnly");
             }
-                
+
 
             // play mode change
             if (localPlayMode != globalPlayMode)
             {
                 if (coolTime <= 1)
                     return;
-    
+
                 Debug.Log("[Kinel] video mode synced.");
                 coolTime = 0;
                 localPlayMode = globalPlayMode;
@@ -294,16 +303,18 @@ namespace Kinel.VideoPlayer.Scripts
 
         //public void Paste()
         //{
-            //var str = GUIUtility.systemCopyBuffer;
-            //url.SetUrl(str);
-            //url.ForceLabelUpdate();
-       // }
+        //var str = GUIUtility.systemCopyBuffer;
+        //url.SetUrl(str);
+        //url.ForceLabelUpdate();
+        // }
 
         public void Sync()
         {
             lastSyncTime = Time.realtimeSinceStartup;
-            float globalVideoTime = Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration());
-            if (Mathf.Clamp(Mathf.Abs(videoPlayer.GetTime() - globalVideoTime), 0, videoPlayer.GetDuration()) > deleyLimit)
+            float globalVideoTime = Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0,
+                videoPlayer.GetDuration());
+            if (Mathf.Clamp(Mathf.Abs(videoPlayer.GetTime() - globalVideoTime), 0, videoPlayer.GetDuration()) >
+                deleyLimit)
                 videoPlayer.SetTime(globalVideoTime);
         }
 
@@ -315,6 +326,7 @@ namespace Kinel.VideoPlayer.Scripts
                 PlayVideo(syncedURL);
                 return;
             }
+
             Sync();
         }
 
@@ -341,7 +353,8 @@ namespace Kinel.VideoPlayer.Scripts
         {
             ChangeOwner(Networking.LocalPlayer);
             videoStartGlobalTime += videoPlayer.GetTime() - seconds;
-            videoPlayer.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration()));
+            videoPlayer.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0,
+                videoPlayer.GetDuration()));
             videoStartGlobalTime += 0.02f;
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Sync));
         }
@@ -358,6 +371,7 @@ namespace Kinel.VideoPlayer.Scripts
                 pausedTime = 0;
                 return;
             }
+
             videoPlayer.Pause();
             pausedTime = (float) Networking.GetServerTimeInSeconds();
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GlobalPause));
@@ -398,9 +412,9 @@ namespace Kinel.VideoPlayer.Scripts
             videoLoadErrorController.hide();
             url.SetUrl(VRCUrl.Empty);
             isPauseLocal = false;
-            
+
         }
-        
+
         public void ResetForButton()
         {
             ResetGlobal();
@@ -423,7 +437,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void SetGlobalPlayMode(int playMode)
         {
-            if(Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+            if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
                 ChangeOwner(Networking.LocalPlayer);
 
             globalPlayMode = playMode;
@@ -438,9 +452,9 @@ namespace Kinel.VideoPlayer.Scripts
         {
             if (!Networking.IsOwner(player, this.gameObject))
                 Networking.SetOwner(player, this.gameObject);
-            
+
         }
-     
+
         public bool IsPlaying()
         {
             return isPlaying;
@@ -453,7 +467,7 @@ namespace Kinel.VideoPlayer.Scripts
 
 
 
-        private bool IsValidURL(String str)
+        private bool IsValidURL(string str)
         {
             return str.Contains("https://") || str.Contains("rtspt://") || str.Contains("http://");
         }
@@ -468,5 +482,71 @@ namespace Kinel.VideoPlayer.Scripts
             return modeChanger;
         }
 
+
+#if UNITY_EDITOR && !COMPILER_UDONSHARP
+        [CustomEditor(typeof(KinelVideoScript))]
+        internal class KinelVideoScriptEditor : Editor
+        {
+            private bool showReference = false;
+
+            private SerializedProperty sliderControllerProperty;
+            private SerializedProperty urlProperty;
+            private SerializedProperty videoLoadErrorControllerProperty;
+
+            private SerializedProperty globalProcessProperty;
+            private SerializedProperty localProcessProperty;
+            private SerializedProperty modeChangerProperty;
+            private SerializedProperty inputFieldLoadMessageProperty;
+            private SerializedProperty syncFrequencyProperty;
+            private SerializedProperty deleyLimitProperty;
+
+            private void OnEnable()
+            {
+                sliderControllerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.sliderController));
+                urlProperty = serializedObject.FindProperty(nameof(KinelVideoScript.url));
+                videoLoadErrorControllerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.videoLoadErrorController));
+                globalProcessProperty = serializedObject.FindProperty(nameof(KinelVideoScript.globalProcess));
+                localProcessProperty = serializedObject.FindProperty(nameof(KinelVideoScript.localProcess));
+                modeChangerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.modeChanger));
+                inputFieldLoadMessageProperty = serializedObject.FindProperty(nameof(KinelVideoScript.inputFieldLoadMessage));
+                syncFrequencyProperty = serializedObject.FindProperty(nameof(KinelVideoScript.syncFrequency));
+                deleyLimitProperty = serializedObject.FindProperty(nameof(KinelVideoScript.deleyLimit));
+
+            }
+
+            public override void OnInspectorGUI()
+            {
+                if (UdonSharpGUI.DrawConvertToUdonBehaviourButton(target) ||
+                    UdonSharpGUI.DrawProgramSource(target))
+                    return;
+
+                serializedObject.Update();
+
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(syncFrequencyProperty);
+                EditorGUILayout.PropertyField(deleyLimitProperty);
+                EditorGUILayout.Space();
+
+                showReference = EditorGUILayout.Foldout(showReference, "References");
+
+                if (showReference)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(sliderControllerProperty);
+                    EditorGUILayout.PropertyField(urlProperty);
+                    EditorGUILayout.PropertyField(videoLoadErrorControllerProperty);
+                    EditorGUILayout.PropertyField(globalProcessProperty);
+                    EditorGUILayout.PropertyField(localProcessProperty);
+                    EditorGUILayout.PropertyField(modeChangerProperty);
+                    EditorGUILayout.PropertyField(inputFieldLoadMessageProperty);
+                    EditorGUILayout.Space();
+                    EditorGUI.indentLevel--;
+                }
+                serializedObject.ApplyModifiedProperties();
+
+            }
+
+        }
+#endif
     }
 }
