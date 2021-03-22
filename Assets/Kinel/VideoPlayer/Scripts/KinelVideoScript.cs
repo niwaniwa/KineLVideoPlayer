@@ -530,6 +530,7 @@ namespace Kinel.VideoPlayer.Scripts
             private SerializedProperty inputFieldLoadMessageProperty;
             private SerializedProperty syncFrequencyProperty;
             private SerializedProperty deleyLimitProperty;
+            private SerializedProperty loopProperty;
 
             private void OnEnable()
             {
@@ -542,7 +543,7 @@ namespace Kinel.VideoPlayer.Scripts
                 inputFieldLoadMessageProperty = serializedObject.FindProperty(nameof(KinelVideoScript.inputFieldLoadMessage));
                 syncFrequencyProperty = serializedObject.FindProperty(nameof(KinelVideoScript.syncFrequency));
                 deleyLimitProperty = serializedObject.FindProperty(nameof(KinelVideoScript.deleyLimit));
-
+                loopProperty = serializedObject.FindProperty(nameof(KinelVideoScript.loop));
             }
 
             public override void OnInspectorGUI()
@@ -556,6 +557,7 @@ namespace Kinel.VideoPlayer.Scripts
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(syncFrequencyProperty);
                 EditorGUILayout.PropertyField(deleyLimitProperty);
+                EditorGUILayout.PropertyField(loopProperty);
                 EditorGUILayout.Space();
 
                 showReference = EditorGUILayout.Foldout(showReference, "References");
