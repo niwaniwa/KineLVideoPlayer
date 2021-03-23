@@ -243,30 +243,25 @@ namespace Kinel.VideoPlayer.Scripts
             return false;
         }
 
-        private float coolTime = 0;
+        private float waitTime = 0;
 
         public override void OnDeserialization()
         {
             if (Networking.IsOwner(this.gameObject))
                 return;
 
-            coolTime += Time.deltaTime;
+            waitTime += Time.deltaTime;
 
             if (masterOnlyLocal != masterOnly)
             {
                 modeChanger.ToggleMasterOnly();
                 Debug.Log("[Kinel] MasterOnly");
             }
-                
-
+            
             // play mode change
             if (localPlayMode != globalPlayMode)
             {
-                if (coolTime <= 1)
-                    return;
-    
                 Debug.Log("[Kinel] video mode synced.");
-                coolTime = 0;
                 localPlayMode = globalPlayMode;
                 modeChanger.ChangeMode(globalPlayMode);
                 return;
@@ -274,6 +269,12 @@ namespace Kinel.VideoPlayer.Scripts
 
             if (globalVideoID == localVideoID)
                 return;
+            
+            // GlobalIDとlocalIDの同期の差によってURLが更新されていない場合があるのでwaitを挟む
+            if (waitTime < 1)
+            {
+                return;
+            }
 
             localVideoID = globalVideoID;
             Debug.Log($"[KineL] Synced. # {syncedURL.Get()}");
