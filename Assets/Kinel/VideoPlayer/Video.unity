@@ -790,6 +790,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: VRCWorld
       objectReference: {fileID: 0}
+    - target: {fileID: 1415578911040940289, guid: 8894fa7e4588a5c4fab98453e558847d,
+        type: 3}
+      propertyPath: serializedProgramAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8a1c4147e1b62184ba0a58df610b8ca9,
+        type: 2}
     - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
       propertyPath: DynamicMaterials.Array.data[0]
@@ -2721,7 +2727,7 @@ PrefabInstance:
     - target: {fileID: 6793564426126590204, guid: 2a70fe71d86e8f742866ffae0b436103,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00003490149
+      value: -0.000069917565
       objectReference: {fileID: 0}
     - target: {fileID: 6793564426209196819, guid: 2a70fe71d86e8f742866ffae0b436103,
         type: 3}
@@ -2846,6 +2852,11 @@ PrefabInstance:
     - target: {fileID: 6793564427131386281, guid: 2a70fe71d86e8f742866ffae0b436103,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6793564427131386282, guid: 2a70fe71d86e8f742866ffae0b436103,
+        type: 3}
+      propertyPath: tags.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6793564427131386283, guid: 2a70fe71d86e8f742866ffae0b436103,
