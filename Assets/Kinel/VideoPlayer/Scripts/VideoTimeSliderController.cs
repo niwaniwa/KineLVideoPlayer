@@ -22,15 +22,17 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void OnSliderDrag()
         {
+            if ((kinelVideoPlayer.masterOnly && !Networking.LocalPlayer.isMaster))
+                return;
+                
             isDrag = true;
         }
 
         public void OnSliderDrop()
         {
-            if (kinelVideoPlayer.GetGlobalPlayMode() == STREAM_MODE)
-            {
+            if (kinelVideoPlayer.GetGlobalPlayMode() == STREAM_MODE || (kinelVideoPlayer.masterOnly && !Networking.LocalPlayer.isMaster))
                 return;
-            }
+            
             kinelVideoPlayer.SetVideoTime(slider.value);
             isWait = true;
         }
