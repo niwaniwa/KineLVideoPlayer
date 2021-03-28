@@ -6,6 +6,7 @@ using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
 using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
+using VRC.Udon.Common.Enums;
 using VRC.Udon.Common.Interfaces;
 
 #if UNITY_EDITOR && !COMPILER_UDONSHARP// Editor拡張用
@@ -21,7 +22,6 @@ namespace Kinel.VideoPlayer.Scripts
         [SerializeField] private VideoTimeSliderController sliderController;
         [SerializeField] private VRCUrlInputField url;
         [SerializeField] private VideoLoadErrorController videoLoadErrorController;
-        [SerializeField] private CountDown globalProcess, localProcess;
         [SerializeField] private ModeChanger modeChanger;
         [SerializeField] private GameObject inputFieldLoadMessage;
         [SerializeField] private float syncFrequency = 3f, deleyLimit = 1f;
@@ -136,7 +136,7 @@ namespace Kinel.VideoPlayer.Scripts
                 url.SetUrl(VRCUrl.Empty);
 
                 Debug.Log($"[KineL] Loading ... : {syncedURL}");
-                localProcess.StartSyncWaitCountdown(1.5f, nameof(OwnerPlayVideo), false);
+                SendCustomEventDelayedSeconds(nameof(OwnerPlayVideo), 1.5f);
                 return true;
             }
 
@@ -523,9 +523,7 @@ namespace Kinel.VideoPlayer.Scripts
             private SerializedProperty sliderControllerProperty;
             private SerializedProperty urlProperty;
             private SerializedProperty videoLoadErrorControllerProperty;
-
-            private SerializedProperty globalProcessProperty;
-            private SerializedProperty localProcessProperty;
+            
             private SerializedProperty modeChangerProperty;
             private SerializedProperty inputFieldLoadMessageProperty;
             private SerializedProperty syncFrequencyProperty;
@@ -537,8 +535,6 @@ namespace Kinel.VideoPlayer.Scripts
                 sliderControllerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.sliderController));
                 urlProperty = serializedObject.FindProperty(nameof(KinelVideoScript.url));
                 videoLoadErrorControllerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.videoLoadErrorController));
-                globalProcessProperty = serializedObject.FindProperty(nameof(KinelVideoScript.globalProcess));
-                localProcessProperty = serializedObject.FindProperty(nameof(KinelVideoScript.localProcess));
                 modeChangerProperty = serializedObject.FindProperty(nameof(KinelVideoScript.modeChanger));
                 inputFieldLoadMessageProperty = serializedObject.FindProperty(nameof(KinelVideoScript.inputFieldLoadMessage));
                 syncFrequencyProperty = serializedObject.FindProperty(nameof(KinelVideoScript.syncFrequency));
@@ -568,8 +564,6 @@ namespace Kinel.VideoPlayer.Scripts
                     EditorGUILayout.PropertyField(sliderControllerProperty);
                     EditorGUILayout.PropertyField(urlProperty);
                     EditorGUILayout.PropertyField(videoLoadErrorControllerProperty);
-                    EditorGUILayout.PropertyField(globalProcessProperty);
-                    EditorGUILayout.PropertyField(localProcessProperty);
                     EditorGUILayout.PropertyField(modeChangerProperty);
                     EditorGUILayout.PropertyField(inputFieldLoadMessageProperty);
                     EditorGUILayout.Space();
