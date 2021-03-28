@@ -20,18 +20,22 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         public KinelVideoScript videoPlayer;
         
         public string[] dummy = new string[0];
+        
         public string[] titles = new string[0];
         public string[] descriptions = new string[0];
         public string[] urlString = new string[0];
         public VRCUrl[] urls = new VRCUrl[0];
         public int[] playMode = new int[0];
+        public bool autoPlay;
 
         public GameObject videoPrefab;
         public RectTransform content;
 
         public GameObject warningUI;
 
-        private bool ready = false;
+        private bool ready = false, loop = false;
+        private int index = 0;
+        
         public void Start()
         {
             if (!videoPlayer)
@@ -51,20 +55,51 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 videoPrefab.SetActive(false);
                 return;
             }
+            
             Init();
+            videoPlayer.SetList(this);
         }
 
-        public void PlayVideo()
+        public void OnDisable()
+        {
+            AutoPlayDisable();
+        }
+
+        public void PlayVideoByNumber()
         {
             Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
             var num = GetSelectedItem();
-            videoPlayer.SetGlobalPlayMode(playMode[num]);
-            videoPlayer.GetModeChangeInstance().ChangeMode(playMode[num]);
-            videoPlayer.PlayVideo(urls[num]);
+            PlayVideo(num);
+            if(autoPlay)
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(AutoPlayDisable));
+            
         }
 
+        public void PlayVideo(int index)
+        {
+            videoPlayer.SetGlobalPlayMode(playMode[index]);
+            videoPlayer.GetModeChangeInstance().ChangeMode(playMode[index]);
+            videoPlayer.PlayVideo(urls[index]);
+        }
+
+        public void PlayNextVideo()
+        {
+            if (!Networking.LocalPlayer.isMaster)
+                return;
+            
+            if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
+
+            PlayVideo(index);
+            index++;
+            if (index >= urls.Length)
+                index = 0;
+        }
+        
+        
         public void Init()
         {
+            Debug.Log("[Kinel] Playlist Init");
             for (var i = 0; i < urls.Length; i++)
             {
                 GameObject prefab = VRCInstantiate(videoPrefab);
@@ -81,6 +116,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             }
 
             videoPrefab.SetActive(false);
+            
         }
 
         public int GetSelectedItem()
@@ -106,6 +142,9 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             
             if (!ready)
                 return;
+            
+            if (!warningUI)
+                return;
 
             if (urls.Length <= 0)
                 return;
@@ -126,13 +165,51 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         {
             if(player == Networking.LocalPlayer)
                 ready = true;
+
+            if (player == Networking.LocalPlayer && autoPlay)
+            {
+                AutoPlayEnable();
+                if (Networking.IsMaster)
+                {
+                    PlayNextVideo();
+                }
+            }
+                
         }
+
+        public void OnEnable()
+        {
+            if (!videoPlayer || !videoPlayer.GetVideoPlayer())
+                return;
+            
+        }
+
+        public void AutoPlayEnable()
+        {
+            autoPlay = true;
+            var instance = videoPlayer.GetVideoPlayer();
+            if (instance == null)
+                return;
+            
+            loop = instance.Loop;
+            instance.Loop = false;
+        }
+        
+        public void AutoPlayDisable()
+        {
+            Debug.Log($"Disabled Autoplay");
+            autoPlay = false;
+            videoPlayer.GetVideoPlayer().Loop = (loop != videoPlayer.IsLoop() ? videoPlayer.IsLoop() : loop);
+        }
+        
     }
 
 #if UNITY_EDITOR && !COMPILER_UDONSHARP
     [CustomEditor(typeof(KinelPlaylist))]
     internal class KinelPlaylistEditor : Editor
     {
+        private bool showReference = false;
+        
         private KinelPlaylist kinelPlaylist;
         private ReorderableList list;
 
@@ -142,6 +219,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
 
         private SerializedProperty urlString;
         private SerializedProperty warningUI;
+        private SerializedProperty autoPlay;
 
         private void OnEnable()
         {
@@ -152,6 +230,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             videoPrefab = serializedObject.FindProperty(nameof(KinelPlaylist.videoPrefab));
             urlString = serializedObject.FindProperty(nameof(KinelPlaylist.urlString));
             warningUI = serializedObject.FindProperty(nameof(KinelPlaylist.warningUI));
+            autoPlay = serializedObject.FindProperty(nameof(KinelPlaylist.autoPlay));
 
             var dummyList = serializedObject.FindProperty(nameof(KinelPlaylist.dummy));
             var titles = serializedObject.FindProperty(nameof(KinelPlaylist.titles));
@@ -246,14 +325,26 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
 
             EditorGUILayout.PropertyField(kinelVideoPlayer);
             EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(content);
-            EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(videoPrefab);
-            EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(warningUI);
+            
+            EditorGUILayout.PropertyField(autoPlay);
             EditorGUILayout.Space();
             list.DoLayoutList();
             EditorGUILayout.Space();
+            
+            showReference = EditorGUILayout.Foldout(showReference, "Object References");
+
+            if (showReference)
+            {
+                EditorGUI.indentLevel++;
+
+                EditorGUILayout.PropertyField(content);
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(videoPrefab);
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(warningUI);
+                EditorGUILayout.Space();
+                EditorGUI.indentLevel--;
+            }
 
             serializedObject.ApplyModifiedProperties();
             

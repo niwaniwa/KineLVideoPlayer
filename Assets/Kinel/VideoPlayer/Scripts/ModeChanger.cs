@@ -1,16 +1,14 @@
-﻿
-using Kinel.VideoPlayer.Scripts;
+﻿using Kinel.VideoPlayer.Scripts;
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.UI;
 using VRC.SDK3.Video.Components;
 using VRC.SDK3.Video.Components.AVPro;
-using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
-using VRC.Udon;
-using VRC.Udon.Common.Interfaces;
-using VRC.Udon.Serialization.OdinSerializer.Utilities;
 
+#if UNITY_EDITOR && !COMPILER_UDONSHARP// Editor拡張用
+using UnityEditor;
+using UdonSharpEditor;
+#endif
 public class ModeChanger : UdonSharpBehaviour
 {
 
@@ -36,7 +34,9 @@ public class ModeChanger : UdonSharpBehaviour
     public void ChangeMode(int playMode)
     {
         if (videoPlayer.GetVideoPlayer() != null)
-            videoPlayer.ResetLocal();
+            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                videoPlayer.ResetGlobal();
+            
 
         if (playMode == VIDEO_MODE)
         {
@@ -72,6 +72,9 @@ public class ModeChanger : UdonSharpBehaviour
     {
         if (videoPlayer.masterOnly && !Networking.LocalPlayer.isMaster)
             return;
+        
+        if(videoPlayer.GetList() != null)
+            videoPlayer.GetList().AutoPlayDisable();
         
         if (videoPlayer.GetPlayMode() == VIDEO_MODE)
             ChangeStreamModeForStreamButton();
@@ -154,4 +157,76 @@ public class ModeChanger : UdonSharpBehaviour
         }
     }
 
+#if UNITY_EDITOR && !COMPILER_UDONSHARP
+    [CustomEditor(typeof(ModeChanger))]
+    internal class ModeChangerEditor : Editor
+    {
+        private bool showReference = false;
+
+        private SerializedProperty videoProperty;
+        private SerializedProperty streamProperty;
+        private SerializedProperty videoPlayerProperty;
+        private SerializedProperty sliderControllerProperty;
+        private SerializedProperty togglePlayButtonProperty;
+        private SerializedProperty animatorProperty;
+        private SerializedProperty textUpdaterProperty;
+        private SerializedProperty videoScreenProperty;
+        private SerializedProperty streamScreenProperty;
+        private SerializedProperty subVideoScreeProperty;
+        private SerializedProperty subStreanScreenProperty;
+        private SerializedProperty masterOnlyToggleUIObjectsProperty;
+        
+
+        private void OnEnable()
+        {
+            videoProperty = serializedObject.FindProperty(nameof(ModeChanger.video));
+            streamProperty = serializedObject.FindProperty(nameof(ModeChanger.stream));
+            videoPlayerProperty = serializedObject.FindProperty(nameof(ModeChanger.videoPlayer));
+            sliderControllerProperty = serializedObject.FindProperty(nameof(ModeChanger.sliderController));
+            togglePlayButtonProperty = serializedObject.FindProperty(nameof(ModeChanger.togglePlayButton));
+            animatorProperty = serializedObject.FindProperty(nameof(ModeChanger.animator));
+            textUpdaterProperty = serializedObject.FindProperty(nameof(ModeChanger.textUpdater));
+            videoScreenProperty = serializedObject.FindProperty(nameof(ModeChanger.videoScreen));
+            streamScreenProperty = serializedObject.FindProperty(nameof(ModeChanger.streamScreen));
+            subVideoScreeProperty = serializedObject.FindProperty(nameof(ModeChanger.subVideoScree));
+            subStreanScreenProperty = serializedObject.FindProperty(nameof(ModeChanger.subStreanScreen));
+            masterOnlyToggleUIObjectsProperty = serializedObject.FindProperty(nameof(ModeChanger.masterOnlyToggleUIObjects));
+
+        }
+
+        public override void OnInspectorGUI()
+        {
+            if (UdonSharpGUI.DrawConvertToUdonBehaviourButton(target) ||
+                UdonSharpGUI.DrawProgramSource(target))
+                return;
+
+            serializedObject.Update();
+            
+            showReference = EditorGUILayout.Foldout(showReference, "References");
+
+            if (showReference)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(videoProperty);
+                EditorGUILayout.PropertyField(streamProperty);
+                EditorGUILayout.PropertyField(videoPlayerProperty);
+                EditorGUILayout.PropertyField(sliderControllerProperty);
+                EditorGUILayout.PropertyField(togglePlayButtonProperty);
+                EditorGUILayout.PropertyField(animatorProperty);
+                EditorGUILayout.PropertyField(textUpdaterProperty);
+                EditorGUILayout.PropertyField(videoScreenProperty);
+                EditorGUILayout.PropertyField(streamScreenProperty);
+                EditorGUILayout.PropertyField(subVideoScreeProperty);
+                EditorGUILayout.PropertyField(subStreanScreenProperty);
+                EditorGUILayout.PropertyField(masterOnlyToggleUIObjectsProperty, true);
+                EditorGUILayout.Space();
+                EditorGUI.indentLevel--;
+            }
+            serializedObject.ApplyModifiedProperties();
+
+        }
+
+    }
+#endif
+    
 }
