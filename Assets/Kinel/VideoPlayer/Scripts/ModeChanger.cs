@@ -218,7 +218,7 @@ public class ModeChanger : UdonSharpBehaviour
                 EditorGUILayout.PropertyField(streamScreenProperty);
                 EditorGUILayout.PropertyField(subVideoScreeProperty);
                 EditorGUILayout.PropertyField(subStreanScreenProperty);
-                EditorGUILayout.PropertyField(masterOnlyToggleUIObjectsProperty);
+                EditorGUILayout.PropertyField(masterOnlyToggleUIObjectsProperty, true);
                 EditorGUILayout.Space();
                 EditorGUI.indentLevel--;
             }
