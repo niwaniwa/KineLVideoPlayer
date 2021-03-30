@@ -2,7 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UdonSharp;
+using UdonSharpEditor;
 using UnityEditor;
 using UnityEditor.Experimental.UIElements;
 using UnityEditorInternal;
@@ -20,6 +23,11 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         public List<KinelPlaylist> playlistList = new List<KinelPlaylist>();
         public int index = 0;
         public string[] playerList = { "KinelVideoPlayer", "iwasync v3", "USharpVideo"};
+
+        public void OnEnable()
+        {
+            
+        }
     }
     
     [CustomEditor(typeof(KinelPlayListGenerator))]
@@ -43,6 +51,8 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             playlistSerializedProperty = serializedObject.FindProperty(nameof(KinelPlayListGenerator.playlist));
             tagsSerializedProperty = serializedObject.FindProperty(nameof(KinelPlayListGenerator.tags));
             indexSerializedProperty = serializedObject.FindProperty(nameof(KinelPlayListGenerator.index));
+            kinelPlaylistEditor = ScriptableObject.CreateInstance<KinelPlaylistEditor>();
+            
             list = new ReorderableList(serializedObject, tagsSerializedProperty);
 
             list.drawElementCallback = (rect, index, active, focused) =>
@@ -80,7 +90,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             }
             
             if (GUILayout.Button("Generate"))
-                CreateTabPrefab();
+                CreateTabPrefabs();
 
 //            if (GUILayout.Button("Reset Position")) 
 //                ResetPosition();
@@ -93,17 +103,38 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 
                 Delete();
             }
+
+
+            if (GUILayout.Button("Import"))
+            {
+                if(instance.playlistList.Count > 0)
+                {
+                    var overwrite = EditorUtility.DisplayDialogComplex("上書き", "既にListが存在します。", "続けて追加", "中止", "削除して追加");
+                    
+                    switch (overwrite)
+                    {
+                        case 0:
+                            ImportAll(true);
+                            break;
+                        case 2:
+                            ImportAll(false);
+                            break;
+                        default:
+                            return;
+                    }
+
+                    return;
+                }
+                ImportAll(false);
+
+            }
             
-            
-//            if (GUILayout.Button("Load"))  // to do
-//                Delete();
-            
-//            if (GUILayout.Button("Export"))  // to do
-//                Export();
+            if (GUILayout.Button("Export"))  // to do
+                ExportAll();
 
         }
 
-        private bool CreateTabPrefab()
+        private bool CreateTabPrefabs()
         {
             if (!instance.playlist)
             {
@@ -132,37 +163,44 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
 
             for (int i = 0; i < instance.tags.Count; i++)
             {
-                var tab = Instantiate(tabPrefab);
-                var playlist = Instantiate(listPrefab);
-                var tagName = tagsSerializedProperty.GetArrayElementAtIndex(i).stringValue;
-                
-                tab.transform.SetParent(tabParent.transform);
-                playlist.transform.SetParent(listParent.transform);
-                tab.transform.localPosition = Vector3.zero;
-                tab.transform.localRotation = Quaternion.identity;
-                tab.transform.localScale    = Vector3.one;
-                playlist.transform.localPosition = new Vector3(-325, -450, 0);
-                playlist.transform.localRotation = Quaternion.identity;
-                playlist.transform.localScale = Vector3.one;
-
-                var toggleComponet = tab.GetComponent<Toggle>();
-                toggleComponet.isOn = (i == indexSerializedProperty.intValue - 1 ? true : false);
-
-                var playlistComponent = playlist.GetComponent<KinelPlaylist>();
-
-                tab.name = $"Tag {i + 1}:{tagName}";
-
-                var text = tab.transform.GetChild(1).GetComponent<Text>();
-                text.text = $"{tagName}";
-                playlist.name = $"List {i + 1}:{tagName}";
-                if(i != indexSerializedProperty.intValue - 1)
-                    playlist.gameObject.SetActive(false);
-
-//                instance.playlistList.Add(playlistComponent);
+                CreateTabPrefab(tagsSerializedProperty.GetArrayElementAtIndex(i).stringValue, i,
+                    tabPrefab, listPrefab, tabParent, listParent, (i == indexSerializedProperty.intValue - 1 ? true : false));
             }
             tabPrefab.gameObject.SetActive(false);
             listPrefab.gameObject.SetActive(false);
             return true;
+        }
+
+        private GameObject CreateTabPrefab(string tagName, int index, GameObject tabPrefab, GameObject listPrefab, GameObject tabParent, GameObject listParent, bool isActive)
+        {
+            var tab = Instantiate(tabPrefab);
+            var playlist = Instantiate(listPrefab);
+
+            tab.transform.SetParent(tabParent.transform);
+            playlist.transform.SetParent(listParent.transform);
+            tab.transform.localPosition = Vector3.zero;
+            tab.transform.localRotation = Quaternion.identity;
+            tab.transform.localScale    = Vector3.one;
+            tab.name = $"Tag {index + 1} {tagName}";
+            tab.SetActive(true);
+            
+            playlist.transform.localPosition = new Vector3(-325, -450, 0);
+            playlist.transform.localRotation = Quaternion.identity;
+            playlist.transform.localScale = Vector3.one;
+
+            var toggleComponet = tab.GetComponent<Toggle>();
+            toggleComponet.isOn = isActive;
+
+            var playlistComponent = playlist.GetComponent<KinelPlaylist>();
+
+            var text = tab.transform.GetChild(1).GetComponent<Text>();
+            text.text = $"{tagName}";
+            playlist.name = $"List {index + 1} {tagName}";
+            playlist.gameObject.SetActive(isActive);
+
+            instance.playlistList.Add(playlistComponent);
+
+            return playlist;
         }
 
         private void ResetPosition()
@@ -192,10 +230,130 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             instance.playlistList.RemoveAll(s => true);
         }
 
-        public void Export()
+        public void ExportAll()
         {
-            // to do
+            var filePath = EditorUtility.SaveFolderPanel("", "", "Playlist");
+
+            if (string.IsNullOrEmpty(filePath))
+                return;
+
+            filePath = $"{filePath}/{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss")}/";
+            
+            Directory.CreateDirectory(filePath);
+
+            for (int i = 0; i < instance.playlistList.Count; i++)
+            {
+                var jsonString = JsonUtility.ToJson(instance.playlistList[i]);
+                File.WriteAllText($"{filePath}/{instance.playlistList[i].name}.json", jsonString);
+            }
         }
+
+        public void ExportPlaylist(string name)
+        {
+            
+        }
+
+        public void ImportAll(bool Overwrite)
+        {
+
+            var directoryPath = EditorUtility.SaveFolderPanel("Import", "", "Playlist");
+            if (!Overwrite)
+            {
+                Delete();
+            }
+            
+            var tabParent = instance.playlist.transform.Find("Canvas/Playlist/Tag/Viewport/Content").gameObject;
+            var tabPrefab = tabParent.transform.Find("TabPrefab").gameObject;
+            var listParent = instance.playlist.transform.Find("Canvas/Playlist/List").gameObject;
+            var listPrefab = listParent.transform.Find("ListPrefab").gameObject;
+            
+            foreach (var path in Directory.GetFiles(directoryPath))
+            {
+                if (!path.Contains("json"))
+                {
+                    Debug.LogError($"[KineL] Import error! please check your file extention {path}");
+                    return;
+                }
+                
+                if(path.Contains("meta"))
+                    continue;
+                
+                var jsonString = File.ReadAllText(path);
+                var splitedPath = path.Split(Path.DirectorySeparatorChar);
+                var str = splitedPath[splitedPath.Length - 1].Split(' ');
+
+                var tag = str[2].Replace(".json", "");
+
+                bool active = false;
+                
+                if(!Overwrite)
+                    if (instance.playlistList.Count - 1 == indexSerializedProperty.intValue - 2)
+                        active = true;
+
+                var playlistObject = CreateTabPrefab(tag, instance.playlistList.Count, tabPrefab, listPrefab, tabParent, listParent, active);
+    
+                //var list = instance.playlistList[instance.playlistList.Count - 1];
+
+                JsonUtility.FromJsonOverwrite(jsonString, playlistObject.GetComponent<KinelPlaylist>());
+                var playlist = playlistObject.GetComponents<KinelPlaylist>();
+                UdonSharpEditorUtility.ConvertToUdonBehaviours(playlist, true);
+
+                Debug.Log($"------ {path} ------");
+                foreach (var component in playlistObject.GetComponents<MonoBehaviour>())
+                {
+                    Debug.Log(component.GetType().Name + " : " + (component.GetType() == typeof(KinelPlaylist)));
+                }
+                Debug.Log($"------ ------- ------");
+            }
+
+            if (!Overwrite)
+            {
+                tabPrefab.SetActive(false);
+                listPrefab.SetActive(false);
+            }
+            
+            
+        }
+
+        public void Import(string fileName)
+        {
+            
+        }
+
+        private void ConvertUdonSharpScript(GameObject obj)
+        {
+            var playlist = obj.GetComponents<KinelPlaylist>();
+
+            UdonSharpEditorUtility.ConvertToUdonBehaviours(playlist, true);
+            
+            Debug.Log($"{playlist.Length}");
+            
+            var playlistSerializedObject = new SerializedObject(playlist[0]);
+            // playlist[0].content =
+            playlistSerializedObject.FindProperty(nameof(KinelPlaylist.content)).objectReferenceValue 
+                = obj.transform.Find("Viewport/Content").transform as RectTransform;
+            playlistSerializedObject.FindProperty(nameof(KinelPlaylist.videoPrefab)).objectReferenceValue 
+                = obj.transform.Find("Viewport/VideoPrefab").gameObject;
+            playlistSerializedObject.FindProperty(nameof(KinelPlaylist.warningUI)).objectReferenceValue 
+                = instance.gameObject.transform.Find("Canvas/WarningImage").gameObject;
+            
+            playlistSerializedObject.Update();
+            
+            playlistSerializedObject.FindProperty(nameof(KinelPlaylist.videoPrefab));
+            playlistSerializedObject.FindProperty(nameof(KinelPlaylist.warningUI));
+
+            //        ugokanai
+            //        var oldUdon = obj.GetComponents<KinelPlaylist>();
+            //        foreach (var udonSharp in oldUdon)
+            //        {
+            //            DestroyImmediate(udonSharp);
+            //        }
+
+
+
+        }
+        
+        
 
     }
 }
