@@ -71,7 +71,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000037493566, y: -0.00004858026}
+  m_AnchoredPosition: {x: 0.000037493566, y: -0.000034938133}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6793564426126590202
@@ -1330,7 +1330,7 @@ GameObject:
   - component: {fileID: 6793564427131386281}
   - component: {fileID: 6793564427131386282}
   m_Layer: 0
-  m_Name: KinelPlaylist_Tab
+  m_Name: KinelPlaylist_tab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
