@@ -11,6 +11,8 @@ using UnityEditor.Experimental.UIElements;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
+using VRC.Udon;
+using VRC.Udon.Serialization.OdinSerializer.Utilities;
 
 namespace Kinel.VideoPlayer.Scripts.Playlist
 {
@@ -43,16 +45,13 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         private SerializedProperty tagsSerializedProperty;
         private SerializedProperty indexSerializedProperty;
 
-//      private List<KinelPlaylist> playlistList = new List<KinelPlaylist>();
-
         private void OnEnable()
         {
             instance = target as KinelPlayListGenerator;
             playlistSerializedProperty = serializedObject.FindProperty(nameof(KinelPlayListGenerator.playlist));
             tagsSerializedProperty = serializedObject.FindProperty(nameof(KinelPlayListGenerator.tags));
             indexSerializedProperty = serializedObject.FindProperty(nameof(KinelPlayListGenerator.index));
-            kinelPlaylistEditor = ScriptableObject.CreateInstance<KinelPlaylistEditor>();
-            
+
             list = new ReorderableList(serializedObject, tagsSerializedProperty);
 
             list.drawElementCallback = (rect, index, active, focused) =>
@@ -196,10 +195,9 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             var text = tab.transform.GetChild(1).GetComponent<Text>();
             text.text = $"{tagName}";
             playlist.name = $"List {index + 1} {tagName}";
-            playlist.gameObject.SetActive(isActive);
 
             instance.playlistList.Add(playlistComponent);
-
+            
             return playlist;
         }
 
@@ -243,8 +241,9 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
 
             for (int i = 0; i < instance.playlistList.Count; i++)
             {
-                var jsonString = JsonUtility.ToJson(instance.playlistList[i]);
-                File.WriteAllText($"{filePath}/{instance.playlistList[i].name}.json", jsonString);
+                var playList = instance.playlistList[i];
+                var jsonString = JsonUtility.ToJson(playList);
+                File.WriteAllText($"{filePath}/{playList.name}.json", jsonString);
             }
         }
 
@@ -257,6 +256,10 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
         {
 
             var directoryPath = EditorUtility.SaveFolderPanel("Import", "", "Playlist");
+
+            if (String.IsNullOrEmpty(directoryPath))
+                return;
+            
             if (!Overwrite)
             {
                 Delete();
@@ -281,8 +284,12 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                 var jsonString = File.ReadAllText(path);
                 var splitedPath = path.Split(Path.DirectorySeparatorChar);
                 var str = splitedPath[splitedPath.Length - 1].Split(' ');
-
-                var tag = str[2].Replace(".json", "");
+                var tag = "";
+                for (int i = 2; i < str.Length; i++)
+                {
+                    tag = tag + " " + str[i];
+                }
+                tag = tag.Replace(".json", "");
 
                 bool active = false;
                 
@@ -291,21 +298,14 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
                         active = true;
 
                 var playlistObject = CreateTabPrefab(tag, instance.playlistList.Count, tabPrefab, listPrefab, tabParent, listParent, active);
-    
-                //var list = instance.playlistList[instance.playlistList.Count - 1];
-
-                JsonUtility.FromJsonOverwrite(jsonString, playlistObject.GetComponent<KinelPlaylist>());
                 var playlist = playlistObject.GetComponents<KinelPlaylist>();
+                JsonUtility.FromJsonOverwrite(jsonString, playlist[0]);
+                
                 UdonSharpEditorUtility.ConvertToUdonBehaviours(playlist, true);
+                DestroyImmediate(playlistObject.GetComponents<UdonBehaviour>()[0]);
 
-                Debug.Log($"------ {path} ------");
-                foreach (var component in playlistObject.GetComponents<MonoBehaviour>())
-                {
-                    Debug.Log(component.GetType().Name + " : " + (component.GetType() == typeof(KinelPlaylist)));
-                }
-                Debug.Log($"------ ------- ------");
             }
-
+            
             if (!Overwrite)
             {
                 tabPrefab.SetActive(false);
