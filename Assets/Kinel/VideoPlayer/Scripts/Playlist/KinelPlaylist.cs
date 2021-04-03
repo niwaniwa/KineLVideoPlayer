@@ -15,7 +15,10 @@ using UdonSharpEditor;
 #endif
 namespace Kinel.VideoPlayer.Scripts.Playlist
 {
+    
+#if UNITY_EDITOR && !COMPILER_UDONSHARP
     [Serializable]
+#endif
     public class KinelPlaylist : UdonSharpBehaviour
     {
         public KinelVideoScript videoPlayer;
