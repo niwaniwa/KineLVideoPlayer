@@ -197,7 +197,7 @@ namespace Kinel.VideoPlayer.Scripts.Playlist
             playlist.name = $"List {index + 1} {tagName}";
 
             instance.playlistList.Add(playlistComponent);
-            
+            playlist.SetActive(isActive);
             return playlist;
         }
 
