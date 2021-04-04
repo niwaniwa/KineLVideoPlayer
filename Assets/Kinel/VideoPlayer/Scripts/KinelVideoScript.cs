@@ -57,7 +57,7 @@ namespace Kinel.VideoPlayer.Scripts
         public void Start()
         {
             modeChanger.ChangeMode(VIDEO_MODE);
-            videoPlayer.Loop = loop;
+//            videoPlayer.Loop = loop;
         }
 
         public void FixedUpdate()
@@ -565,7 +565,7 @@ namespace Kinel.VideoPlayer.Scripts
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(syncFrequencyProperty);
                 EditorGUILayout.PropertyField(deleyLimitProperty);
-                EditorGUILayout.PropertyField(loopProperty);
+//                EditorGUILayout.PropertyField(loopProperty);
                 EditorGUILayout.PropertyField(periodicSyncProperty);
                 EditorGUILayout.Space();
 
