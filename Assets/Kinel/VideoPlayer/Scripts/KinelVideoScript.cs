@@ -26,6 +26,7 @@ namespace Kinel.VideoPlayer.Scripts
         [SerializeField] private GameObject inputFieldLoadMessage;
         [SerializeField] private float syncFrequency = 3f, deleyLimit = 1f;
         [SerializeField] private bool loop = true;
+        [SerializeField] private bool periodicSync = true;
 
         private BaseVRCVideoPlayer videoPlayer;
         private float lastSyncTime;
@@ -261,6 +262,9 @@ namespace Kinel.VideoPlayer.Scripts
 
         public bool IsSyncTiming()
         {
+            if (!periodicSync)
+                return false;
+            
             if (!isPlaying || globalPlayMode == STREAM_MODE)
                 return false;
             
@@ -282,9 +286,9 @@ namespace Kinel.VideoPlayer.Scripts
             if (masterOnlyLocal != masterOnly)
             {
                 modeChanger.ToggleMasterOnly();
-                Debug.Log("[KineL] MasterOnly");
+                Debug.Log("[KineL] Change owner mode");
             }
-            
+
             // play mode change
             if (localPlayMode != globalPlayMode)
             {
@@ -369,6 +373,12 @@ namespace Kinel.VideoPlayer.Scripts
             videoStartGlobalTime += videoPlayer.GetTime() - seconds;
             videoPlayer.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration()));
             videoStartGlobalTime += 0.02f;
+            if(!periodicSync)
+                SendCustomEventDelayedSeconds(nameof(SyncGlobal), 1f);
+        }
+
+        public void SyncGlobal()
+        {
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Sync));
         }
 
@@ -529,6 +539,7 @@ namespace Kinel.VideoPlayer.Scripts
             private SerializedProperty syncFrequencyProperty;
             private SerializedProperty deleyLimitProperty;
             private SerializedProperty loopProperty;
+            private SerializedProperty periodicSyncProperty;
 
             private void OnEnable()
             {
@@ -540,6 +551,7 @@ namespace Kinel.VideoPlayer.Scripts
                 syncFrequencyProperty = serializedObject.FindProperty(nameof(KinelVideoScript.syncFrequency));
                 deleyLimitProperty = serializedObject.FindProperty(nameof(KinelVideoScript.deleyLimit));
                 loopProperty = serializedObject.FindProperty(nameof(KinelVideoScript.loop));
+                periodicSyncProperty = serializedObject.FindProperty(nameof(KinelVideoScript.periodicSync));
             }
 
             public override void OnInspectorGUI()
@@ -554,6 +566,7 @@ namespace Kinel.VideoPlayer.Scripts
                 EditorGUILayout.PropertyField(syncFrequencyProperty);
                 EditorGUILayout.PropertyField(deleyLimitProperty);
                 EditorGUILayout.PropertyField(loopProperty);
+                EditorGUILayout.PropertyField(periodicSyncProperty);
                 EditorGUILayout.Space();
 
                 showReference = EditorGUILayout.Foldout(showReference, "References");
