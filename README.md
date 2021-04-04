@@ -7,6 +7,7 @@ VRChatを対象としたビデオプレイヤーです。
 ## 更新履歴
 - 1.0.0 初版
 - 1.0.1 MasterOnlyの不具合を修正
+- 1.1.0 プレイリストにタブ機能の追加
 
 ## 動作環境
 
@@ -28,8 +29,8 @@ VRChatを対象としたビデオプレイヤーです。
 ## 前提ライブラリ等
 ### 必須
 - Unity 2018.4.20f1
-- VRChat SDK3(2021.01.28.19.07)
-- [Udon Sharp(v0.19.2)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.2)
+- VRChat SDK3(2021.03.22.18.27)
+- [Udon Sharp(v0.19.8)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.8)
 
 ### 任意
 - [モザイクシェーダー by pya1234様](https://booth.pm/ja/items/1703064) ※1
@@ -56,9 +57,13 @@ VRChatを対象としたビデオプレイヤーです。
   -   `` [Video Playback] URL '<入力したURL>' resolved to '<動画に対する直リンク>'``
   -   デバッグ画面に動画を入力後上記のようなメッセージが出力されるので`C:\Users\<ユーザー名>\AppData\LocalLow\VRChat\VRChat`に存在する`output_log_<日付>.txt`からコピーを行い、動画プレイヤーに貼付けし再生します。
   -   するとQuestでもURLが同期され再生することが出来ます。
+
+- Youtube-dlの直リンクを用いた場合はURLの都合上数時間程度でリンクが切れるため長期の利用の際は従来の方法を用いる必要があります
+
 ## 改変について
 - このビデオプレイヤーで実装されている機能は基本的に各GameObject上にアタッチされているComponentで処理されています。比較的分かりやすいように設置していますが処理の都合上各GameObjectが連結されている機能もあるためお気を付けください。
 - `Kinel/UI/Icon/Video`内の画像はGoogleの[Material Icons](https://material.io/resources/icons/)です。licenseが異なるため再配布する際はお気を付けください。
+- 詳しい動画の資料については[ドキュメント](https://docs.google.com/document/d/15l-9maLZ5b_juglzD4Lz-rpOAbyeYhiSYAhE75RPQpI/edit?usp=sharing)を参照ください。
 
 ## ライブラリ等
 - [M+ フォント](https://mplus-fonts.osdn.jp/about.html)
