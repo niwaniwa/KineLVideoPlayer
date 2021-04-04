@@ -23,8 +23,10 @@ VRChatを対象としたビデオプレイヤーです。
 
 ## 使い方
 
-ダウンロードしたunitypackageをUnityで展開し、プロジェクトフォルダの`Assets/Kinel/VideoPlayer/Prefab/`内にあるVideoPlayer.prefabを対象シーン内にドラッグ&ドロップしてください。
+- ダウンロードしたunitypackageをUnityで展開し、プロジェクトフォルダの`Assets/Kinel/VideoPlayer/Prefab/`内にあるVideoPlayer.prefabを対象シーン内にドラッグ&ドロップしてください。
 お好きな場所に設置した後、アップロードを行うのみでVRChat内で動画を見ることが出来ます。
+
+- 更新する際は最新のunitypackageをそのまま上書きするのみで導入できます。
 
 ## 前提ライブラリ等
 ### 必須
