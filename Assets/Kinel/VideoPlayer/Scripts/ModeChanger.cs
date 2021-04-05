@@ -34,8 +34,7 @@ public class ModeChanger : UdonSharpBehaviour
     public void ChangeMode(int playMode)
     {
         if (videoPlayer.GetVideoPlayer() != null)
-            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
-                videoPlayer.ResetGlobal();
+            videoPlayer.ResetLocal();
             
 
         if (playMode == VIDEO_MODE)
