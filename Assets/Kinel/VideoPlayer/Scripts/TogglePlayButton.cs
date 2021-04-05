@@ -40,7 +40,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         public void OnPlayStateButtonClick()
         {
-            if (kinelVideoPlayer.GetPlayMode() == STREAM_MODE || kinelVideoPlayer.masterOnly)
+            if (kinelVideoPlayer.GetPlayMode() == STREAM_MODE || (kinelVideoPlayer.masterOnly && !Networking.LocalPlayer.isMaster) )
                 return;
 
             if (!kinelVideoPlayer.IsPlaying() && !kinelVideoPlayer.IsPause())
