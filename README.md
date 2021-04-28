@@ -1,18 +1,19 @@
-# Video Player For VRChat 1.0.1
+# Video Player For VRChat 1.1.1
 
 ## はじめに
 
 VRChatを対象としたビデオプレイヤーです。
 
 ## 更新履歴
-- 1.0.0 初版
-- 1.0.1 MasterOnlyの不具合を修正
-- 1.1.0 プレイリストにタブ機能の追加
+- [1.0.0](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.0.0) 初版
+- [1.0.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.0.1) MasterOnlyの不具合を修正
+- [1.1.0](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.0) プレイリストにタブ機能の追加
+- [1.1.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.1) [テキストが最前面に来る問題](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/10)を修正
 
 ## 動作環境
 
-- VRChat SDK3(2021.02.23.11.40)
-- [Udon Sharp(v0.19.3)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.3)
+- VRChat SDK3(2021.03.22.18.27)
+- [Udon Sharp(v0.19.8)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.8)
 - Unity 2018.4.20f1
 
 ## 特徴
@@ -26,13 +27,15 @@ VRChatを対象としたビデオプレイヤーです。
 - ダウンロードしたunitypackageをUnityで展開し、プロジェクトフォルダの`Assets/Kinel/VideoPlayer/Prefab/`内にあるVideoPlayer.prefabを対象シーン内にドラッグ&ドロップしてください。
 お好きな場所に設置した後、アップロードを行うのみでVRChat内で動画を見ることが出来ます。
 
-- 更新する際は最新のunitypackageをそのまま上書きするのみで導入できます。
+- 更新する際は最新のunitypackageをそのまま上書きするのみで導入できます。但し念の為バックアップすることを強くおすすめします。
 
 ## 前提ライブラリ等
 ### 必須
 - Unity 2018.4.20f1
 - VRChat SDK3(2021.03.22.18.27)
 - [Udon Sharp(v0.19.8)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.8)
+
+[v1.1.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.1)はSDK3(2021.03.22.18.27)、及びUdonSharp(v0.19.8)以降でのみ動作します。
 
 ### 任意
 - [モザイクシェーダー by pya1234様](https://booth.pm/ja/items/1703064) ※1
@@ -48,6 +51,9 @@ VRChatを対象としたビデオプレイヤーです。
 
 ## 注意点
 - VRChatの同期の性質上、プレイヤーが入力したURL文字列の長さが一定以上を超えるとエラーが出力されるように設定されています。現在その条件は85文字以上に設定されています。
+- Import, Export機能については同梱のpngファイルを閲覧の上設定してください.
+- Import, Export機能にて稀にNullエラーが発生します. その際はコンポーネント内のVideoPlayerフィールドなどを何回か設定することで改善します.
+- Import機能を設定するとアタッチされているコンポーネントの参照が外れます。初期で配置されているPrefabを参考に設定し直すと動作します.
 
 ## Questについて
 - このプレイヤーに用いられているVideoPlayre ComponentはQuestに対応しており、このプレイヤーシステム自体もQuestに対応しておりますが、動画に対して直リンクのみをサポートしているためYoutubeやその他のサイトに投稿されている動画を見ることが出来ない場合があります
