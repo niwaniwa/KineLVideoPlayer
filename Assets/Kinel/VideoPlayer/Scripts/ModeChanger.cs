@@ -9,6 +9,7 @@ using VRC.SDKBase;
 using UnityEditor;
 using UdonSharpEditor;
 #endif
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class ModeChanger : UdonSharpBehaviour
 {
 
@@ -119,6 +120,7 @@ public class ModeChanger : UdonSharpBehaviour
             {
                 Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
                 videoPlayer.masterOnly = false;
+                videoPlayer.RequestSerialization();
             }
             
             videoPlayer.masterOnlyLocal = false;
@@ -137,6 +139,7 @@ public class ModeChanger : UdonSharpBehaviour
             {
                 Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
                 videoPlayer.masterOnly = true;
+                videoPlayer.RequestSerialization();
             }
             
             videoPlayer.masterOnlyLocal = true;

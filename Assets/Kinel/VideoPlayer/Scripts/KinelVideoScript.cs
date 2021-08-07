@@ -2,6 +2,8 @@ using System;
 using Kinel.VideoPlayer.Scripts.Playlist;
 using UdonSharp;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.UI;
 using VRC.SDK3.Components;
 using VRC.SDK3.Components.Video;
 using VRC.SDK3.Video.Components.Base;
@@ -16,6 +18,7 @@ using UdonSharpEditor;
 
 namespace Kinel.VideoPlayer.Scripts
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class KinelVideoScript : UdonSharpBehaviour
     {
 
@@ -30,6 +33,7 @@ namespace Kinel.VideoPlayer.Scripts
 
         private BaseVRCVideoPlayer videoPlayer;
         private float lastSyncTime;
+        private float localVideoStartTime;
         private int localVideoID = 0;
         private int localPlayMode = 0;
         //private bool isReady = false;
@@ -91,12 +95,7 @@ namespace Kinel.VideoPlayer.Scripts
             
             Debug.Log($"[KineL] Start process");
             ChangeOwner(Networking.LocalPlayer);
-            if (url.GetUrl().Get().Length >= 85)
-            {
-                videoLoadErrorController.showMessage("Input Error. Please check your URL length.");
-                return;
-            }
-            
+
             if(list != null)
                 if(list.autoPlay)
                     list.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(KinelPlaylist.AutoPlayDisable));
@@ -104,6 +103,7 @@ namespace Kinel.VideoPlayer.Scripts
 
             syncedURL = url.GetUrl();
             PlayVideo(syncedURL);
+            RequestSerialization();
         }
 
         public bool PlayVideo(VRCUrl playURL)
@@ -135,9 +135,10 @@ namespace Kinel.VideoPlayer.Scripts
                 isPlaying = true;
                 syncedURL = playURL;
                 url.SetUrl(VRCUrl.Empty);
-
+                RequestSerialization();
                 Debug.Log($"[KineL] Loading ... : {syncedURL}");
                 SendCustomEventDelayedSeconds(nameof(OwnerPlayVideo), 1.5f);
+                
                 return true;
             }
 
@@ -185,8 +186,7 @@ namespace Kinel.VideoPlayer.Scripts
 
             if (globalPlayMode == STREAM_MODE)
                 return;
-            
-            
+
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 float time = 0;
@@ -216,6 +216,7 @@ namespace Kinel.VideoPlayer.Scripts
                         }
                     }
                 }
+                RequestSerialization();
 
             }
         }
@@ -228,10 +229,9 @@ namespace Kinel.VideoPlayer.Scripts
                 isPlaying = false;
                 videoPlayer.Stop();
                 syncedURL = VRCUrl.Empty;
+                isPause = false;
+                RequestSerialization();
             }
-
-            isPause = false;
-
             
             if(Networking.LocalPlayer.isMaster)
                 if (list != null)
@@ -243,8 +243,10 @@ namespace Kinel.VideoPlayer.Scripts
         public override void OnVideoLoop()
         {
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+            {
                 videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
-
+                RequestSerialization();
+            }
         }
 
         public override void OnVideoError(VideoError videoError)
@@ -274,39 +276,28 @@ namespace Kinel.VideoPlayer.Scripts
             return false;
         }
 
-        private float deserializeCount = 0;
-
-        public override void OnPreSerialization()
-        {
-            deserializeCount = 0;
-        }
 
         public override void OnDeserialization()
         {
             if (Networking.IsOwner(this.gameObject))
                 return;
             
-            // Ownerが他の人に変わった際にURLが巻き戻るので対策
-            if (deserializeCount <= 20)
-            {
-                deserializeCount++;
-                return;
-            }
-
             if (masterOnlyLocal != masterOnly)
             {
                 modeChanger.ToggleMasterOnly();
                 Debug.Log("[KineL] Change owner mode");
             }
-
             // play mode change
             if (localPlayMode != globalPlayMode)
             {
                 Debug.Log("[KineL] video mode synced.");
                 localPlayMode = globalPlayMode;
                 modeChanger.ChangeMode(globalPlayMode);
-                return;
             }
+            
+            // change video time 
+            if (localVideoStartTime != videoStartGlobalTime)
+                Sync();
 
             if (globalVideoID == localVideoID)
                 return;
@@ -371,6 +362,7 @@ namespace Kinel.VideoPlayer.Scripts
 
             globalPlayMode = mode;
             localPlayMode = mode;
+            RequestSerialization();
         }
 
         public void SetVideoTime(float seconds)
@@ -378,15 +370,10 @@ namespace Kinel.VideoPlayer.Scripts
             ChangeOwner(Networking.LocalPlayer);
             videoStartGlobalTime += videoPlayer.GetTime() - seconds;
             videoPlayer.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - videoStartGlobalTime, 0, videoPlayer.GetDuration()));
-            videoStartGlobalTime += 0.02f;
-            if(!periodicSync)
-                SendCustomEventDelayedSeconds(nameof(SyncGlobal), 1f);
+            videoStartGlobalTime += 1f;
+            RequestSerialization();
         }
-
-        public void SyncGlobal()
-        {
-            SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Sync));
-        }
+        
 
         public void OwnerPause()
         {
@@ -398,6 +385,7 @@ namespace Kinel.VideoPlayer.Scripts
                 isPause = false;
                 videoStartGlobalTime += (float) Networking.GetServerTimeInSeconds() - pausedTime;
                 pausedTime = 0;
+                RequestSerialization();
                 return;
             }
             videoPlayer.Pause();
@@ -406,13 +394,16 @@ namespace Kinel.VideoPlayer.Scripts
             isPlaying = false;
             isPause = true;
             isPauseLocal = true;
+            RequestSerialization();
         }
 
         public void GlobalPause()
         {
+            Networking.IsOwner(Networking.LocalPlayer, this.gameObject);
             Debug.Log("[KineL] Paused.");
             videoPlayer.Pause();
             isPauseLocal = true;
+            
         }
 
         public void PauseExit()
@@ -430,6 +421,7 @@ namespace Kinel.VideoPlayer.Scripts
             isPause = false;
             videoStartGlobalTime = 0;
             pausedTime = 0;
+            RequestSerialization();
         }
 
         public void ResetLocal()
@@ -468,6 +460,7 @@ namespace Kinel.VideoPlayer.Scripts
                 ChangeOwner(Networking.LocalPlayer);
 
             globalPlayMode = playMode;
+            RequestSerialization();
         }
 
         public void SetVideoInstance(BaseVRCVideoPlayer instance)
@@ -481,6 +474,8 @@ namespace Kinel.VideoPlayer.Scripts
                 Networking.SetOwner(player, this.gameObject);
             
         }
+        
+        
      
         public bool IsPlaying()
         {
