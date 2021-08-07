@@ -1,4 +1,4 @@
-# Video Player For VRChat 1.1.1
+# Video Player For VRChat 1.1.2
 
 ## はじめに
 
@@ -9,9 +9,16 @@ VRChatを対象としたビデオプレイヤーです。
 - [1.0.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.0.1) MasterOnlyの不具合を修正
 - [1.1.0](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.0) プレイリストにタブ機能の追加
 - [1.1.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.1) [テキストが最前面に来る問題](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/10)を修正
+- [1.1.2](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.2) [新SDKへの対応(UnU) #12](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/12)と[Unity2019への対応#14](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/14)を暫定的に行いました。この更新により各種同期が1.1.1と比較して速度が向上しました。
 
 ## 動作環境
 
+ver1.1.2 以降
+- VRChat SDK3(2021.08.04.15.07)
+- [Udon Sharp(v0.20.2)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.20.2)
+- Unity 2019.4.29f1
+
+ver1.1.1 以前
 - VRChat SDK3(2021.03.22.18.27)
 - [Udon Sharp(v0.19.8)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.8)
 - Unity 2018.4.20f1
@@ -31,11 +38,11 @@ VRChatを対象としたビデオプレイヤーです。
 
 ## 前提ライブラリ等
 ### 必須
-- Unity 2018.4.20f1
-- VRChat SDK3(2021.03.22.18.27)
-- [Udon Sharp(v0.19.8)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.19.8)
+- Unity 2019.4.29f1
+- VRChat SDK3(2021.08.04.15.07)
+- [Udon Sharp(v0.20.2)](https://github.com/MerlinVR/UdonSharp/releases/tag/v0.20.2)
 
-[v1.1.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.1)はSDK3(2021.03.22.18.27)、及びUdonSharp(v0.19.8)以降でのみ動作します。
+[v1.1.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.1)はSDK3(2021.03.22.18.27)、及びUdonSharp(v0.19.8)でのみ動作します。Unity 2019年では動作しますが、推奨しません。v1.1.2にて動作しない場合使用してください。
 
 ### 任意
 - [モザイクシェーダー by pya1234様](https://booth.pm/ja/items/1703064) ※1
