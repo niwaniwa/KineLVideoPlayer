@@ -1,4 +1,4 @@
-# Video Player For VRChat 1.1.0
+# Video Player For VRChat 1.1.1
 
 ## はじめに
 
