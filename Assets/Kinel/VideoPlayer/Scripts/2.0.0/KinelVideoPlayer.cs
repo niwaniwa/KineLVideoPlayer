@@ -7,6 +7,7 @@ using VRC.SDK3.Components.Video;
 using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Common.Interfaces;
 
 namespace Kinel.VideoPlayer.Scripts._2._0._0
 {
@@ -16,11 +17,13 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
     {
 
         // Const variables
-        public const string DEBUG_PREFIX = "[KineL]";
+        public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
         
         // SerializeField variables
         [SerializeField] private KinelVideoPlayerController videoPlayerController;
         [SerializeField] private float deleyLimit;
+        [SerializeField] private int retryLimit;
+        [SerializeField] private bool enableErrorRetry;
 
         // System
         private UdonSharpBehaviour[] _listeners;
@@ -32,14 +35,15 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
         [UdonSynced] private int _globalVideoId = 0;
         [UdonSynced] private bool _isPlaying = false;
         [UdonSynced] private bool _isPause = false;
-        
-        
+
         // Local variables
         private float _videoStartLocalTime = 0;
         private float _lastSyncTime = 0;
         private int _localVideoId = 0;
+        private int _errorCount = 0;
+        private int _retryCount = 0;
         private bool _isPauseLocal = false;
-        
+
         //public 
         
         public void Start()
@@ -95,7 +99,6 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
         {
             foreach (UdonSharpBehaviour listener in _listeners)
             {
-                Debug.Log($"Call listener {listener.name}, event {eventName}");
                 listener.SendCustomEvent(eventName);
             }
             return;
@@ -107,20 +110,22 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
             if(ownerTransfer)
                 Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
 
-            _syncedURL = url;
-            _globalVideoId++;
+            if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+            {
+                _syncedURL = url;
+                _globalVideoId++;
+                RequestSerialization();
+            }
             _localVideoId = _globalVideoId;
             
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedURL);
             
-            this.RequestSerialization();
-            _listeners[0].SendCustomEvent("OnVideoStart");
-
-            return false;
+            return true;
         }
 
         public void Play()
         {
+            Debug.Log($"{DEBUG_PREFIX} Video playing...");
             _isPauseLocal = false;
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
@@ -130,14 +135,24 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
                 _pausedTime = 0;
                 RequestSerialization();
             }
+
+            _videoStartLocalTime = _videoStartGlobalTime;
             videoPlayerController.GetCurrentVideoPlayer().Play();
         }
 
-        public void Pause()
+        public void Pause(bool ownerTransfer)
         {
+
+            if (!_isPlaying)
+                return;
+            
+            if(ownerTransfer)
+                Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
+            
             _isPauseLocal = true;
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
+                Debug.Log("Pause Owner");
                 _pausedTime = (float) Networking.GetServerTimeInSeconds();
                 _isPlaying = false;
                 _isPause = true;
@@ -146,23 +161,23 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
             videoPlayerController.GetCurrentVideoPlayer().Pause();
         }
 
-        public void Reset()
-        {
-            if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                _pausedTime = 0;
-                _isPlaying = false;
-                _isPause = false;
-                _videoStartGlobalTime = 0;
-                RequestSerialization();
-            }
-            _isPauseLocal = false;
-            SendCustomEvent(nameof(ResetGlobal));
-        }
-
         public void ResetGlobal()
         {
+            Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
+            _pausedTime = 0;
+            _isPlaying = false;
+            _isPause = false;
+            _videoStartGlobalTime = 0;
+            _syncedURL = VRCUrl.Empty;
+            RequestSerialization();
+            SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Reset));
+        }
+
+        public void Reset()
+        {
             _isPauseLocal = false;
+            _videoStartLocalTime = 0;
+            videoPlayerController.GetCurrentVideoPlayer().Stop();
             CallEvent("OnKinelVideoReset");
         }
 
@@ -180,10 +195,11 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
 
         public override void OnVideoReady()
         {
-            CallEvent("OnKinelVideoReady");
+
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
-                videoPlayerController.GetCurrentVideoPlayer().Play();
+                Play();
+                CallEvent("OnKinelVideoReady");
                 return;
             }
             
@@ -192,17 +208,14 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
 
             if (_isPause)
                 Sync();
+            
+            CallEvent("OnKinelVideoReady");
            
         }
 
         public override void OnVideoStart()
         {
-            if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            {
-                _videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
-                RequestSerialization();
-            }
-           
+            
             CallEvent("OnKinelVideoStart");
         }
 
@@ -226,10 +239,57 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
             CallEvent("OnKinelVideoLoop");
         }
 
+        private float _lastVideoErrorTime = 0;
+
         public override void OnVideoError(VideoError videoError)
         {
-            Debug.Log($"{videoError}");
-            CallEvent(nameof(OnVideoError));
+            // 連続エラー防止
+            float nowTime = Networking.GetServerTimeInMilliseconds();
+            Debug.Log($"{DEBUG_PREFIX} Video error. : {videoError}");
+            
+            Reset();
+            
+            //Debug.Log($"{DEBUG_PREFIX} Video error. : {videoError}");
+            //CallEvent("OnKinelVideoRetryError");
+            
+            _lastVideoErrorTime = nowTime;
+            _errorCount++;
+            
+            if (enableErrorRetry)
+            {
+                if (_retryCount > retryLimit)
+                {
+                    Debug.Log($"{DEBUG_PREFIX} Sorry. Couldn't retry.");
+                    Reset();
+                    _retryCount = 0;
+                    _errorCount = 0;
+                    CallEvent("OnKinelVideoRetryError");
+                    return;
+                }
+                Debug.Log($"{_retryCount}, {_errorCount}");
+                _retryCount++;
+                Debug.Log($"{DEBUG_PREFIX} Retrying...  Please wait.");
+                SendCustomEventDelayedSeconds(nameof(Reload), 5f);
+            }
+            
+            CallEvent("OnKinelVideoError");
+        }
+
+        public void ReloadGlobal()
+        {
+            Debug.Log($"{DEBUG_PREFIX} Reloading...");
+            var lastVideoURL = _syncedURL;
+            ResetGlobal();
+            PlayByURL(lastVideoURL, true);
+            Debug.Log($"{DEBUG_PREFIX} Reload completed. # {_syncedURL}");
+        }
+
+        public void Reload()
+        {
+            Debug.Log($"{DEBUG_PREFIX} Reloading...");
+            Reset();
+            videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedURL);
+            Debug.Log($"{DEBUG_PREFIX} Reload completed. # {_syncedURL}");
         }
 
         public override void OnDeserialization()
@@ -237,23 +297,29 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
                 return;
 
-            if (_isPause != _isPauseLocal && _isPlaying)
+            if (_isPause != _isPauseLocal)
             {
+                Debug.Log($"{DEBUG_PREFIX} Deserialization: paused.");
                 if(_isPause)
-                    Play();
+                    Pause(false);
                 else 
-                    Pause();
+                    Play();
+                return;
             }
 
             if (!videoPlayerController.GetCurrentVideoPlayer().IsPlaying && _isPlaying)
             {
-                Debug.Log("Deseri Play");
+                Debug.Log($"{DEBUG_PREFIX} Deserialization: Video start.");
                 Play();
                 return;
             }
+            
+            if (_videoStartLocalTime != _videoStartGlobalTime)
+                Sync();
 
             if (_localVideoId != _globalVideoId)
             {
+                Debug.Log($"{DEBUG_PREFIX} Deserialization: URL synced.");
                 PlayByURL(_syncedURL, false);
                 return;
             }
@@ -267,6 +333,7 @@ namespace Kinel.VideoPlayer.Scripts._2._0._0
 
             if (_isPlaying || (!_isPlaying && _isPause))
             {
+                Debug.Log($"{DEBUG_PREFIX} Player Joined. now playing video...");
                 PlayByURL(_syncedURL, false);
                 return;
             }
