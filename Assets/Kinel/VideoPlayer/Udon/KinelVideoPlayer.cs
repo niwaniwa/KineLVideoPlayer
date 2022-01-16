@@ -32,7 +32,8 @@ namespace Kinel.VideoPlayer.Udon
         [UdonSynced, FieldChangeCallback(nameof(SyncedUrl))]
         private VRCUrl _syncedUrl;
         
-        [UdonSynced] private float _videoStartGlobalTime = 0;
+        [UdonSynced, FieldChangeCallback(nameof(VideoStartGlobalTime))]
+        private float _videoStartGlobalTime = 0;
         [UdonSynced] private float _pausedTime = 0;
         
         [UdonSynced, FieldChangeCallback(nameof(IsPlaying))] 
@@ -75,6 +76,16 @@ namespace Kinel.VideoPlayer.Udon
             }
         }
 
+        public float VideoStartGlobalTime
+        {
+            get => _videoStartGlobalTime;
+            set
+            {
+                _videoStartGlobalTime = value;
+                Sync();
+            }
+        }
+
         public bool IsPlaying
         {
             get
@@ -94,10 +105,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public bool IsPause
         {
-            get
-            {
-                return _isPause;
-            }
+            get => _isPause; 
             set
             {
                 Debug.Log($"{DEBUG_PREFIX} Deserialization: paused.");
@@ -292,7 +300,7 @@ namespace Kinel.VideoPlayer.Udon
             
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
-                _videoStartGlobalTime = (float)Networking.GetServerTimeInSeconds();
+                _videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
                 _isPause = false;
                 _isPlaying = false;
                 RequestSerialization();
