@@ -42,6 +42,9 @@ namespace Kinel.VideoPlayer.Udon
         [UdonSynced, FieldChangeCallback(nameof(IsPause))] 
         private bool _isPause = false;
 
+        [UdonSynced, FieldChangeCallback(nameof(IsLock))]
+        private bool _isLock = false;
+
         // Local variables
         private float _videoStartLocalTime = 0;
         private float _lastSyncTime = 0;
@@ -115,6 +118,16 @@ namespace Kinel.VideoPlayer.Udon
                 else
                     Play();
 
+            }
+        }
+
+        public bool IsLock
+        {
+            get => _isLock;
+            set
+            {
+                _isLock = value;
+                CallEvent("OnKinelVideoPlayerLock");
             }
         }
 
