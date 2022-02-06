@@ -15,14 +15,13 @@ namespace Kinel.VideoPlayer.Udon
         // Const variables
         public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
         public const int VIDEO_MODE = 0;
-        public const int STREAN_MODE = 1;
+        public const int STREAM_MODE = 1;
 
         // SerializeField variables
         [SerializeField] private KinelVideoPlayerController videoPlayerController;
         [SerializeField] private float deleyLimit;
         [SerializeField] private int retryLimit;
         [SerializeField] private bool enableErrorRetry;
-        [SerializeField] private bool autoPlay;
         [SerializeField] private bool loop;
 
         // System
@@ -66,16 +65,15 @@ namespace Kinel.VideoPlayer.Udon
 
         public VRCUrl SyncedUrl
         {
-            get
-            {
-                return _syncedUrl;
-            }
+            get => _syncedUrl;
             set
             {
                 _syncedUrl = value;
+                if (_syncedUrl.Equals(VRCUrl.Empty))
+                    return;
                 Debug.Log($"{DEBUG_PREFIX} Deserialization: URL synced.");
                 PlayByURL(_syncedUrl);
-                return;
+                
             }
         }
 
@@ -91,10 +89,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public bool IsPlaying
         {
-            get
-            {
-                return _isPlaying;
-            }
+            get => _isPlaying;
             set
             {
                 _isPlaying = value;
@@ -127,7 +122,8 @@ namespace Kinel.VideoPlayer.Udon
             set
             {
                 _isLock = value;
-                CallEvent("OnKinelVideoPlayerLock");
+                
+                CallEvent(_isLock ? "OnKinelVideoPlayerLocked" : "OnKinelVideoPlayerUnlocked");
             }
         }
 
@@ -191,7 +187,7 @@ namespace Kinel.VideoPlayer.Udon
                 RequestSerialization();
             }
 
-           //_localVideoId = _globalVideoId;
+            //_localVideoId = _globalVideoId;
             
             CallEvent("OnUrlUpdate");
 
@@ -260,6 +256,7 @@ namespace Kinel.VideoPlayer.Udon
             _isPauseLocal = false;
             _videoStartLocalTime = 0;
             videoPlayerController.GetCurrentVideoPlayer().Stop();
+            
             CallEvent("OnKinelVideoReset");
         }
 
