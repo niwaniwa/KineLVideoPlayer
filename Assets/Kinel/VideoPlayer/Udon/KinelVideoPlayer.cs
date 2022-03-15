@@ -26,6 +26,8 @@ namespace Kinel.VideoPlayer.Udon
         [SerializeField] private int retryLimit;
         [SerializeField] private bool enableErrorRetry;
         [SerializeField] private bool defaultLoop;
+        [SerializeField] private bool enableDefaultUrl;
+        [SerializeField] private VRCUrl defaultPlayUrl;
 
         // System
         private UdonSharpBehaviour[] _listeners;
@@ -149,8 +151,10 @@ namespace Kinel.VideoPlayer.Udon
         {
             get
             {
-                
-                return 0;
+                float videoTime = Mathf.Clamp((IsPause ? _pausedTime : (float) Networking.GetServerTimeInSeconds()) - _videoStartGlobalTime,
+                    0,
+                    videoPlayerController.GetCurrentVideoPlayer().GetDuration());
+                return videoTime;
             }
             set => SetVideoTime(value);
         }
@@ -251,7 +255,6 @@ namespace Kinel.VideoPlayer.Udon
             
             CallEvent("OnKinelUrlUpdate");
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedUrl);
-
             return true;
         }
 
@@ -337,12 +340,12 @@ namespace Kinel.VideoPlayer.Udon
             if (videoPlayerController.GetCurrentVideoMode() == STREAM_MODE)
                 if (float.IsInfinity(videoPlayerController.GetCurrentVideoPlayer().GetDuration()))
                     _isVideo = false;
-                
-            
+
 
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 videoPlayerController.GetCurrentVideoPlayer().SetTime(0);
+                _isPause = false;
                 Play();
                 CallEvent("OnKinelVideoReady");
                 return;
@@ -391,23 +394,33 @@ namespace Kinel.VideoPlayer.Udon
 
             CallEvent("OnKinelVideoLoop");
         }
-        
+
+        private VideoError lastVideoError = VideoError.Unknown;
+
+        public VideoError LastVideoError
+        {
+            get => lastVideoError;
+            private set => lastVideoError = value;
+        }
+
         public override void OnVideoError(VideoError videoError)
         {
-            
 
+            lastVideoError = videoError;
             Debug.Log($"{DEBUG_PREFIX} Video error. : {videoError}");
             
             _errorCount++;
 
             if (enableErrorRetry)
             {
+                Debug.Log($"{DEBUG_PREFIX} enableErrorRetry");
                 if (_canceled)
                 {
                     Debug.Log($"{DEBUG_PREFIX} retry canceled.");
                     ResetLocal();
                     ResetRetryProcess();
                     _canceled = false;
+                    CallEvent("OnKinelVideoRetryError");
                     return;
                 }
                 
@@ -419,13 +432,14 @@ namespace Kinel.VideoPlayer.Udon
                     CallEvent("OnKinelVideoRetryError");
                     return;
                 }
+                
 
                 Debug.Log($"{_retryCount}, {_errorCount}");
                 _retryCount++;
                 Debug.Log($"{DEBUG_PREFIX} Retrying...  Please wait.");
                 SendCustomEventDelayedSeconds(nameof(Reload), 5f);
             }
-
+            Debug.Log($"{DEBUG_PREFIX} CALL Event");
             CallEvent("OnKinelVideoError");
         }
 
@@ -451,8 +465,18 @@ namespace Kinel.VideoPlayer.Udon
             Debug.Log($"{DEBUG_PREFIX} Reload completed. # {_syncedUrl}");
         }
 
+        private float lastReloadTime = -1;
+        
         public void Reload()
         {
+            
+            if ((float) Networking.GetServerTimeInSeconds() - lastReloadTime <= 4 && !(lastReloadTime < 0) || _syncedUrl.Equals(VRCUrl.Empty))
+            {
+                Debug.Log($"{DEBUG_PREFIX} Reload error: {(float) Networking.GetServerTimeInSeconds() - lastReloadTime}");
+                return;
+            }
+
+            lastReloadTime = (float) Networking.GetServerTimeInSeconds();
             Debug.Log($"{DEBUG_PREFIX} Reloading...");
             ResetLocal();
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedUrl);
@@ -463,10 +487,9 @@ namespace Kinel.VideoPlayer.Udon
         {
             TakeOwnership();
             var video = videoPlayerController.GetCurrentVideoPlayer();
-            _videoStartGlobalTime += video.GetTime() - seconds;
+            _videoStartGlobalTime += VideoTime - seconds;
             video.SetTime(Mathf.Clamp((float) Networking.GetServerTimeInSeconds() - _videoStartGlobalTime, 0,
                 video.GetDuration()));
-            _videoStartGlobalTime += 1f;
 
             RequestSerialization();
             if (_isPause)
