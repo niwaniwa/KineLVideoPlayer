@@ -29,7 +29,7 @@ namespace Kinel.VideoPlayer.Editor
             if (headerTexture == null)
             {
                 headerTexture = AssetDatabase.LoadAssetAtPath<Texture>(AssetDatabase.GUIDToAssetPath(HEADER_IMAGE_GUID));
-                Debug.Log($"{headerTexture == null}");
+                // Debug.Log($"{headerTexture == null}");
             }
             
             if(headerTexture != null){
