@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: KineLSpliteAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 8
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: dc536855ce86c7f4ba398ad39914984f, type: 3}
+    - {fileID: 2800000, guid: 216faa4d4dd65394b93796bbe0a64e9d, type: 3}
+    - {fileID: 2800000, guid: 5be00597f9fe8ce46bac60f9477d9d6e, type: 3}
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 384f822110a9c3944a26b713c6fb2a7d, type: 3}
+  - {fileID: 21300000, guid: a4f6714210137e4499c736899ccf2ee7, type: 3}
+  - {fileID: 21300000, guid: 7ffae5334f2564a4087fdbccb8036ef5, type: 3}
+  - {fileID: 21300000, guid: 341d3683b7fb23e49becf8d40df01433, type: 3}
+  - {fileID: 21300000, guid: 72dc74a483f24d9429f874edd22721e2, type: 3}
+  - {fileID: 21300000, guid: 0edb80e5df4eca148b830f95ebacdbb7, type: 3}
+  - {fileID: 21300000, guid: bc8987462f783744f902b8200f8b4b14, type: 3}
+  - {fileID: 21300000, guid: 1c186b867680cb84c881a9977d8bc262, type: 3}
+  - {fileID: 21300000, guid: 2a9774f6b2a3c4145875de31c35b70ee, type: 3}
+  - {fileID: 21300000, guid: 7e43403724c03dd49879348ab1d34a31, type: 3}
+  - {fileID: 21300000, guid: 5be00597f9fe8ce46bac60f9477d9d6e, type: 3}
+  - {fileID: 21300000, guid: d0ff6bf7e852c4347b1f5c3fe7c743af, type: 3}
+  - {fileID: 21300000, guid: 881a2cd8d28f28d41bce65c53c3958ca, type: 3}
+  - {fileID: 21300000, guid: 9219af290162aba4e84e0765e29336ba, type: 3}
+  - {fileID: 21300000, guid: 10366d4989b67bc48b3c3151408307de, type: 3}
+  - {fileID: 21300000, guid: cf2a8f2a59f73e54499f0698fbe4e041, type: 3}
+  - {fileID: 21300000, guid: 66a2603bac11e144080eac19a79f29a5, type: 3}
+  - {fileID: 21300000, guid: f416a90cdfc39a2409fb767ecb38d930, type: 3}
+  - {fileID: 21300000, guid: 5877271c4ab738c43a1766f945e1db56, type: 3}
+  - {fileID: 21300000, guid: 31e4203ca5a75c345ab7d36086bd5355, type: 3}
+  - {fileID: 21300000, guid: 9429433d6bd5bd74288b2d7e1d8ad511, type: 3}
+  - {fileID: 21300000, guid: 216faa4d4dd65394b93796bbe0a64e9d, type: 3}
+  - {fileID: 21300000, guid: ddb6166daa3df274e88d059adb20d964, type: 3}
+  - {fileID: 21300000, guid: 79cc748d597ef3d4e86376020b6f134b, type: 3}
+  - {fileID: 21300000, guid: c1707bcd4dbe37942ab534eb2b6bef0a, type: 3}
+  - {fileID: 21300000, guid: 34daf3fdc6656ca49948076a3963f45b, type: 3}
+  - {fileID: 21300000, guid: 6edce05e4aa93394fb527d6644601e56, type: 3}
+  - {fileID: 21300000, guid: e97e13ee30b9ce149b724e1c3a174107, type: 3}
+  - {fileID: 21300000, guid: 1e80556f35d6af1498ef7ff5d284d99d, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - baseline_play_circle_outline_white_48pt_3x
+  - outline_highlight_off_white_48dp
+  - outline_lock_open_white_48dp
+  - baseline_radio_button_checked_white_48pt_3x
+  - baseline_no_encryption_white_48pt_3x
+  - baseline_link_white_48pt_3x
+  - outline_forward_10_white_48dp
+  - baseline_play_arrow_white_48pt_3x
+  - baseline_volume_off_white_48pt_3x
+  - outline_lock_white_48dp
+  - Background
+  - baseline_sync_white_48pt_3x
+  - outline_replay_10_white_48dp
+  - baseline_volume_down_white_48pt_3x
+  - baseline_rotate_left_white_48pt_3x
+  - baseline_pause_white_48pt_3x
+  - baseline_expand_less_white_48dp
+  - outline_flip_to_back_white_48dp
+  - outline_repeat_white_48dp
+  - outline_add_circle_outline_white_48dpx2
+  - baseline_volume_up_white_48pt_3x
+  - border
+  - baseline_refresh_white_48pt_3x
+  - baseline_error_outline_white_48pt_3x
+  - outline_stop_white_48dp
+  - outline_shuffle_white_48dp
+  - outline_settings_white_48dp
+  - baseline_expand_more_white_48dp
+  - baseline_school_white_48pt_3x
+  m_Tag: KineLSpliteAtlas
+  m_IsVariant: 0
