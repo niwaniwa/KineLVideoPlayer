@@ -41,10 +41,15 @@ namespace Kinel.VideoPlayer.Udon
         {
             videoPlayer.UnregisterListener(udon);
         }
-        
+
         public bool IsUIAcitve()
         {
             return _isUIActive;
+        }
+
+        public bool IsVideo()
+        {
+            return videoPlayer.IsVideo();
         }
 
     }
