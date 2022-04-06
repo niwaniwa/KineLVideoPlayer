@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: Information Udon C# Program Asset
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 2936d7271ce0a9e42b7a5988e683d84d,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 80bf8b734f360894c884cb6235108437,
     type: 2}
   udonAssembly: 
   assemblyError: 
-  sourceCsScript: {fileID: 11500000, guid: c8e56568d274ca44086564c062f86d80, type: 3}
+  sourceCsScript: {fileID: 11500000, guid: 45efe146b4615de478ec6ef818d0f31f, type: 3}
   behaviourSyncMode: 0
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
@@ -25,7 +25,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11500000, guid: f867b7bcdaae4999b2c3463a344c5ab0, type: 3}
+    - {fileID: 11500000, guid: af0c4bb60ca44fed8393832db7c4272b, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -50,7 +50,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: videoPlayer
+      Data: videoPlayerUI
     - Name: $v
       Entry: 7
       Data: 2|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Kinel.VideoPlayer.Scripts.KinelVideoScript, Assembly-CSharp
+      Data: Kinel.VideoPlayer.Udon.KinelVideoPlayerUI, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -77,10 +77,10 @@ MonoBehaviour:
       Data: VRCUdonUdonBehaviour
     - Name: symbolOriginalName
       Entry: 1
-      Data: videoPlayer
+      Data: videoPlayerUI
     - Name: symbolUniqueName
       Entry: 1
-      Data: videoPlayer
+      Data: videoPlayerUI
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
