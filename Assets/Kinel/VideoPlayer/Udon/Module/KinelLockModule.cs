@@ -10,7 +10,7 @@ namespace Kinel.VideoPlayer.Udon.Module
     {
 
         public KinelVideoPlayerUI videoPlayerUI;
-        public GameObject[] toggleObjects;
+        public GameObject[] toggleObjects, systemObjects;
 
         public void Start()
         {
@@ -19,17 +19,27 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void ToggleLock()
         {
-            if (!Networking.LocalPlayer.IsOwner(videoPlayerUI.GetVideoPlayer().gameObject))
+            if (!Networking.LocalPlayer.isMaster)
                 return;
             
+            
             var videoPlayer = videoPlayerUI.GetVideoPlayer();
+            videoPlayer.TakeOwnership();
             videoPlayer.IsLock = !videoPlayer.IsLock;
+            videoPlayer.RequestSerialization();
         }
 
         public void OnKinelVideoPlayerLocked()
         {
+            
+            foreach (var target in systemObjects)
+            {
+                target.SetActive(!target.activeSelf);
+            }
+            
             if (Networking.LocalPlayer.IsOwner(videoPlayerUI.GetVideoPlayer().gameObject))
                 return;
+            
             foreach (var target in toggleObjects)
             {
                 target.SetActive(!target.activeSelf);
@@ -38,8 +48,14 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void OnKinelVideoPlayerUnlocked()
         {
+            foreach (var target in systemObjects)
+            {
+                target.SetActive(!target.activeSelf);
+            }
+            
             if (Networking.LocalPlayer.IsOwner(videoPlayerUI.GetVideoPlayer().gameObject))
                 return;
+            
             foreach (var target in toggleObjects)
             {
                 target.SetActive(!target.activeSelf);
