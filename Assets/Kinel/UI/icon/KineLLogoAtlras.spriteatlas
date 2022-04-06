@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: KineLLogoAtlras
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 83c57595ed56f654bb6b2d46d70ec627, type: 3}
+    - {fileID: 2800000, guid: f0835da46bf2e7a48a2b9617190ecbc8, type: 3}
+    - {fileID: 2800000, guid: 8c803f5fff835b04f81825f790fe32d5, type: 3}
+    - {fileID: 2800000, guid: 1757ad854354b8e4681c38cfe1e728a4, type: 3}
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: f0835da46bf2e7a48a2b9617190ecbc8, type: 3}
+  - {fileID: 21300000, guid: 1757ad854354b8e4681c38cfe1e728a4, type: 3}
+  - {fileID: 21300000, guid: 83c57595ed56f654bb6b2d46d70ec627, type: 3}
+  - {fileID: 21300000, guid: 8c803f5fff835b04f81825f790fe32d5, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - KineL
+  - Logo_alpha_white
+  - icon
+  - KineL_alpha
+  m_Tag: KineLLogoAtlras
+  m_IsVariant: 0
