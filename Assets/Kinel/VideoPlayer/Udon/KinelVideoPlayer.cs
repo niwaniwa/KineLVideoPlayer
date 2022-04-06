@@ -28,6 +28,7 @@ namespace Kinel.VideoPlayer.Udon
         [SerializeField] private bool defaultLoop;
         [SerializeField] private bool enableDefaultUrl;
         [SerializeField] private VRCUrl defaultPlayUrl;
+        [SerializeField] private int defaultPlayUrlMode;
 
         // System
         private UdonSharpBehaviour[] _listeners;
@@ -56,6 +57,7 @@ namespace Kinel.VideoPlayer.Udon
         private float _lastSyncTime = 0;
         private int _errorCount = 0;
         private int _retryCount = 0;
+        private bool _loading = false;
         private bool _canceled = false;
         private bool _isVideo = true;
 
@@ -81,6 +83,8 @@ namespace Kinel.VideoPlayer.Udon
                 if (_syncedUrl.Equals(VRCUrl.Empty))
                     return;
                 Debug.Log($"{DEBUG_PREFIX} Deserialization: URL synced.");
+                
+                
                 PlayByURL(_syncedUrl);
                 
             }
@@ -92,7 +96,8 @@ namespace Kinel.VideoPlayer.Udon
             set
             {
                 _videoStartGlobalTime = value;
-                Sync();
+                Debug.Log($"{DEBUG_PREFIX} Deserialization: Video Start Global Time ");
+                SendCustomEventDelayedSeconds(nameof(Sync), 1);
             }
         }
 
@@ -159,6 +164,10 @@ namespace Kinel.VideoPlayer.Udon
             set => SetVideoTime(value);
         }
 
+        /// <summary>
+        /// このビデオプレイヤーからイベントを受け取るためのリスナー登録関数
+        /// </summary>
+        /// <param name="listener">受け取るUdonSharpBehaviour</param>
         public void RegisterListener(UdonSharpBehaviour listener)
         {
             if (_listeners == null)
@@ -219,6 +228,10 @@ namespace Kinel.VideoPlayer.Udon
             Debug.Log($"{DEBUG_PREFIX}" + " Unregister " + $"{listener.name}");
         }
 
+        /// <summary>
+        /// イベントの呼び出し
+        /// </summary>
+        /// <param name="eventName">イベント名</param>
         public void CallEvent(string eventName)
         {
             foreach (UdonSharpBehaviour listener in _listeners)
@@ -239,7 +252,11 @@ namespace Kinel.VideoPlayer.Udon
             return;
         }
 
-        public bool PlayByURL(VRCUrl url)
+        /// <summary>
+        /// 任意のVRCUrlの動画を再生します。
+        /// </summary>
+        /// <param name="url">再生する動画URL</param>
+        public void PlayByURL(VRCUrl url)
         {
 
             Debug.Log($"{DEBUG_PREFIX} Video load process starting...");
@@ -254,13 +271,21 @@ namespace Kinel.VideoPlayer.Udon
             //_localVideoId = _globalVideoId;
             
             CallEvent("OnKinelUrlUpdate");
+            _loading = true;
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedUrl);
-            return true;
         }
 
+        /// <summary>
+        /// 動画の再生を行います。
+        /// 動画が一時停止の場合 - 続きから再生
+        /// 動画が終了した場合   - 
+        /// </summary>
         public void Play()
         {
             Debug.Log($"{DEBUG_PREFIX} Video playing...");
+
+            if (_syncedUrl == null)
+                return;
             
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
@@ -300,6 +325,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public void ResetGlobal()
         {
+            Debug.Log($"{DEBUG_PREFIX} Reset (Global)");
             TakeOwnership();
             _pausedTime = 0;
             _isPlaying = false;
@@ -312,6 +338,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public void ResetLocal()
         {
+            Debug.Log($"{DEBUG_PREFIX} Reset (Local)");
             if (videoPlayerController.GetCurrentVideoPlayer() == null) return;
             videoPlayerController.GetUnityVideoPlayer().Stop();
             videoPlayerController.GetAvProVideoPlayer().Stop();
@@ -322,26 +349,67 @@ namespace Kinel.VideoPlayer.Udon
         {
             if (IsPlaying && !videoPlayerController.GetCurrentVideoPlayer().IsPlaying)
             {
+                if (_loading)
+                {
+                    Debug.Log($"{DEBUG_PREFIX} Already reloading....");
+                    return;
+                }
+                
+                Debug.Log($"{DEBUG_PREFIX} Synced. Reloading....");
                 Reload();
             }
-
             _lastSyncTime = Time.realtimeSinceStartup;
-            float globalVideoTime = Mathf.Clamp((float)Networking.GetServerTimeInSeconds() - _videoStartGlobalTime, 0,
-                videoPlayerController.GetCurrentVideoPlayer().GetDuration());
-            if (Mathf.Clamp(Mathf.Abs(videoPlayerController.GetCurrentVideoPlayer().GetTime() - globalVideoTime), 0,
-                videoPlayerController.GetCurrentVideoPlayer().GetDuration()) > deleyLimit)
-                videoPlayerController.GetCurrentVideoPlayer().SetTime(globalVideoTime);
-            
+
+            if (Mathf.Clamp(Mathf.Abs(videoPlayerController.GetCurrentVideoPlayer().GetTime() - VideoTime), 0,
+                    videoPlayerController.GetCurrentVideoPlayer().GetDuration()) > deleyLimit)
+            {
+                Debug.Log($"{DEBUG_PREFIX} Synced. Set VideoTime ");
+                videoPlayerController.GetCurrentVideoPlayer().SetTime(VideoTime);
+            }
+
+            Debug.Log($"{DEBUG_PREFIX} Synced.");
+
         }
+        
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            if (Networking.LocalPlayer != player)
+                return;
+
+            if (!Networking.LocalPlayer.IsOwner(gameObject))
+                return;
+            
+            if (enableDefaultUrl)
+            {
+                SendCustomEventDelayedSeconds(nameof(PlayDefaultUrl), 5f);
+            }
+        }
+
+        public void PlayDefaultUrl()
+        {
+            if (IsPlaying)
+                return;
+            
+            TakeOwnership();
+            ChangeMode(defaultPlayUrlMode);
+            PlayByURL(defaultPlayUrl);
+        }
+        
 
         public override void OnVideoReady()
         {
-
             if (videoPlayerController.GetCurrentVideoMode() == STREAM_MODE)
+            {
                 if (float.IsInfinity(videoPlayerController.GetCurrentVideoPlayer().GetDuration()))
                     _isVideo = false;
+            }
+            else
+            {
+                _isVideo = true;
+            }
 
-
+            _loading = false;
+            
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 videoPlayerController.GetCurrentVideoPlayer().SetTime(0);
@@ -355,7 +423,11 @@ namespace Kinel.VideoPlayer.Udon
                 videoPlayerController.GetCurrentVideoPlayer().Play();
 
             if (_isPause)
+            {
+                Debug.Log($"{DEBUG_PREFIX} Video Ready");
                 Sync();
+            }
+                
 
             CallEvent("OnKinelVideoReady");
 
@@ -363,6 +435,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public override void OnVideoStart()
         {
+            Debug.Log($"{DEBUG_PREFIX} Video Start");
             Sync();
             
             CallEvent("OnKinelVideoStart");
@@ -433,7 +506,7 @@ namespace Kinel.VideoPlayer.Udon
                     return;
                 }
                 
-
+    
                 Debug.Log($"{_retryCount}, {_errorCount}");
                 _retryCount++;
                 Debug.Log($"{DEBUG_PREFIX} Retrying...  Please wait.");
@@ -457,11 +530,11 @@ namespace Kinel.VideoPlayer.Udon
                 Debug.Log($"{DEBUG_PREFIX} url is empty.");
                 return;
             }
-            Debug.Log($"{DEBUG_PREFIX} Reloading...");
-            // var lastVideoURL = _syncedUrl;
+            Debug.Log($"{DEBUG_PREFIX} Reloading... (Global)");
+            var lastVideoURL = _syncedUrl;
             ResetGlobal();
             TakeOwnership();
-            PlayByURL(_syncedUrl);
+            PlayByURL(lastVideoURL);
             Debug.Log($"{DEBUG_PREFIX} Reload completed. # {_syncedUrl}");
         }
 
@@ -477,7 +550,7 @@ namespace Kinel.VideoPlayer.Udon
             }
 
             lastReloadTime = (float) Networking.GetServerTimeInSeconds();
-            Debug.Log($"{DEBUG_PREFIX} Reloading...");
+            Debug.Log($"{DEBUG_PREFIX} Reloading... (Local)");
             ResetLocal();
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedUrl);
             Debug.Log($"{DEBUG_PREFIX} Reload internal process start. # {_syncedUrl}");
@@ -485,6 +558,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public void SetVideoTime(float seconds)
         {
+            Debug.Log($"{DEBUG_PREFIX} Set time. {seconds}");
             TakeOwnership();
             var video = videoPlayerController.GetCurrentVideoPlayer();
             _videoStartGlobalTime += VideoTime - seconds;
@@ -547,6 +621,9 @@ namespace Kinel.VideoPlayer.Udon
 
         public void TakeOwnership()
         {
+            
+            Debug.Log($"{DEBUG_PREFIX} Take ownership (System)");
+            
             if (Networking.IsOwner(gameObject))
                 return;
 
