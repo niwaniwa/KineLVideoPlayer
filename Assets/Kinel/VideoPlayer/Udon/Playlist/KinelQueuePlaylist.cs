@@ -37,8 +37,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
         [UdonSynced, FieldChangeCallback(nameof(NowPlayingFlag))]
         private bool nowPlayingFlag = false;
 
-        [UdonSynced] private int index;
-
+        [UdonSynced] private int index; // このindexはcontent内のchilsの順番ではなく、urlsの順番とする
         
         private int _selectedMode = 0;
         private Text _messageUIPlayerText;
@@ -52,9 +51,17 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 isEditing = value;
                 if (value && !Networking.IsOwner(Networking.LocalPlayer, gameObject))
                 {
-                    messageUI.SetActive(value);
+                    messageUI.SetActive(true);
                     _messageUIPlayerText.text = "Queue editing now... " + Networking.GetOwner(this.gameObject).displayName;
+                } 
+                else if (Networking.IsOwner(Networking.LocalPlayer, gameObject))
+                {
+                    if (value)
+                        return;
+                    messageUI.SetActive(false);
                 }
+                else 
+                    messageUI.SetActive(value);
             }
             get => isEditing;
         }
@@ -91,7 +98,6 @@ namespace Kinel.VideoPlayer.Udon.Playlist
         public void Start()
         {
             Debug.Log($"{DEBUG_PREFIX} QueuePlaylist initializing...");
-            Debug.Log($"{DEBUG_PREFIX} {videoPlayer == null}");
             videoPlayer.RegisterListener(this);
             _urls = new VRCUrl[0];
             _messageUIPlayerText = messageUI.transform.Find("Text").GetComponent<Text>();
@@ -153,13 +159,19 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             _urls = tempVrcUrls;
             _modeQueue = tempModeQueue;
             //_gameObjects = tempGameObjects;
-            QueueIndexTextUpdate();
-            Debug.Log($"{DEBUG_PREFIX} {_urls.Length}");
+            SendCustomEventDelayedFrames(nameof(QueueIndexTextUpdate), 5);
+            Debug.Log($"{DEBUG_PREFIX} Remove queue. now urls length : {_urls.Length}");
         }
 
+        /**
+         * index - urlsの0から指定する事
+         */
         public void PlayQueue(int index)
         {
             if (_urls.Length <= index)
+                return;
+
+            if (videoPlayer.IsLock && !Networking.LocalPlayer.isMaster)
                 return;
             
             TakeOwnership();
@@ -210,6 +222,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             }
         }
 
+        private float lastSliderUpdateTime = -1;
 
         public void UpdateProgressBar()
         {
@@ -220,22 +233,23 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 return;
 
             if (progress == null)
-                ProgressBarSetting();
-                
-            
-            /*if(!progress.gameObject.activeSelf)
-                progress.gameObject.SetActive(true);*/
+                return;
             
             progress.value = videoPlayer.GetVideoPlayerController().GetCurrentVideoPlayer().GetTime();
         }
 
         public void ProgressBarSetting()
         {
-            var trans = content.GetChild(index).Find("Progress/Slider");
+            var trans = content.GetChild(index + 1).Find("Progress/Slider");
             if (trans == null)
+            {
+                Debug.Log($"null? true {index}");
+                SendCustomEventDelayedSeconds(nameof(ProgressBarSetting), 2);
                 return;
+            }
             trans.gameObject.SetActive(true);
             progress = trans.GetComponent<Slider>();
+            progress.maxValue = videoPlayer.GetVideoPlayerController().GetCurrentVideoPlayer().GetDuration();
         }
 
         public int GetNextVideoIndex()
@@ -310,12 +324,12 @@ namespace Kinel.VideoPlayer.Udon.Playlist
         public void OnQueueClick()
         {
             int select = GetSelectedItem(4);
-            if (select == index)
+            if (NowPlayingFlag && select == index)
                 return;
             TakeOwnership();
             Debug.Log($"{select},");
-            Debug.Log($"{select},{_urls[select - 1]}");
-            PlayQueue(select - 1);
+            Debug.Log($"{select},{_urls[select]}");
+            PlayQueue(select);
             Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
             NowPlayingFlag = true;
             index = select;
@@ -332,14 +346,14 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 videoPlayer.ResetGlobal();
                 if (autoPlay && autoPlayMode == 1)
                 {
-                    if (index == _urls.Length)
+                    if (index == _urls.Length - 1)
                         return;
                     PlayQueue(GetNextVideoIndex());
                 }
             }
             
-            RemoveQueue(select - 1);
-            Destroy(content.GetChild(select).gameObject);
+            RemoveQueue(select);
+            Destroy(content.GetChild(select + 1).gameObject);
             RequestSerialization();
             Debug.Log($"{DEBUG_PREFIX} Queue deleted");
         }
@@ -349,7 +363,9 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             for (int i = 1; i < content.childCount; i++)
             {
                 Text text = content.GetChild(i).Find("Description").GetComponent<Text>();
+                var oldText = text.text;
                 text.text = text.text.Remove(0, 1).Insert(0, i.ToString());
+                Debug.Log($"index {i}, old {oldText}, new {text.text}");
             }
         }
 
@@ -371,14 +387,19 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             return true;
         }
         
+        /// <summary>
+        /// 選択されたplaylistItemのindexを取得
+        /// </summary>
+        /// <param name="index">判定に使用するGameObjectのindex</param>
+        /// <returns>選択されたitemのindexを返却。なお、先頭に存在するURLInputFieldは除いたindexを返す。</returns>
         public int GetSelectedItem(int index)
         {
             var select = 0;
             for (int i = 1; i < content.transform.childCount; i++)
             {
-                var button = content.GetChild(i).GetChild(index).GetComponent<Button>();
+                var button = content.GetChild(i).GetChild(index).GetComponent<UnityEngine.UI.Button>();
                 if (!button.interactable){
-                    select = i;
+                    select = i　- 1;
                     button.interactable = true;
                     break;
                 }
@@ -386,7 +407,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             return select;
         }
 
-        public void OnUrlUpdate()
+        public void OnKinelUrlUpdate()
         {
             if (!videoPlayer.IsLock)
             {
@@ -396,6 +417,8 @@ namespace Kinel.VideoPlayer.Udon.Playlist
 
             if (NowPlayingFlag)
             {
+                if (!Networking.IsOwner(Networking.LocalPlayer, gameObject))
+                    return;
                 TakeOwnership();
                 RevertPlayerSettings();
                 NowPlayingFlag = false;
@@ -419,8 +442,8 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 return;
 
             ProgressBarSetting();
-            progress.maxValue = videoPlayer.GetVideoPlayerController().GetCurrentVideoPlayer().GetDuration();
             
+
 
         }
 
@@ -431,17 +454,18 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 return;
             
             Debug.Log($"{DEBUG_PREFIX} Video stop.");
-
+            progress = null;
             if (shouldDelete)
             {
-                Destroy(content.GetChild(index).gameObject);
+                Destroy(content.GetChild(index + 1).gameObject);
             }
             
-            if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
             {
+                TakeOwnership();
                 if (shouldDelete)
                 {
-                    RemoveQueue(index == 0 ? 0 : index - 1);
+                    RemoveQueue(index /*== 0 ? 0 : index - 1*/);
                 }
                 if (autoPlay)
                 {
@@ -483,10 +507,24 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             }
         }
 
-        public void TakeOwnership()
+        private void TakeOwnership()
         {
+
+            if (Networking.IsOwner(Networking.LocalPlayer, gameObject))
+            {
+                if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                {
+                    videoPlayer.TakeOwnership();
+                    return;
+                }
+
+                return;
+            }
+            
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
             videoPlayer.TakeOwnership();
+            
+            
         }
         
         public void ResetPlayState()
