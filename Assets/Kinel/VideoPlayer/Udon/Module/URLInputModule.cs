@@ -55,11 +55,14 @@ namespace Kinel.VideoPlayer.Udon.Module
             if (url.Equals(VRCUrl.Empty))
                 return false;
 
-            if (!url.Get().StartsWith("https://"))
-                return false;
+            if (url.Get().StartsWith("https://")
+                || url.Get().StartsWith("http://")
+                || url.Get().StartsWith("rtmp://")
+                || url.Get().StartsWith("rtspt://"))
+                return true;
             
             
-            return true;
+            return false;
         }
 
         public void OnKinelUrlUpdate()
