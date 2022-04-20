@@ -58,7 +58,9 @@ namespace Kinel.VideoPlayer.Udon.Module
             if (url.Get().StartsWith("https://")
                 || url.Get().StartsWith("http://")
                 || url.Get().StartsWith("rtmp://")
-                || url.Get().StartsWith("rtspt://"))
+                || url.Get().StartsWith("rtsp://")
+                || url.Get().StartsWith("rtspt://")
+                || url.Get().StartsWith("rtspu://"))
                 return true;
             
             
