@@ -231,7 +231,7 @@ namespace Kinel.VideoPlayer.Editor
                 
                     //// isOn処理 (後で変更できるようにする(予定))
                     tabPrefab.transform.Find("Dummy").GetComponent<Toggle>().isOn = (i == 0);
-                    playlistPrefab.transform.Find("KVPPlaylist/Canvas").gameObject.SetActive(false);
+                    // playlistPrefab.transform.Find("KVPPlaylist/Canvas").gameObject.SetActive(false);
 
                     ApplyPlaylistProperties(playlistPrefab, (i == 0));
 
@@ -265,10 +265,7 @@ namespace Kinel.VideoPlayer.Editor
             var editor = UnityEditor.Editor.CreateEditor(playlist.GetComponent<KinelPlaylistScript>(), typeof(KinelPlaylistEditor)) as KinelPlaylistEditor;
             editor.ApplyUdonProperties();
                 
-            if (active)
-            {
-                playlist.transform.Find("KVPPlaylist/Canvas").gameObject.SetActive(false);
-            }
+            playlist.transform.Find("KVPPlaylist/Canvas").gameObject.SetActive(active);
             
             
         }
