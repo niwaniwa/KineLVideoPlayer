@@ -1,4 +1,4 @@
-# Video Player For VRChat v2.0.0
+# Video Player For VRChat v2.0.3
 
 ## はじめに
 
@@ -83,4 +83,4 @@ SDKなどは全て最新版を導入してください。
 - Mit License
 
 ## 何かわからない時
-- Twitter(@ni_rilana)までDMを投げて頂けると助かります。。。！
+- BoothかGithubなどにてDMを投げて頂けると助かります。。。！
