@@ -26,6 +26,7 @@ namespace Kinel.VideoPlayer.Udon
         [SerializeField] private int retryLimit;
         [SerializeField] private bool enableErrorRetry;
         [SerializeField] private bool defaultLoop;
+        [SerializeField] private int defaultPlayerMode;
         [SerializeField] private bool enableDefaultUrl;
         [SerializeField] private VRCUrl defaultPlayUrl;
         [SerializeField] private int defaultPlayUrlMode;
@@ -65,8 +66,11 @@ namespace Kinel.VideoPlayer.Udon
 
         public void Start()
         {
-            if(Networking.IsOwner(Networking.LocalPlayer, gameObject))
+            if (Networking.IsOwner(Networking.LocalPlayer, gameObject))
+            {
                 Loop = defaultLoop;
+            }
+                
         }
 
         public void OnDisable()
@@ -379,9 +383,15 @@ namespace Kinel.VideoPlayer.Udon
             if (!Networking.LocalPlayer.IsOwner(gameObject))
                 return;
             
+            TakeOwnership();
+            
             if (enableDefaultUrl)
             {
                 SendCustomEventDelayedSeconds(nameof(PlayDefaultUrl), 5f);
+            }
+            else
+            {
+                ChangeMode(defaultPlayerMode);
             }
         }
 
@@ -390,7 +400,6 @@ namespace Kinel.VideoPlayer.Udon
             if (IsPlaying)
                 return;
             
-            TakeOwnership();
             ChangeMode(defaultPlayUrlMode);
             PlayByURL(defaultPlayUrl);
         }
@@ -398,7 +407,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public override void OnVideoReady()
         {
-            if (videoPlayerController.GetCurrentVideoMode() == STREAM_MODE)
+            if (videoPlayerController.CurrentMode == STREAM_MODE)
             {
                 if (float.IsInfinity(videoPlayerController.GetCurrentVideoPlayer().GetDuration()))
                     _isVideo = false;
