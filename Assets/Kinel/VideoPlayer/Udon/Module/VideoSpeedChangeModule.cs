@@ -8,6 +8,8 @@ namespace Kinel.VideoPlayer.Udon.Module
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class VideoSpeedChangeModule : UdonSharpBehaviour
     {
+        public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
+        
         [SerializeField] private KinelVideoPlayer videoPlayer;
 
         [SerializeField] private Animator animator;
@@ -18,7 +20,7 @@ namespace Kinel.VideoPlayer.Udon.Module
         [SerializeField] private bool pitchChange;
         [SerializeField] private float increaseSpeed;
 
-        [SerializeField, FieldChangeCallback(nameof(Speed))]
+        [UdonSynced, FieldChangeCallback(nameof(Speed))]
         private float speed = 1f;
 
         private bool isEdit = false;
@@ -30,6 +32,8 @@ namespace Kinel.VideoPlayer.Udon.Module
             {
                 speed = value;
                 SetSpeed(speed);
+                speedChangerSlider.value = speed;
+                Debug.Log($"{DEBUG_PREFIX} Value synced. (VSCM)");
             }
         }
 
@@ -72,11 +76,6 @@ namespace Kinel.VideoPlayer.Udon.Module
             VideoTimeRecalculation();
         }
         
-        public void OnKinelVideoPlay()
-        {
-            VideoTimeRecalculation();
-        }
-
         public void OnEditingSlider()
         {
             text.text = $"{speedChangerSlider.value:F2}";
@@ -94,9 +93,12 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void ResetSpeed()
         {
+            TakeOwnership();
             isEdit = false;
             speedChangerSlider.value = 1;
+            this.speed = speed;
             SetSpeed(1);
+            RequestSerialization();
         }
 
         public void SetSpeed(float speed)
@@ -111,7 +113,7 @@ namespace Kinel.VideoPlayer.Udon.Module
                     source.pitch = speed;
                 }
             }
-
+            
             VideoTimeRecalculation();
             // SendCustomEventDelayedFrames(nameof(VideoTimeRecalculation), 1);
         }
@@ -130,9 +132,9 @@ namespace Kinel.VideoPlayer.Udon.Module
                 normalSpeedVideoTime = videoPlayer.VideoTime;
             }
             
-            Debug.Log($"now {nowVideoTime}, Normal Video Time {normalSpeedVideoTime}, speed {Speed}");
-            Debug.Log($"Global Video Time {videoPlayer.VideoStartGlobalTime}, now GV {Networking.GetServerTimeInSeconds() }");
-            videoPlayer.VideoStartGlobalTime = (float ) Networking.GetServerTimeInSeconds() - nowVideoTime;
+            // Debug.Log($"now {nowVideoTime}, Normal Video Time {normalSpeedVideoTime}, speed {Speed}");
+            // Debug.Log($"Global Video Time {videoPlayer.VideoStartGlobalTime}, now GV {Networking.GetServerTimeInSeconds() }");
+            videoPlayer.VideoStartGlobalTime = (float) Networking.GetServerTimeInSeconds() - nowVideoTime;
             // videoPlayer.VideoStartGlobalTime = Mathf.Clamp(videoPlayer.VideoStartGlobalTime - (normalSpeedVideoTime - nowVideoTime),
             //     0,
             //     float.MaxValue);;
@@ -189,13 +191,19 @@ namespace Kinel.VideoPlayer.Udon.Module
 
             if (Networking.IsOwner(Networking.LocalPlayer, gameObject))
             {
+                if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                {
+                    videoPlayer.TakeOwnership();
+                    return;
+                }
 
                 return;
             }
             
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
-
-
+            videoPlayer.TakeOwnership();
+            
+            
         }
 
 
