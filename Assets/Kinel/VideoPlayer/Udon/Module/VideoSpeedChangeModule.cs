@@ -67,9 +67,19 @@ namespace Kinel.VideoPlayer.Udon.Module
             
         }
 
-        public void OnKinelVideoStart()
+        public void OnKinelVideoPause()
         {
             VideoTimeRecalculation();
+        }
+        
+        public void OnKinelVideoPlay()
+        {
+            VideoTimeRecalculation();
+        }
+
+        public void OnEditingSlider()
+        {
+            text.text = $"{speedChangerSlider.value:F2}";
         }
 
         public void OnChangeSlider()
@@ -102,12 +112,13 @@ namespace Kinel.VideoPlayer.Udon.Module
                 }
             }
 
-            SendCustomEventDelayedFrames(nameof(VideoTimeRecalculation), 5);
+            VideoTimeRecalculation();
+            // SendCustomEventDelayedFrames(nameof(VideoTimeRecalculation), 1);
         }
 
         public void VideoTimeRecalculation()
         {
-            var nowVideoTime = videoPlayer.VideoTime;
+            var nowVideoTime = videoPlayer.GetVideoPlayerController().GetCurrentVideoPlayer().GetTime();
             float normalSpeedVideoTime = 0f;// ((float)Networking.GetServerTimeInSeconds()) - videoPlayer.VideoStartGlobalTime;
 
             if (videoPlayer.IsPause)
@@ -116,12 +127,15 @@ namespace Kinel.VideoPlayer.Udon.Module
             }
             else
             {
-                normalSpeedVideoTime = ((float)Networking.GetServerTimeInSeconds()) - videoPlayer.VideoStartGlobalTime;
+                normalSpeedVideoTime = videoPlayer.VideoTime;
             }
             
             Debug.Log($"now {nowVideoTime}, Normal Video Time {normalSpeedVideoTime}, speed {Speed}");
             Debug.Log($"Global Video Time {videoPlayer.VideoStartGlobalTime}, now GV {Networking.GetServerTimeInSeconds() }");
-            videoPlayer.VideoStartGlobalTime -= normalSpeedVideoTime - nowVideoTime;
+            videoPlayer.VideoStartGlobalTime = (float ) Networking.GetServerTimeInSeconds() - nowVideoTime;
+            // videoPlayer.VideoStartGlobalTime = Mathf.Clamp(videoPlayer.VideoStartGlobalTime - (normalSpeedVideoTime - nowVideoTime),
+            //     0,
+            //     float.MaxValue);;
         }
 
         public float SliderValueToVideoSpeed()
