@@ -103,7 +103,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SetSpeed(float speed)
         {
-            var animationRation = ConverToAnimationRation(speed,max,min,2);
+            var animationRation = ConverToAnimationRation(speed,max,min,animationParameterMax);
             animator.SetFloat("Speed", animationRation);
             text.text = $"{speed:F2}";
             if (pitchChange)
