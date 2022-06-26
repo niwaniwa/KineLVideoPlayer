@@ -164,7 +164,8 @@ namespace Kinel.VideoPlayer.Udon
                 float videoTime = Mathf.Clamp((IsPause ? _pausedTime : (float) Networking.GetServerTimeInSeconds()) - _videoStartGlobalTime,
                     0,
                     videoPlayerController.GetCurrentVideoPlayer().GetDuration());
-                                return videoTime;
+                
+                return videoTime;
             }
             set => SetVideoTime(value);
         }
