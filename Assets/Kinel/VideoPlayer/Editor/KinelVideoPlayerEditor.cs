@@ -44,6 +44,8 @@ namespace Kinel.VideoPlayer.Editor
             PlayerSettingsInspector();
             
             EditorGUILayout.Space();
+            
+            base.DrawFooter();
 
             if (serializedObject.ApplyModifiedProperties())
             {
