@@ -4,6 +4,7 @@ using UdonSharp;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRC.SDK3.Components.Video;
+using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
 using VRC.Udon.Common.Enums;
 using VRC.Udon.Common.Interfaces;
@@ -39,7 +40,7 @@ namespace Kinel.VideoPlayer.Udon
         
         [UdonSynced, FieldChangeCallback(nameof(VideoStartGlobalTime))]
         private float _videoStartGlobalTime = 0;
-        [UdonSynced] private float _pausedTime = 0;
+        [UdonSynced, FieldChangeCallback(nameof(PausedTime))] private float _pausedTime = 0;
         
         [UdonSynced, FieldChangeCallback(nameof(IsPlaying))] 
         private bool _isPlaying = false;
@@ -152,6 +153,10 @@ namespace Kinel.VideoPlayer.Udon
             }
         }
 
+        /// <summary>
+        /// 速度変更に依存しない現時点での動画再生時間を取得できます。
+        /// 速度変更された動作再生時間についてはBaseVRCVideoPlayerから取得してください。
+        /// </summary>
         public float VideoTime
         {
             get
@@ -159,9 +164,16 @@ namespace Kinel.VideoPlayer.Udon
                 float videoTime = Mathf.Clamp((IsPause ? _pausedTime : (float) Networking.GetServerTimeInSeconds()) - _videoStartGlobalTime,
                     0,
                     videoPlayerController.GetCurrentVideoPlayer().GetDuration());
+                
                 return videoTime;
             }
             set => SetVideoTime(value);
+        }
+
+        public float PausedTime
+        {
+            get => _pausedTime;
+            set => _pausedTime = value;
         }
 
         /// <summary>
@@ -321,6 +333,7 @@ namespace Kinel.VideoPlayer.Udon
             }
 
             videoPlayerController.GetCurrentVideoPlayer().Pause();
+            CallEvent("OnKinelVideoPause");
         }
 
         public void ResetGlobal()
