@@ -64,6 +64,8 @@ namespace Kinel.VideoPlayer.Editor
             }
             EditorGUILayout.EndVertical();
             
+            base.DrawFooter();
+            
             if (serializedObject.ApplyModifiedProperties())
             {
                 ApplyPlaylistProperties();

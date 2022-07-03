@@ -126,6 +126,8 @@ namespace Kinel.VideoPlayer.Editor
             PlaylistInspectror();
             
             EditorGUILayout.Space();
+            
+            base.DrawFooter();
 
             if (serializedObject.ApplyModifiedProperties())
             {
