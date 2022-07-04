@@ -44,7 +44,7 @@ namespace Kinel.VideoPlayer.Udon.Controller
             videoPlayerUI.GetVideoPlayer().Loop = !videoPlayerUI.GetVideoPlayer().Loop;
             videoPlayerUI.GetVideoPlayer().RequestSerialization();
             ToggleLoopIcon();
-            
+           
         }
 
         public void OnLockChangeToggle()
@@ -63,7 +63,6 @@ namespace Kinel.VideoPlayer.Udon.Controller
         public void OnModeChange()
         {
             TakeOwnership();
-            videoPlayerUI.GetVideoPlayer().TakeOwnership();
             switch (videoPlayerUI.GetVideoPlayer().GetCurrentVideoMode())
             {
                 case VIDEO_MODE:

@@ -26,7 +26,6 @@ namespace Kinel.VideoPlayer.Udon.Controller
         private const int STREAM_MODE = 1;
 
         [UdonSynced, FieldChangeCallback(nameof(CurrentMode))] private int _currentMode = 0;
-        private int _localCurrentMode = 0;
 
         public int CurrentMode
         {
@@ -36,22 +35,24 @@ namespace Kinel.VideoPlayer.Udon.Controller
             }
             set
             {
+                Debug.Log($"{DEBUG_PREFIX} Deserialization: Change mode");
+                ChangeMode(value);
                 _currentMode = value;
-                if (_localCurrentMode != _currentMode)
-                {
-                    Debug.Log($"{DEBUG_PREFIX} Deserialization: Change mode");
-                    ChangeMode(_currentMode);
-                }
+                videoPlayer.CallEvent("OnKinelVideoModeChange");
             }
         }
 
-
-        public void ChangeMode(int mode)
+        /// <summary>
+        /// ビデオプレイヤーのモードの変更をします。
+        /// </summary>
+        /// <param name="mode">変更するモード</param>
+        /// <returns>モードが変更されたか</returns>
+        public bool ChangeMode(int mode)
         {
             if (_currentMode == mode)
             {
                 Debug.Log($"{DEBUG_PREFIX} already set to #{mode}");
-                return;
+                return false;
             }
             
             Debug.Log($"{DEBUG_PREFIX} Change mode to #{mode}");
@@ -65,7 +66,6 @@ namespace Kinel.VideoPlayer.Udon.Controller
                         _currentMode = mode;
                         RequestSerialization();
                     }
-                    _localCurrentMode = _currentMode;
                     break;
                 case STREAM_MODE:
                     if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
@@ -75,15 +75,16 @@ namespace Kinel.VideoPlayer.Udon.Controller
                         _currentMode = mode;
                         RequestSerialization();
                     }
-                    _localCurrentMode = _currentMode;
 
                     break;
                 default:
                     break;
             }
 
-            videoPlayer.CallEvent("OnKinelVideoModeChange");
+            if(Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                videoPlayer.CallEvent("OnKinelVideoModeChange");
             
+            return true;
         }
 
         public void Loop(bool loop)
@@ -91,16 +92,6 @@ namespace Kinel.VideoPlayer.Udon.Controller
             unityVideoPlayer.Loop = loop;
             vrcAvProVideoPlayer.Loop = loop;
         }
-
-        // public override void OnDeserialization()
-        // {
-        //     if (_localCurrentMode != _currentMode)
-        //     {
-        //         Debug.Log($"{DEBUG_PREFIX} Deserialization: Change mode");
-        //         videoPlayer.Reset();
-        //         ChangeMode(_currentMode);
-        //     }
-        // }
 
         public BaseVRCVideoPlayer GetCurrentVideoPlayer()
         {
@@ -114,39 +105,20 @@ namespace Kinel.VideoPlayer.Udon.Controller
                     return unityVideoPlayer;
             }
         }
-
+        
+        
         public BaseVRCVideoPlayer GetUnityVideoPlayer() => unityVideoPlayer;
         public BaseVRCVideoPlayer GetAvProVideoPlayer() => vrcAvProVideoPlayer;
 
-        public int GetCurrentVideoMode()
-        {
-            return _currentMode;
-        }
+        public override void OnVideoReady() => videoPlayer.OnVideoReady();
 
-        public override void OnVideoReady()
-        {
-            videoPlayer.OnVideoReady();;
-        }
+        public override void OnVideoStart() => videoPlayer.OnVideoStart();
 
-        public override void OnVideoStart()
-        {
-            videoPlayer.OnVideoStart();
-        }
+        public override void OnVideoEnd() => videoPlayer.OnVideoEnd();
 
-        public override void OnVideoEnd()
-        {
-            videoPlayer.OnVideoEnd();
-        }
+        public override void OnVideoError(VideoError videoError) => videoPlayer.OnVideoError(videoError);
 
-        public override void OnVideoError(VideoError videoError)
-        {
-            videoPlayer.OnVideoError(videoError);
-        }
-
-        public override void OnVideoLoop()
-        {
-            videoPlayer.OnVideoLoop();
-        }
+        public override void OnVideoLoop() => videoPlayer.OnVideoLoop();
 
         public Renderer GetInternalScreen(int mode)
         {

@@ -255,7 +255,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
         public int GetNextVideoIndex()
         {
             int nextIndex = 0;
-            nextIndex = (shouldDelete ? (index == 0 ? 0 : index - 1) : index++);
+            nextIndex = (shouldDelete ? (index == 0 ? 0 : index ) : index++); 
             return nextIndex;
         }
 
@@ -327,7 +327,6 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             if (NowPlayingFlag && select == index)
                 return;
             TakeOwnership();
-            Debug.Log($"{select},");
             Debug.Log($"{select},{_urls[select]}");
             PlayQueue(select);
             Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
@@ -364,7 +363,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             {
                 Text text = content.GetChild(i).Find("Description").GetComponent<Text>();
                 var oldText = text.text;
-                text.text = text.text.Remove(0, 1).Insert(0, i.ToString());
+                text.text = oldText.Remove(0, (i + 1).ToString().Length).Insert(0, i.ToString());
                 Debug.Log($"index {i}, old {oldText}, new {text.text}");
             }
         }
