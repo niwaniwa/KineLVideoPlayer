@@ -1,22 +1,21 @@
-# Video Player For VRChat v2.0.3
+# Video Player For VRChat v2.1.0
 
 ## はじめに
 
 VRChatを対象としたビデオプレイヤーです。
 
 ## 更新履歴
-- [1.0.0](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.0.0) 初版
-- [1.0.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.0.1) MasterOnlyの不具合を修正
-- [1.1.0](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.0) プレイリストにタブ機能の追加
-- [1.1.1](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.1) [テキストが最前面に来る問題](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/10)を修正
-- [1.1.2](https://github.com/niwaniwa/VideoPlayerForVRChat/releases/tag/1.1.2) [新SDKへの対応(UnU) #12](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/12)と[Unity2019への対応#14](https://github.com/niwaniwa/VideoPlayerForVRChat/issues/14)を暫定的に行いました。この更新により各種同期が1.1.1と比較して速度が向上しました。
 - [2.0.0] v1より大幅な更新を行いました。具体的な更新はgithubにて。
 - [2.0.1] PlaylistのprogressバーとQueueの設定ミスを修正しました。v2.0.0からアップデートの場合、プレイリストに不具合が発生する場合があります。詳しくはgithubのwikiにて確認をよろしくお願いします。
 - [2.0.2] Liveモードにて秒数表示関連の修正を行いました。加えてplaylist(tab)のEditor拡張の調整を行いました。さらにReloadに不備があったため修正しました。
+- [2.1.0] 不具合と機能追加
+  - 速度再生機能の追加 (暫定)
+  - QueuePlaylistの修正
+  - Inspector表示の調整
 
 ## 動作環境
 
-v2.0.0
+v2.1.0
 - VRChat SDK3(最新)
 - Udon Sharp(最新)
 - Unity 2019.4.31f1
@@ -84,3 +83,4 @@ SDKなどは全て最新版を導入してください。
 
 ## 何かわからない時
 - BoothかGithubなどにてDMを投げて頂けると助かります。。。！
+- Twitter: [@ni_rilana](https://twitter.com/ni_rilana)
