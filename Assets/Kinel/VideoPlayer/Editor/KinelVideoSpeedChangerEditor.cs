@@ -1,3 +1,4 @@
+using Kinel.VideoPlayer.Editor.Internal;
 using Kinel.VideoPlayer.Scripts;
 using Kinel.VideoPlayer.Scripts.Parameter;
 using Kinel.VideoPlayer.Udon;
@@ -15,12 +16,12 @@ namespace Kinel.VideoPlayer.Editor
         
         private KinelSpeedChangerScript _speedChangerScript;
 
-        private SerializedProperty _videoPlayer, _animator, _speedChangerSlider, _text, _min, _max, _increaseSpeed, _audioSource, _pitchChange, _isAutoFill, _manual, _animationParameterMax;
+        private SerializedProperty _kinelVideoPlayer, _animator, _speedChangerSlider, _text, _min, _max, _increaseSpeed, _audioSource, _pitchChange, _isAutoFill, _manual, _animationParameterMax;
         private bool _isOpen = false;
         public void OnEnable()
         {
             _speedChangerScript = target as KinelSpeedChangerScript;
-            _videoPlayer = serializedObject.FindProperty(nameof(KinelSpeedChangerScript.videoPlayer));
+            _kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelSpeedChangerScript.videoPlayer));
             _animator = serializedObject.FindProperty(nameof(KinelSpeedChangerScript.animator));
             _speedChangerSlider = serializedObject.FindProperty(nameof(KinelSpeedChangerScript.speedChangerSlider));
             _text = serializedObject.FindProperty(nameof(KinelSpeedChangerScript.text));
@@ -38,8 +39,9 @@ namespace Kinel.VideoPlayer.Editor
         {
             base.OnInspectorGUI();
             serializedObject.Update();
+            
+;            
             OnInternalInspector();
-            AutoFillProperties();
             
             if (serializedObject.ApplyModifiedProperties())
             {
@@ -49,8 +51,9 @@ namespace Kinel.VideoPlayer.Editor
 
         private void OnInternalInspector()
         {
-            EditorGUILayout.PropertyField(_videoPlayer);
+            EditorGUILayout.PropertyField(_kinelVideoPlayer);
             EditorGUILayout.PropertyField(_animator);
+            AutoFillProperties();
             if (_isAutoFill.boolValue)
             {
                 EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
@@ -87,11 +90,14 @@ namespace Kinel.VideoPlayer.Editor
         {
             var udon = _speedChangerScript.GetUdonSharpComponentInChildren<VideoSpeedChangeModule>(true);
             if (udon == null)
+            {
+                Debug.Log($"Udon is null");
                 return;
+            }
             
             Undo.RecordObject(udon, "Applay Udon properties.");
             udon.UpdateProxy();
-            udon.SetProgramVariable("videoPlayer", _videoPlayer.objectReferenceValue);
+            udon.SetProgramVariable("videoPlayer", _kinelVideoPlayer.objectReferenceValue);
             udon.SetProgramVariable("animator", _animator.objectReferenceValue);
             udon.SetProgramVariable("speedChangerSlider", _speedChangerSlider.objectReferenceValue);
             udon.SetProgramVariable("text", _text.objectReferenceValue);
@@ -108,29 +114,47 @@ namespace Kinel.VideoPlayer.Editor
         
         private void AutoFillProperties()
         {
-            if (_animator.objectReferenceValue == null || _videoPlayer.objectReferenceValue == null)
+            if (_kinelVideoPlayer.objectReferenceValue == null)
             {
-                var playerScripts = GetVideoPlayers(); //
-                if (playerScripts.Length != 0)
-                {
-                    if (playerScripts.Length != 1)
-                        return;
+                
+                // var playerScripts = GetVideoPlayers(); //
+                // if (playerScripts.Length != 0)
+                // {
+                //     if (playerScripts.Length == 1)
+                //     {
+                //
+                //         var system = playerScripts[0].gameObject.GetUdonSharpComponentsInChildren<KinelVideoPlayer>();
+                //         if (system.Length == 1)
+                //         {
+                //             Undo.RecordObject(_speedChangerScript, "Instance attached");
+                //             _kinelVideoPlayer.objectReferenceValue = system[0];
+                //             _kinelVideoPlayer.serializedObject.ApplyModifiedProperties();
+                //             EditorUtility.SetDirty(_speedChangerScript);
+                //         }
+                //     }
+                // }
+                Undo.RecordObject(_speedChangerScript, "Instance attached");
+                KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(_kinelVideoPlayer,
+                    _speedChangerScript.transform.parent.gameObject, false);
+                _kinelVideoPlayer.serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(_speedChangerScript);
+                
+            }
+            serializedObject.Update();
+            if (_animator.objectReferenceValue == null)
+            {
+                if (_kinelVideoPlayer.objectReferenceValue == null)
+                    return;
 
-                    var videoPlayers = playerScripts[0].gameObject.GetUdonSharpComponentsInChildren<KinelVideoPlayer>();
-                    if (videoPlayers.Length >= 2 || videoPlayers.Length == 0)
-                        return;
+                var animators = ((KinelVideoPlayer) _kinelVideoPlayer.objectReferenceValue).GetComponents<Animator>();
+                if (animators.Length >= 2 || animators.Length == 0)
+                    return;
 
-                    var animators = videoPlayers[0].gameObject.GetComponents<Animator>();
-                    if (animators.Length >= 2 || animators.Length == 0)
-                        return;
-
-                    _isAutoFill.boolValue = true;
-                    _videoPlayer.objectReferenceValue = videoPlayers[0];
-                    _animator.objectReferenceValue = animators[0];
-                }
+                _isAutoFill.boolValue = true;
+                _animator.objectReferenceValue = animators[0];
 
             }
-            
+            serializedObject.Update();
         }
     }
 }
