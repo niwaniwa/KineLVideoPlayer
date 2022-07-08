@@ -96,7 +96,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             TakeOwnership();
             isEdit = false;
             speedChangerSlider.value = 1;
-            this.speed = speed;
+            this.speed = 1;
             SetSpeed(1);
             RequestSerialization();
         }
