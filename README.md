@@ -1,4 +1,4 @@
-# Video Player For VRChat v2.1.0
+# Video Player For VRChat v2.1.1
 
 ## はじめに
 
@@ -12,6 +12,9 @@ VRChatを対象としたビデオプレイヤーです。
   - 速度再生機能の追加 (暫定)
   - QueuePlaylistの修正
   - Inspector表示の調整
+- [2.1.1] 不具合の修正
+  - Editor拡張の不具合を修正
+  - 再生速度関連の修正
 
 ## 動作環境
 
