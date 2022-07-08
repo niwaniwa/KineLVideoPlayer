@@ -42,7 +42,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void OnKinelVideoStart()
         {
-            UpdateRenderer();
+            SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
         }
 
         public void OnKinelVideoLoop()
@@ -73,7 +73,9 @@ namespace Kinel.VideoPlayer.Udon.Module
                     SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
                     return;
                 }
-#if !UNITY_ANDROID
+                
+                // AVPro向けのシェーダー設定が動作しない
+
                 if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
                 {
                     // _screenRenderer.material.EnableKeyword("IS_AVPRO");
@@ -84,7 +86,7 @@ namespace Kinel.VideoPlayer.Udon.Module
                     // _screenRenderer.material.DisableKeyword("IS_AVPRO");
                     _propertyBlock.SetInt("_IsAVPRO", 0);
                 }
-#endif
+
 
                 _propertyBlock.SetTexture(propertyName, texture);
 
@@ -124,7 +126,6 @@ namespace Kinel.VideoPlayer.Udon.Module
             }
 #endif
             UpdateRenderer();
-
         }
 
         private Texture GetTexture(Renderer renderer, bool avPro)
@@ -141,7 +142,6 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SetMirrorInversion(bool active)
         {
-#if !UNITY_ANDROID
             if (active)
             {
                 _propertyBlock.SetInt("_NoMirrorInversion", 1);
@@ -150,7 +150,6 @@ namespace Kinel.VideoPlayer.Udon.Module
             {
                 _propertyBlock.SetInt("_NoMirrorInversion", 0);
             }
-#endif
             UpdateRenderer();
         }
         
