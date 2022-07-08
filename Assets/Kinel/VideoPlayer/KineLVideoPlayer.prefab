@@ -3149,6 +3149,11 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 1556877783}
+    - target: {fileID: 7548034909719369431, guid: d5ccffa8042a5014a9b9a9959fcb711b,
+        type: 3}
+      propertyPath: videoPlayer
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8913740688546799342, guid: d5ccffa8042a5014a9b9a9959fcb711b,
         type: 3}
       propertyPath: m_AnchorMax.x

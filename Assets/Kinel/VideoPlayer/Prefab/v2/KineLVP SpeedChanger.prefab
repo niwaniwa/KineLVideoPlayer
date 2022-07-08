@@ -674,6 +674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9034350f31f04380abdb86d62cc5696f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 0}
   animator: {fileID: 0}
   speedChangerSlider: {fileID: 6612850267812481187}
   text: {fileID: 3079298478714927838}
