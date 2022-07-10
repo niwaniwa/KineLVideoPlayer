@@ -1,27 +1,22 @@
-# Video Player For VRChat v2.1.1
+# Video Player For VRChat v2.1.2
 
 ## はじめに
 
 VRChatを対象としたビデオプレイヤーです。
 
 ## 更新履歴
-- [2.0.0] v1より大幅な更新を行いました。具体的な更新はgithubにて。
-- [2.0.1] PlaylistのprogressバーとQueueの設定ミスを修正しました。v2.0.0からアップデートの場合、プレイリストに不具合が発生する場合があります。詳しくはgithubのwikiにて確認をよろしくお願いします。
-- [2.0.2] Liveモードにて秒数表示関連の修正を行いました。加えてplaylist(tab)のEditor拡張の調整を行いました。さらにReloadに不備があったため修正しました。
-- [2.1.0] 不具合と機能追加
-  - 速度再生機能の追加 (暫定)
-  - QueuePlaylistの修正
-  - Inspector表示の調整
-- [2.1.1] 不具合の修正
-  - Editor拡張の不具合を修正
-  - 再生速度関連の修正
+- [[2.1.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.0) 再生速度変更のサポート
+- [[2.1.1]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.1) 各種不具合の修正
+- [[2.1.2]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.2) Editorに関わる不具合の修正
 
 ## 動作環境
 
-v2.1.0
+v2.1.2
 - VRChat SDK3(最新)
 - Udon Sharp(最新)
 - Unity 2019.4.31f1
+
+VCC(VRChat Creator Companion)には現在対応していません。
 
 ## 特徴
 - シークバーを用いた自由な位置からの再生
@@ -80,6 +75,8 @@ SDKなどは全て最新版を導入してください。
 ## ライブラリ等
 - [Material Icons](https://material.io/resources/icons/)
     - 各UI表示用に使用しており、[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)を適用しています
+- [AAChair](https://github.com/AoiKamishiro/VRChatPrefabs/blob/master/Assets/00Kamishiro/AAChair/AAChair-README_JP.md) by 神城工業
+  - Editor拡張について参考にさせていただきました。
 
 ## License
 - Mit License
