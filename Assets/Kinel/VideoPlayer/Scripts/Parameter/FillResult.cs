@@ -5,6 +5,7 @@ namespace Kinel.VideoPlayer.Scripts.Parameter
         Success = 0,
         NoExistence = 1,
         AlreadyExistence = 2,
-        MultipleExistence = 3
+        MultipleExistence = 3,
+        NotInitialized = 4
     }
 }

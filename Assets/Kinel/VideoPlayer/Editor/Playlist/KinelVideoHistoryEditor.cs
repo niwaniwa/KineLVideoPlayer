@@ -93,7 +93,7 @@ namespace Kinel.VideoPlayer.Editor.Playlist
         
         private void AutoFillProperties()
         {
-            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(_kinelVideoPlayer, _playlist.gameObject, false);
+            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _playlist.gameObject, false);
         }
 
     }
