@@ -100,14 +100,7 @@ namespace Kinel.VideoPlayer.Editor
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(_kinelVideoPlayer);
                 AutoFillProperties();
-                if (_isAutoFill.enumValueIndex == (int) FillResult.Success)
-                {
-                    EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
-                } 
-                else if (_isAutoFill.enumValueIndex == (int) FillResult.AlreadyExistence)
-                {
-                    EditorGUILayout.HelpBox("設定されました。", MessageType.Info);
-                }
+                KinelEditorUtilities.DrawFillMessage(_isAutoFill.enumValueIndex);
                 
                 EditorGUI.indentLevel--;
             }
@@ -340,7 +333,7 @@ namespace Kinel.VideoPlayer.Editor
 
         private void AutoFillProperties()
         {
-            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(_kinelVideoPlayer, _playlist.gameObject, false);
+            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _playlist.gameObject, false);
         }
         
             

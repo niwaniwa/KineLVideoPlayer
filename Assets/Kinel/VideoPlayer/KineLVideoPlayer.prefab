@@ -2346,7 +2346,7 @@ PrefabInstance:
     - target: {fileID: 4470757360622255101, guid: 2487a911b7d0e0b4686ddc491696f4be,
         type: 3}
       propertyPath: m_Text
-      value: "Kinel(\u308A\u3089\u5F0F) Video Player v2.1.1"
+      value: "Kinel(\u308A\u3089\u5F0F) Video Player v2.1.2"
       objectReference: {fileID: 0}
     - target: {fileID: 4470757360701265651, guid: 2487a911b7d0e0b4686ddc491696f4be,
         type: 3}

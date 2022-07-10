@@ -1,6 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UdonSharp;
+using UdonSharpEditor;
 using UnityEngine;
+using VRC.Udon.Serialization.OdinSerializer.Utilities;
+using Object = System.Object;
 
 namespace Kinel.VideoPlayer.Editor.Internal
 {
@@ -10,41 +16,57 @@ namespace Kinel.VideoPlayer.Editor.Internal
     /// </summary>
     public static class KinelUdonUtilities
     {
-        public static T UdonToUserSharp<T>(UdonSharpBehaviour udon) where T : UdonSharpBehaviour
+        public static T[] ConvertToUdonSharpComponent<T>(UdonSharpBehaviour[] udon) where T : UdonSharpBehaviour
         {
-            if (udon.GetType().Equals(typeof(T)))
-                return udon as T;
-            return null;
+            var udonSharpList = new List<T>();
+            // udonsharp
+            if(udon.Length == 0)
+                return udonSharpList.ToArray();
+            
+            foreach (var udonSharpBehaviour in udon)
+                if (udonSharpBehaviour.GetType().Equals(typeof(T)))
+                    udonSharpList.Add(udonSharpBehaviour as T);
+                
+            
+
+            // vanilla udon 
+            //UdonSharpEditorUtility.GetProxyBehaviour(udon);
+            //
+            
+            return udonSharpList.ToArray();
+        }
+
+        public static T[] ConvertToUdonSharpComponent<T>(UdonSharpBehaviour udon) where T : UdonSharpBehaviour
+        {
+            return ConvertToUdonSharpComponent<T>(new []{ udon});
+        }
+
+        public static T GetUdonSharpComponentByKinel<T>(this GameObject gameObject) where T: UdonSharpBehaviour
+        {
+            var udon = ConvertToUdonSharpComponent<T>(gameObject.GetComponent<UdonSharpBehaviour>());
+            if (udon.Length == 0)
+                return null;
+            return udon[0];
         }
 
         public static T[] GetUdonSharpComponentsByKinel<T>(this GameObject gameObject) where T: UdonSharpBehaviour
         {
-            var udonSs = new List<T>();
-            var udonS = gameObject.GetComponents<UdonSharpBehaviour>();
-
-            foreach (var udon in udonS)
-            {
-                var udonSharp = UdonToUserSharp<T>(udon);
-                if (udonSharp != null)
-                    udonSs.Add(udonSharp);
-            }
-            
-            return udonSs.ToArray();
+            return ConvertToUdonSharpComponent<T>(gameObject.GetComponents<UdonSharpBehaviour>());
+        }
+        
+        
+        public static T GetUdonSharpComponentInChildrenByKinel<T>(this GameObject gameObject) where T: UdonSharpBehaviour
+        {
+            var udon = ConvertToUdonSharpComponent<T>(gameObject.GetComponentInChildren<UdonSharpBehaviour>());
+            if (udon.Length == 0)
+                return null;
+            return udon[0];
         }
         
         public static T[] GetUdonSharpComponentsInChildrenByKinel<T>(this GameObject gameObject) where T: UdonSharpBehaviour
         {
-            var udonSs = new List<T>();
-            var udonS = gameObject.GetComponentsInChildren<UdonSharpBehaviour>();
-
-            foreach (var udon in udonS)
-            {
-                var udonSharp = UdonToUserSharp<T>(udon);
-                if (udonSharp != null)
-                    udonSs.Add(udonSharp);
-            }
-            
-            return udonSs.ToArray();
+            return ConvertToUdonSharpComponent<T>(gameObject.GetComponentsInChildren<UdonSharpBehaviour>());
         }
+        
     }
 }

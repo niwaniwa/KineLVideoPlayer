@@ -116,27 +116,9 @@ namespace Kinel.VideoPlayer.Editor
         {
             if (_kinelVideoPlayer.objectReferenceValue == null)
             {
-                
-                // var playerScripts = GetVideoPlayers(); //
-                // if (playerScripts.Length != 0)
-                // {
-                //     if (playerScripts.Length == 1)
-                //     {
-                //
-                //         var system = playerScripts[0].gameObject.GetUdonSharpComponentsInChildren<KinelVideoPlayer>();
-                //         if (system.Length == 1)
-                //         {
-                //             Undo.RecordObject(_speedChangerScript, "Instance attached");
-                //             _kinelVideoPlayer.objectReferenceValue = system[0];
-                //             _kinelVideoPlayer.serializedObject.ApplyModifiedProperties();
-                //             EditorUtility.SetDirty(_speedChangerScript);
-                //         }
-                //     }
-                // }
                 Undo.RecordObject(_speedChangerScript, "Instance attached");
-                KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(_kinelVideoPlayer,
+                KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer,
                     _speedChangerScript.transform.parent.gameObject, false);
-                _kinelVideoPlayer.serializedObject.ApplyModifiedProperties();
                 EditorUtility.SetDirty(_speedChangerScript);
                 
             }
