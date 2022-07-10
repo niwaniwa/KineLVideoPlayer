@@ -20,9 +20,14 @@ namespace Kinel.VideoPlayer.Editor.Internal
         public static void UpdateKinelVideoUIComponents(MonoBehaviour component, Object udon)
         {
             var targetObject = component.gameObject;
-            var components = targetObject.GetUdonSharpComponentsInChildren<KinelVideoPlayerUI>();
+            var components = targetObject.GetUdonSharpComponentsInChildrenByKinel<KinelVideoPlayerUI>();
             foreach (var ui in components)
             {
+                if (ui == null)
+                {
+                    continue;
+                }
+                
                 Undo.RecordObject(ui, "kinelUI Udon Update");
 
                 var editor = UnityEditor.Editor.CreateEditor(ui, typeof(KinelUIEditor)) as KinelUIEditor;
@@ -52,7 +57,7 @@ namespace Kinel.VideoPlayer.Editor.Internal
 
         public static T[] GetUdonSharpScripts<T>(GameObject parent) where T: UdonSharpBehaviour
         {
-            T[] targets = parent.GetUdonSharpComponentsInChildren<T>();
+            T[] targets = parent.GetUdonSharpComponentsInChildrenByKinel<T>();
             if (targets.Length == 0)
             {
                 // UdonSharp
@@ -60,7 +65,7 @@ namespace Kinel.VideoPlayer.Editor.Internal
                 var tempList = new List<T>();
                 foreach (var rootObject in SceneManager.GetActiveScene().GetRootGameObjects())
                 {
-                    tempList.AddRange(rootObject.GetUdonSharpComponentsInChildren<T>());
+                    tempList.AddRange(rootObject.GetUdonSharpComponentsInChildrenByKinel<T>());
                 }
                 // if (targets.Length == 0)
                 //     return targets;
@@ -71,7 +76,7 @@ namespace Kinel.VideoPlayer.Editor.Internal
             return targets;
         }
 
-        public static FillResult FillUdonSharpInstance<T>(SerializedProperty targetProperty, GameObject parent, bool overwrite) where T: UdonSharpBehaviour
+        public static FillResult FillUdonSharpInstance<T>(ref SerializedProperty targetProperty, GameObject parent, bool overwrite) where T: UdonSharpBehaviour
         {
             if (targetProperty.objectReferenceValue != null && !overwrite)
                 return FillResult.AlreadyExistence;
@@ -85,8 +90,34 @@ namespace Kinel.VideoPlayer.Editor.Internal
                 return FillResult.MultipleExistence;
 
             targetProperty.objectReferenceValue = instance[0];
-
+            targetProperty.serializedObject.ApplyModifiedProperties();
+            
             return FillResult.Success;
+        }
+
+        public static void DrawFillMessage(int fillResultInteger /*, params string[] messages*/)
+        {
+            switch (fillResultInteger)
+            {
+                case((int)FillResult.Success):
+                    EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
+                    break;
+                case((int)FillResult.AlreadyExistence):
+                    EditorGUILayout.HelpBox("設定されています。", MessageType.Info);
+                    break;
+                case((int)FillResult.MultipleExistence):
+                    EditorGUILayout.HelpBox("複数のビデオプレイヤーが存在しています。動画プレイヤーを選択してください。", MessageType.Info);
+                    break;
+                case((int)FillResult.NoExistence):
+                    EditorGUILayout.HelpBox("動画プレイヤーが存在しません。", MessageType.Info);
+                    break;
+                case((int)FillResult.NotInitialized):
+                    EditorGUILayout.HelpBox("... 初期化中 ...", MessageType.Info);
+                    break;
+                default:
+                    EditorGUILayout.HelpBox("不明なエラーが発生しました。(エラーコード#30)", MessageType.Error);
+                    return;
+            }
         }
         
     }
