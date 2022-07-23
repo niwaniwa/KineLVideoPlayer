@@ -23,18 +23,30 @@ namespace Kinel.VideoPlayer.Udon.Module
         [UdonSynced, FieldChangeCallback(nameof(Speed))]
         private float speed = 1f;
 
-        private bool isEdit = false;
+        private bool isEdit = false, initialized = false;
+        private float rawSpeed = 1;
 
         public float Speed
         {
             get => speed;
             set
             {
+                if (!initialized)
+                {
+                    SendCustomEventDelayedSeconds(nameof(SetSpeedDeleyMethod), 1);
+                    rawSpeed = value;
+                    return;
+                }
                 speed = value;
                 SetSpeed(speed);
                 speedChangerSlider.value = speed;
                 Debug.Log($"{DEBUG_PREFIX} Value synced. (VSCM)");
             }
+        }
+
+        public void SetSpeedDeleyMethod()
+        {
+            Speed = rawSpeed;
         }
 
         public void Start()
@@ -44,6 +56,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             speedChangerSlider.maxValue = max;
             speedChangerSlider.minValue = min;
             speedChangerSlider.value = 1;
+            initialized = true;
         }
 
         public void OnExMenuEnable()
@@ -67,6 +80,16 @@ namespace Kinel.VideoPlayer.Udon.Module
         }
 
         public void OnExMenuReset()
+        {
+            
+        }
+
+        public void OnKinelVideoPlayerLocked()
+        {
+            
+        }
+
+        public void OnKinelVideoPlayerUnlocked()
         {
             
         }
