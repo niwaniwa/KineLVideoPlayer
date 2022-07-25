@@ -25,6 +25,9 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         private bool isEdit = false, initialized = false;
         private float rawSpeed = 1;
+        
+        private const int VIDEO_MODE = 0;
+        private const int STREAM_MODE = 1;
 
         public float Speed
         {
@@ -128,6 +131,9 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SetSpeed(float speed)
         {
+            if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
+                return;
+            
             var animationRation = ConverToAnimationRation(speed,max,min,animationParameterMax);
             animator.SetFloat("Speed", animationRation);
             text.text = $"{speed:F2}";
