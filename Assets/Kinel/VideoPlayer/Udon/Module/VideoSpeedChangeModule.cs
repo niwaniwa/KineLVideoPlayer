@@ -86,12 +86,12 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void OnKinelVideoPlayerLocked()
         {
-            
+            speedChangerSlider.interactable = false;
         }
 
         public void OnKinelVideoPlayerUnlocked()
         {
-            
+            speedChangerSlider.interactable = true;
         }
 
         public void OnKinelVideoPause()
@@ -106,6 +106,8 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void OnChangeSlider()
         {
+            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+                return;
             var speed = speedChangerSlider.value;
             TakeOwnership();
             SetSpeed(speed);
@@ -174,6 +176,9 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SpeedDown()
         {
+            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+                return;
+            
             var changeSpeed = speed - increaseSpeed;
             speedChangerSlider.value = changeSpeed;
             TakeOwnership();
@@ -185,6 +190,9 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SpeedUp()
         {
+            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+                return;
+            
             var changeSpeed = speed + increaseSpeed;
             speedChangerSlider.value = changeSpeed;
             TakeOwnership();
