@@ -111,6 +111,7 @@ namespace Kinel.VideoPlayer.Udon.Module
         {
             if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
                 return;
+            
             var speed = speedChangerSlider.value;
             TakeOwnership();
             SetSpeed(speed);
@@ -185,6 +186,9 @@ namespace Kinel.VideoPlayer.Udon.Module
             if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
                 return;
             
+            if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
+                return;
+            
             var changeSpeed = speed - increaseSpeed;
             speedChangerSlider.value = changeSpeed;
             TakeOwnership();
@@ -197,6 +201,9 @@ namespace Kinel.VideoPlayer.Udon.Module
         public void SpeedUp()
         {
             if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+                return;
+            
+            if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
                 return;
             
             var changeSpeed = speed + increaseSpeed;
