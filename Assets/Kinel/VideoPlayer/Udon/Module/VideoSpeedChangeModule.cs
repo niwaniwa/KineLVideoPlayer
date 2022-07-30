@@ -97,6 +97,11 @@ namespace Kinel.VideoPlayer.Udon.Module
             speedChangerSlider.interactable = true;
         }
 
+        public void OnKinelVideoModeChange()
+        {
+            ResetSpeed();
+        }
+
         public void OnKinelVideoPause()
         {
             VideoTimeRecalculation();
@@ -104,12 +109,21 @@ namespace Kinel.VideoPlayer.Udon.Module
         
         public void OnEditingSlider()
         {
+            if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+                return;
+            
+            if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
+                return;
+            
             text.text = $"{speedChangerSlider.value:F2}";
         }
 
         public void OnChangeSlider()
         {
-            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+            if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+                return;
+            
+            if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
                 return;
             
             var speed = speedChangerSlider.value;
@@ -153,23 +167,7 @@ namespace Kinel.VideoPlayer.Udon.Module
         public void VideoTimeRecalculation()
         {
             var nowVideoTime = videoPlayer.GetVideoPlayerController().GetCurrentVideoPlayer().GetTime();
-            float normalSpeedVideoTime = 0f;// ((float)Networking.GetServerTimeInSeconds()) - videoPlayer.VideoStartGlobalTime;
-
-            if (videoPlayer.IsPause)
-            {
-                normalSpeedVideoTime = (videoPlayer.PausedTime) - videoPlayer.VideoStartGlobalTime;
-            }
-            else
-            {
-                normalSpeedVideoTime = videoPlayer.VideoTime;
-            }
-            
-            // Debug.Log($"now {nowVideoTime}, Normal Video Time {normalSpeedVideoTime}, speed {Speed}");
-            // Debug.Log($"Global Video Time {videoPlayer.VideoStartGlobalTime}, now GV {Networking.GetServerTimeInSeconds() }");
             videoPlayer.VideoStartGlobalTime = (float) Networking.GetServerTimeInSeconds() - nowVideoTime;
-            // videoPlayer.VideoStartGlobalTime = Mathf.Clamp(videoPlayer.VideoStartGlobalTime - (normalSpeedVideoTime - nowVideoTime),
-            //     0,
-            //     float.MaxValue);;
         }
 
         public float SliderValueToVideoSpeed()
@@ -183,7 +181,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SpeedDown()
         {
-            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+            if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
                 return;
             
             if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
@@ -200,7 +198,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SpeedUp()
         {
-            if (Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
+            if (!Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject) && videoPlayer.IsLock)
                 return;
             
             if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
