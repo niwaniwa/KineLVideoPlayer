@@ -1,4 +1,4 @@
-# Video Player For VRChat v2.1.2
+# Video Player For VRChat v2.1.3
 
 ## はじめに
 
@@ -8,10 +8,12 @@ VRChatを対象としたビデオプレイヤーです。
 - [[2.1.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.0) 再生速度変更のサポート
 - [[2.1.1]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.1) 各種不具合の修正
 - [[2.1.2]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.2) Editorに関わる不具合の修正
+- [[2.1.3]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.3) スピード関係の挙動を変更
+
 
 ## 動作環境
 
-v2.1.2
+v2.1.3
 - VRChat SDK3(最新)
 - Udon Sharp(最新)
 - Unity 2019.4.31f1
@@ -75,6 +77,8 @@ SDKなどは全て最新版を導入してください。
 ## ライブラリ等
 - [Material Icons](https://material.io/resources/icons/)
     - 各UI表示用に使用しており、[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)を適用しています
+
+## リファレンス
 - [AAChair](https://github.com/AoiKamishiro/VRChatPrefabs/blob/master/Assets/00Kamishiro/AAChair/AAChair-README_JP.md) by 神城工業
   - Editor拡張について参考にさせていただきました。
 
