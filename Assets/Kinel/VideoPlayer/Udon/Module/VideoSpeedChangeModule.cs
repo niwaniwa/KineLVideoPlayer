@@ -59,7 +59,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             speedChangerSlider.maxValue = max;
             speedChangerSlider.minValue = min;
             speedChangerSlider.value = 1;
-            initialized = true;
+            
         }
 
         public void OnExMenuEnable()
