@@ -16,7 +16,7 @@ namespace Kinel.VideoPlayer.Scripts
         public Loop loop;
         public FillResult isAutoFill;
         public bool autoPlayWhenJoin, nextPlayVideoWhenPlaySelected, shuffle; // autoplay etc..
-        public string playlistUrl;
+        public string playlistUrl, urlPrefix;
         public bool generateInUnity = false, showPlaylist = true, managePlaylistTabHost, storePlaylist;
     }
 }
