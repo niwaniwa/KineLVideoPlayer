@@ -28,7 +28,7 @@ namespace Kinel.VideoPlayer.Editor
 
         private SerializedProperty _kinelVideoPlayer;
         private SerializedProperty _videos, _autoplay, _loop, _playlistUrl, _generateInUnity, _showPlaylist, _storePlaylist, _isAutoFill, _managePlaylistTabHost;
-        private SerializedProperty _autoPlayWhenJoin, _nextPlayVideoWhenPlaySelected, _shuffle;
+        private SerializedProperty _autoPlayWhenJoin, _nextPlayVideoWhenPlaySelected, _shuffle, _urlPrefix;
 
 
         private ReorderableList _reorderableList;
@@ -50,6 +50,7 @@ namespace Kinel.VideoPlayer.Editor
             _storePlaylist = serializedObject.FindProperty(nameof(KinelPlaylistScript.storePlaylist));
             _isAutoFill = serializedObject.FindProperty(nameof(KinelPlaylistScript.isAutoFill));
             _managePlaylistTabHost = serializedObject.FindProperty(nameof(KinelPlaylistScript.managePlaylistTabHost));
+            _urlPrefix = serializedObject.FindProperty(nameof(KinelPlaylistScript.urlPrefix));
 
             _reorderableList = new ReorderableList(serializedObject, _videos)
             {
@@ -141,6 +142,7 @@ namespace Kinel.VideoPlayer.Editor
                 EditorGUI.indentLevel++;
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(_playlistUrl);
+                EditorGUILayout.PropertyField(_urlPrefix);
                 EditorGUILayout.Space();
                 if (GUILayout.Button("Import"))
                 {
@@ -152,7 +154,7 @@ namespace Kinel.VideoPlayer.Editor
                     {
                         _videos.arraySize++;
                         _videos.GetArrayElementAtIndex(i).FindPropertyRelative("title").stringValue = data.videos[i].title;
-                        _videos.GetArrayElementAtIndex(i).FindPropertyRelative("url").stringValue = data.videos[i].url;
+                        _videos.GetArrayElementAtIndex(i).FindPropertyRelative("url").stringValue = _urlPrefix.stringValue + data.videos[i].url;
                         _videos.GetArrayElementAtIndex(i).FindPropertyRelative("mode").intValue = data.videos[i].mode;
                        
                     }
