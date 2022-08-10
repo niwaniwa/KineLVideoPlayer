@@ -1,5 +1,7 @@
 ﻿using UdonSharp;
 using UnityEngine;
+using UnityEngine.UI;
+using VRC.SDKBase;
 
 namespace Kinel.VideoPlayer.Udon.Controller
 {
@@ -8,10 +10,33 @@ namespace Kinel.VideoPlayer.Udon.Controller
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
         [SerializeField] private Animator uiAnimator;
         
-        private bool mirrorInversion = false;
+        [SerializeField] private bool mirrorInversion = false; // true = 反転 , false = そのまま
+        [SerializeField] private Toggle mirrorInversionToggle;
         
         public void Start()
         {
+            Initialize();
+
+        }
+
+        public void Initialize()
+        {
+            if (mirrorInversionToggle == null)
+            {
+                mirrorInversionToggle = gameObject.transform.Find("Local/Mirror").GetComponent<Toggle>();
+            }
+
+            mirrorInversionToggle.isOn = !mirrorInversion;
+            SetMirrorInversion(mirrorInversion);
+        }
+
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            if (Networking.LocalPlayer.Equals(player))
+            {
+                Initialize();
+            }
         }
 
         public void OnResyncClick()
@@ -26,12 +51,15 @@ namespace Kinel.VideoPlayer.Udon.Controller
 
         public void ToggleMirrorInversion()
         {
-            Debug.Log($"SCRENN MODULE {videoPlayerUI.GetVideoPlayer().GetKinelScreenModules().Length}");
+            mirrorInversion = !mirrorInversion;
+            SetMirrorInversion(mirrorInversion);
+        }
+
+        public void SetMirrorInversion(bool isMirrorInversion)
+        {
             foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
-            {
-                screen.SetMirrorInversion(!mirrorInversion);
-                mirrorInversion = !mirrorInversion;
-            }
+                screen.SetMirrorInversion(isMirrorInversion);
+            
         }
         
     }
