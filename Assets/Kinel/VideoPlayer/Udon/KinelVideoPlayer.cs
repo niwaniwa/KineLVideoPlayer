@@ -413,6 +413,7 @@ namespace Kinel.VideoPlayer.Udon
             if (IsPlaying)
                 return;
             
+            TakeOwnership();// 念のため
             ChangeMode(defaultPlayUrlMode);
             PlayByURL(defaultPlayUrl);
         }
