@@ -54,12 +54,23 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void Start()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
             videoPlayer.RegisterListener(this);
             animator.Rebind();
             speedChangerSlider.maxValue = max;
             speedChangerSlider.minValue = min;
             speedChangerSlider.value = 1;
-            
+            initialized = true;
+        }
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            if (Networking.LocalPlayer.Equals(player))
+                Initialize();
         }
 
         public void OnExMenuEnable()
