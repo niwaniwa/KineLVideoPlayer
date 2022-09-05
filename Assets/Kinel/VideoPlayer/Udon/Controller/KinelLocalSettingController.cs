@@ -16,7 +16,6 @@ namespace Kinel.VideoPlayer.Udon.Controller
         public void Start()
         {
             Initialize();
-
         }
 
         public void Initialize()
@@ -49,17 +48,26 @@ namespace Kinel.VideoPlayer.Udon.Controller
             videoPlayerUI.GetVideoPlayer().Reload();
         }
 
-        public void ToggleMirrorInversion()
+        public void OnToggleMirrorInversion()
         {
             mirrorInversion = !mirrorInversion;
-            SetMirrorInversion(mirrorInversion);
+            // SetMirrorInversion(mirrorInversion);
+            ToggleMirrorInversion();
         }
 
         public void SetMirrorInversion(bool isMirrorInversion)
         {
             foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
                 screen.SetMirrorInversion(isMirrorInversion);
-            
+        }
+
+        public void ToggleMirrorInversion()
+        {
+            foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
+            {
+                screen.SetMirrorInversion(!screen.mirrorInverion);
+                screen.mirrorInverion = !screen.mirrorInverion;
+            }
         }
         
     }
