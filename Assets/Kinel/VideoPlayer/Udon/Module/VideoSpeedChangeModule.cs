@@ -62,31 +62,6 @@ namespace Kinel.VideoPlayer.Udon.Module
             initialized = true;
         }
 
-        public void OnExMenuEnable()
-        {
-            
-        }
-        
-        public void OnExMenuDisable()
-        {
-            
-        }
-
-        public void OnExMenuActive()
-        {
-            
-        }
-
-        public void OnExMenuInactive()
-        {
-            
-        }
-
-        public void OnExMenuReset()
-        {
-            
-        }
-
         public void OnKinelVideoPlayerLocked()
         {
             speedChangerSlider.interactable = false;
@@ -99,7 +74,8 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void OnKinelVideoModeChange()
         {
-            ResetSpeed();
+            if(Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
+                ResetSpeedGlobal();
         }
 
         public void OnKinelVideoPause()
@@ -134,7 +110,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             RequestSerialization();
         }
 
-        public void ResetSpeed()
+        public void ResetSpeedGlobal()
         {
             TakeOwnership();
             isEdit = false;
@@ -149,7 +125,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
                 return;
             
-            var animationRation = ConverToAnimationRation(speed,max,min,animationParameterMax);
+            var animationRation = ConverToAnimationRation(speed, max, min, animationParameterMax);
             animator.SetFloat("Speed", animationRation);
             text.text = $"{speed:F2}";
             if (pitchChange)
