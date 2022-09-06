@@ -116,6 +116,9 @@ namespace Kinel.VideoPlayer.Editor
         {
             if (_kinelVideoPlayer.objectReferenceValue == null)
             {
+                if (_speedChangerScript.transform.parent == null)
+                    return;
+                
                 Undo.RecordObject(_speedChangerScript, "Instance attached");
                 KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer,
                     _speedChangerScript.transform.parent.gameObject, false);
@@ -125,13 +128,14 @@ namespace Kinel.VideoPlayer.Editor
             serializedObject.Update();
             if (_animator.objectReferenceValue == null)
             {
+               
                 if (_kinelVideoPlayer.objectReferenceValue == null)
                     return;
 
                 var animators = ((KinelVideoPlayer) _kinelVideoPlayer.objectReferenceValue).GetComponents<Animator>();
                 if (animators.Length >= 2 || animators.Length == 0)
                     return;
-
+                
                 _isAutoFill.boolValue = true;
                 _animator.objectReferenceValue = animators[0];
 

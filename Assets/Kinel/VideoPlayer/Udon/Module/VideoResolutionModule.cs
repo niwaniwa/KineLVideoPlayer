@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UdonSharp;
 using UnityEngine;
@@ -16,6 +17,11 @@ namespace Kinel.VideoPlayer.Udon.Module
         [SerializeField] private Text resolutionText;
 
         private int resolutionIndex = 4;
+
+        public void Start()
+        {
+            SetResolution(resolutionArray[4]);
+        }
 
         // Udon#1.x.xでEnum使いたい
         public void SetResolution(int resolution)
@@ -36,18 +42,17 @@ namespace Kinel.VideoPlayer.Udon.Module
         public void ResolutionUp()
         {
             SetResolution(resolutionArray[GetClampResolutionIndex(++resolutionIndex)]);
-            UpdateUI();
         }
 
         public void ResolutionDown()
         {
             SetResolution(resolutionArray[GetClampResolutionIndex(--resolutionIndex)]);
-            UpdateUI();
         }
 
         public void UpdateUI()
         {
-            if (resolutionText == null) return;
+            if (resolutionText == null)
+                return;
             resolutionText.text = $"{resolutionArray[resolutionIndex]}";
         }
 
@@ -78,7 +83,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         private int GetClampResolutionIndex(int index)
         {
-            return Mathf.Clamp(index, -1, resolutionArray.Length - 1);
+            return Mathf.Clamp(index, 0, resolutionArray.Length - 1);
         }
 
         #endregion
