@@ -1995,6 +1995,16 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2292020553100792849, guid: 2de6d3bc416a2f143bd454d863308b0c,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.135
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292020553100792849, guid: 2de6d3bc416a2f143bd454d863308b0c,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2292020553221953309, guid: 2de6d3bc416a2f143bd454d863308b0c,
         type: 3}
       propertyPath: m_RootOrder
@@ -2135,11 +2145,21 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2292020554421244791, guid: 2de6d3bc416a2f143bd454d863308b0c,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.135
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292020554421244791, guid: 2de6d3bc416a2f143bd454d863308b0c,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4304302926549306488, guid: 2de6d3bc416a2f143bd454d863308b0c,
         type: 3}
       propertyPath: text
       value: 
-      objectReference: {fileID: 1725075940}
+      objectReference: {fileID: 1757860582}
     - target: {fileID: 4304302926549306488, guid: 2de6d3bc416a2f143bd454d863308b0c,
         type: 3}
       propertyPath: animator
@@ -2219,7 +2239,7 @@ PrefabInstance:
         type: 3}
       propertyPath: publicVariablesUnityEngineObjects.Array.data[1]
       value: 
-      objectReference: {fileID: 1725075940}
+      objectReference: {fileID: 1757860582}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2de6d3bc416a2f143bd454d863308b0c, type: 3}
 --- !u!4 &1725075938 stripped
@@ -2240,7 +2260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45115577ef41a5b4ca741ed302693907, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1725075940 stripped
+--- !u!114 &1757860582 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3043879255755899987, guid: 2de6d3bc416a2f143bd454d863308b0c,
     type: 3}
