@@ -2,7 +2,7 @@
 
 ## はじめに
 
-VRChatを対象としたビデオプレイヤーです。
+VRChatを対象としたビデオプレイヤーです。U#1.x.x向けはBoothからダウンロードをしてください。
 
 ## 更新履歴
 - [[2.1.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.0) 再生速度変更のサポート
