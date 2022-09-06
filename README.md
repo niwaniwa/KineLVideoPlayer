@@ -1,8 +1,8 @@
-# Video Player For VRChat v2.1.3
+# Video Player For VRChat v2.3.0
 
 ## はじめに
 
-VRChatを対象としたビデオプレイヤーです。
+VRChatを対象としたビデオプレイヤーです。U#1.x.x向けはBoothからダウンロードをしてください。
 
 ## 更新履歴
 - [[2.1.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.0) 再生速度変更のサポート
@@ -11,7 +11,8 @@ VRChatを対象としたビデオプレイヤーです。
 - [[2.1.3]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.1.3) スピード関係の挙動を変更
 - [2.1.4] AudioSourceがアタッチされていなかった問題を修正
 - [[2.2.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.2.0) PlaylistをImportする際にPrefixを追加できるように修正
-
+- [2.2.1] Stream時に後から人がJoinするとOwnerが切り替わってしまう問題を修正
+- [[2.3.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.3.0) 動画解像度の変更を実装しました。
 
 ## 動作環境
 

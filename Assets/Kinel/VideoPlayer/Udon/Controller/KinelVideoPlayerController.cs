@@ -81,6 +81,7 @@ namespace Kinel.VideoPlayer.Udon.Controller
                     break;
             }
 
+            // Owner判定しないとFieldCallbackChangeでOwner以外が二階実行してしまうので
             if(Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
                 videoPlayer.CallEvent("OnKinelVideoModeChange");
             

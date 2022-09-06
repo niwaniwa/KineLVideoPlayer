@@ -38,6 +38,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: 384f822110a9c3944a26b713c6fb2a7d, type: 3}
   - {fileID: 21300000, guid: 33c2fd41cd7c6cc4894266ff0c832ddb, type: 3}
+  - {fileID: 21300000, guid: 68d28202f19f5154f8b6404374d7db8f, type: 3}
   - {fileID: 21300000, guid: a4f6714210137e4499c736899ccf2ee7, type: 3}
   - {fileID: 21300000, guid: 7ffae5334f2564a4087fdbccb8036ef5, type: 3}
   - {fileID: 21300000, guid: 341d3683b7fb23e49becf8d40df01433, type: 3}
@@ -69,6 +70,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - baseline_play_circle_outline_white_48pt_3x
   - baseline_speed_white_48dp
+  - outline_video_settings_white_48dp
   - outline_highlight_off_white_48dp
   - outline_lock_open_white_48dp
   - baseline_radio_button_checked_white_48pt_3x

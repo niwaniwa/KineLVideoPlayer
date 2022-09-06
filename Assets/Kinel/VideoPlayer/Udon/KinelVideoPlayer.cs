@@ -71,12 +71,6 @@ namespace Kinel.VideoPlayer.Udon
             {
                 Loop = defaultLoop;
             }
-                
-        }
-
-        public void OnDisable()
-        {
-
         }
 
         public VRCUrl SyncedUrl
@@ -88,7 +82,6 @@ namespace Kinel.VideoPlayer.Udon
                 if (_syncedUrl.Equals(VRCUrl.Empty))
                     return;
                 Debug.Log($"{DEBUG_PREFIX} Deserialization: URL synced.");
-                
                 
                 PlayByURL(_syncedUrl);
                 
@@ -274,18 +267,14 @@ namespace Kinel.VideoPlayer.Udon
         /// <param name="url">再生する動画URL</param>
         public void PlayByURL(VRCUrl url)
         {
-
             Debug.Log($"{DEBUG_PREFIX} Video load process starting...");
 
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 _syncedUrl = url;
-                //_globalVideoId++;
                 RequestSerialization();
             }
 
-            //_localVideoId = _globalVideoId;
-            
             CallEvent("OnKinelUrlUpdate");
             _loading = true;
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedUrl);
@@ -375,6 +364,7 @@ namespace Kinel.VideoPlayer.Udon
                 Debug.Log($"{DEBUG_PREFIX} Synced. Reloading....");
                 Reload();
             }
+            
             _lastSyncTime = Time.realtimeSinceStartup;
 
             if (Mathf.Clamp(Mathf.Abs(videoPlayerController.GetCurrentVideoPlayer().GetTime() - VideoTime), 0,
