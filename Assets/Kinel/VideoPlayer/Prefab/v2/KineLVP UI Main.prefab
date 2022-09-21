@@ -4230,7 +4230,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Kinel(\u308A\u3089\u5F0F) Video Player v2.2.0"
+  m_Text: "Kinel(\u308A\u3089\u5F0F) Video Player v2.3.0"
 --- !u!1 &4470757360694713801
 GameObject:
   m_ObjectHideFlags: 0
