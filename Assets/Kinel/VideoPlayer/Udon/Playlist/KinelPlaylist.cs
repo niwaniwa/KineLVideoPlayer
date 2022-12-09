@@ -26,7 +26,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
         
         [SerializeField] private string[] titles;
         [SerializeField] private VRCUrl[] urls;
-        [SerializeField] private int[] playMode;
+        [SerializeField] private KinelVideoMode[] playMode;
         
         // Loopとauto playについて同期するか迷い
         // [SerializeField] private int autoPlayMode = 0; // 

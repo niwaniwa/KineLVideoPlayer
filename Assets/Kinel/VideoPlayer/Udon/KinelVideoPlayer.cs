@@ -1,13 +1,9 @@
-using System.Collections.Generic;
 using Kinel.VideoPlayer.Udon.Controller;
 using Kinel.VideoPlayer.Udon.Module;
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using VRC.SDK3.Components.Video;
-using VRC.SDK3.Video.Components.Base;
 using VRC.SDKBase;
-using VRC.Udon.Common.Enums;
 using VRC.Udon.Common.Interfaces;
 
 namespace Kinel.VideoPlayer.Udon
@@ -16,22 +12,19 @@ namespace Kinel.VideoPlayer.Udon
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class KinelVideoPlayer : UdonSharpBehaviour
     {
-
-        // Const variables
         public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
-        public const int VIDEO_MODE = 0;
-        public const int STREAM_MODE = 1;
+        // public const int VIDEO_MODE = 0;
+        // public const int STREAM_MODE = 1;
 
         // SerializeField variables
         [SerializeField] private KinelVideoPlayerController videoPlayerController;
+        [SerializeField] private VRCUrl defaultPlayUrl;
+        [SerializeField] private KinelVideoMode defaultPlayerMode, defaultPlayUrlMode;
         [SerializeField] private float deleyLimit;
         [SerializeField] private int retryLimit;
         [SerializeField] private bool enableErrorRetry;
         [SerializeField] private bool defaultLoop;
-        [SerializeField] private int defaultPlayerMode;
         [SerializeField] private bool enableDefaultUrl;
-        [SerializeField] private VRCUrl defaultPlayUrl;
-        [SerializeField] private int defaultPlayUrlMode;
 
         // System
         private UdonSharpBehaviour[] _listeners;
@@ -82,10 +75,9 @@ namespace Kinel.VideoPlayer.Udon
                 _syncedUrl = value;
                 if (_syncedUrl.Equals(VRCUrl.Empty))
                     return;
+                
                 Debug.Log($"{DEBUG_PREFIX} Deserialization: URL synced.");
-                
                 PlayByURL(_syncedUrl);
-                
             }
         }
 
@@ -125,7 +117,6 @@ namespace Kinel.VideoPlayer.Udon
                     Pause();
                 else
                     Play();
-
             }
         }
 
@@ -135,7 +126,6 @@ namespace Kinel.VideoPlayer.Udon
             set
             {
                 _isLock = value;
-                
                 CallEvent(_isLock ? "OnKinelVideoPlayerLocked" : "OnKinelVideoPlayerUnlocked");
             }
         }
@@ -209,9 +199,6 @@ namespace Kinel.VideoPlayer.Udon
             temp[_listeners.Length] = listener;
             
             _listeners = temp;
-            
-
-            
 
             Debug.Log($"{DEBUG_PREFIX}" + " Register " + $"{listener.name}");
         }
@@ -244,21 +231,13 @@ namespace Kinel.VideoPlayer.Udon
         public void CallEvent(string eventName)
         {
             foreach (UdonSharpBehaviour listener in _listeners)
-            {
                 listener.SendCustomEvent(eventName);
-            }
-
-            return;
         }
 
         public void CallEventDelayedFrames(string eventName, int frames)
         {
             foreach (UdonSharpBehaviour listener in _listeners)
-            {
                 listener.SendCustomEventDelayedFrames(eventName, frames);
-            }
-
-            return;
         }
 
         /// <summary>
@@ -268,13 +247,11 @@ namespace Kinel.VideoPlayer.Udon
         public void PlayByURL(VRCUrl url)
         {
             Debug.Log($"{DEBUG_PREFIX} Video load process starting...");
-
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 _syncedUrl = url;
                 RequestSerialization();
             }
-
             CallEvent("OnKinelUrlUpdate");
             _loading = true;
             videoPlayerController.GetCurrentVideoPlayer().LoadURL(_syncedUrl);
@@ -288,7 +265,6 @@ namespace Kinel.VideoPlayer.Udon
         public void Play()
         {
             Debug.Log($"{DEBUG_PREFIX} Video playing...");
-
             if (_syncedUrl == null)
                 return;
             
@@ -306,14 +282,11 @@ namespace Kinel.VideoPlayer.Udon
                 _pausedTime = 0;
                 RequestSerialization();
             }
-
-
             videoPlayerController.GetCurrentVideoPlayer().Play();
         }
 
         public void Pause()
         {
-
             if (!_isPlaying)
                 return;
 
@@ -411,7 +384,7 @@ namespace Kinel.VideoPlayer.Udon
 
         public override void OnVideoReady()
         {
-            if (videoPlayerController.CurrentMode == STREAM_MODE)
+            if (videoPlayerController.CurrentMode == (int) KinelVideoMode.Stream)
             {
                 if (float.IsInfinity(videoPlayerController.GetCurrentVideoPlayer().GetDuration()))
                     _isVideo = false;
@@ -440,10 +413,8 @@ namespace Kinel.VideoPlayer.Udon
                 Debug.Log($"{DEBUG_PREFIX} Video Ready");
                 Sync();
             }
-                
-
+            
             CallEvent("OnKinelVideoReady");
-
         }
 
         public override void OnVideoStart()
@@ -452,13 +423,11 @@ namespace Kinel.VideoPlayer.Udon
             Sync();
             
             CallEvent("OnKinelVideoStart");
-            
         }
 
         // Loop Onの時は呼ばれない。 LoopがOFFの時だけ呼ばれる
         public override void OnVideoEnd()
         {
-            
             if (Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
                 _videoStartGlobalTime = (float) Networking.GetServerTimeInSeconds();
@@ -592,9 +561,9 @@ namespace Kinel.VideoPlayer.Udon
             videoPlayerController.Loop(loop);
         }
 
-        public void ChangeMode(int mode)
+        public void ChangeMode(KinelVideoMode mode)
         {
-            videoPlayerController.ChangeMode(mode);
+            videoPlayerController.ChangeMode((int) mode);
         }
         
         public KinelVideoPlayerController GetVideoPlayerController()
@@ -627,6 +596,10 @@ namespace Kinel.VideoPlayer.Udon
             return enableErrorRetry;
         }
 
+        /// <summary>
+        /// Streamの際に通常の動画も流せるため、その判断。
+        /// </summary>
+        /// <returns>通常の動画か</returns>
         public bool IsVideo()
         {
             return _isVideo;
@@ -634,16 +607,12 @@ namespace Kinel.VideoPlayer.Udon
 
         public void TakeOwnership()
         {
-            
             Debug.Log($"{DEBUG_PREFIX} Take ownership (System)");
-            
             if (Networking.IsOwner(gameObject))
                 return;
 
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
         }
-        
-        
         
         
     }

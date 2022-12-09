@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using System;
+using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDK3.Components;
@@ -176,7 +177,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             
             TakeOwnership();
             PlayerSettings();
-            videoPlayer.ChangeMode(_modeQueue[index]);
+            videoPlayer.ChangeMode((KinelVideoMode) Enum.ToObject(typeof(KinelVideoMode), _modeQueue[index]));
             videoPlayer.PlayByURL(_urls[index]);
             NowPlayingFlag = true;
             this.index = index;
