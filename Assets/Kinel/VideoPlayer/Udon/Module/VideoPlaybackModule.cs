@@ -5,9 +5,8 @@ using UnityEngine;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    public class VideoPlaybackModule : UdonSharpBehaviour
+    public class VideoPlaybackModule : KinelModule
     {
-
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
         [SerializeField] private GameObject pause, play;
         [SerializeField] private int additionalTime;
@@ -74,12 +73,12 @@ namespace Kinel.VideoPlayer.Udon.Module
             videoPlayerUI.GetVideoPlayer().ResetGlobal();
         }
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             Play();
         }
 
-        public void OnKinelVideoEnd()
+        public override void OnKinelVideoEnd()
         {
             Pause();
         }

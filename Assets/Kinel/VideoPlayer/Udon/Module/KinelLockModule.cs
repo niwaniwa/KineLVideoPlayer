@@ -6,7 +6,7 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class KinelLockModule : UdonSharpBehaviour
+    public class KinelLockModule : KinelModule
     {
 
         public KinelVideoPlayerUI videoPlayerUI;
@@ -29,7 +29,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             videoPlayer.RequestSerialization();
         }
 
-        public void OnKinelVideoPlayerLocked()
+        public override void OnKinelVideoPlayerLocked()
         {
             
             foreach (var target in systemObjects)
@@ -46,7 +46,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             }
         }
 
-        public void OnKinelVideoPlayerUnlocked()
+        public override void OnKinelVideoPlayerUnlocked()
         {
             foreach (var target in systemObjects)
             {

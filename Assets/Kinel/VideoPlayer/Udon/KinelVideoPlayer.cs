@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Kinel.VideoPlayer.Udon.Controller;
 using Kinel.VideoPlayer.Udon.Module;
 using UdonSharp;
@@ -184,7 +185,6 @@ namespace Kinel.VideoPlayer.Udon
                 _listeners = new UdonSharpBehaviour[0];
                 _screenModules = new KinelScreenModule[0];
             }
-
             var temp = new UdonSharpBehaviour[_listeners.Length + 1];
             var isScreen = (listener.name.Equals("KineLVP Screen")); //(listener.GetType() == typeof(KinelScreenModule));
             KinelScreenModule[] screenTemp = null;

@@ -4,10 +4,8 @@ using UnityEngine;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class KinelScreenModule : UdonSharpBehaviour
+    public class KinelScreenModule : KinelModule
     {
-
-        
         [SerializeField] public KinelVideoPlayer videoPlayer;
         
         [SerializeField] public string propertyName;
@@ -40,12 +38,12 @@ namespace Kinel.VideoPlayer.Udon.Module
             SetBackCulling(backCulling);
         }
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
         }
 
-        public void OnKinelVideoLoop()
+        public override void OnKinelVideoLoop()
         {
             UpdateRenderer();
         }
@@ -107,7 +105,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             
         }
         
-        public void OnKinelVideoModeChange()
+        public override void OnKinelVideoModeChange()
         {
 #if UNITY_ANDROID
             // quest

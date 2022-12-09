@@ -5,9 +5,8 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class VideoModeChangeModule : UdonSharpBehaviour
+    public class VideoModeChangeModule : KinelModule
     {
-
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
 
         private KinelVideoPlayer videoPlayer;

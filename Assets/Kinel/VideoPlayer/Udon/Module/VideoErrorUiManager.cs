@@ -5,12 +5,11 @@ using UnityEngine.UI;
 
 namespace Kinel.VideoPlayer.Udon.Module
 {
-    public class VideoErrorUiManager : UdonSharpBehaviour
+    public class VideoErrorUiManager : KinelModule
     {
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
         [SerializeField] private GameObject errorMessageObject;
         
-
         private Text errorText;
 
         public void Start()
@@ -19,12 +18,12 @@ namespace Kinel.VideoPlayer.Udon.Module
             videoPlayerUI.RegisterListener(this);
         }
 
-        public void OnKinelVideoReady()
+        public override void OnKinelVideoReady()
         {
             InactiveUiCover();
         }
 
-        public void OnKinelVideoError()
+        public override void OnKinelVideoError()
         {
             if(!videoPlayerUI.GetVideoPlayer().IsErrorRetry())
             {
@@ -36,7 +35,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             errorText.text = $"Retrying... please wait. (click to cancel) : ErrorType {videoPlayerUI.GetVideoPlayer().LastVideoError}";
         }
 
-        public void OnKinelVideoRetryError()
+        public override void OnKinelVideoRetryError()
         {
             errorMessageObject.SetActive(true);
             errorText.text = $"Retry error : ErrorType {videoPlayerUI.GetVideoPlayer().LastVideoError}";
@@ -53,7 +52,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             // videoPlayerUI.GetVideoPlayer().ResetRetryProcess();
         }
 
-        public void OnKinelVideoReset()
+        public override void OnKinelVideoReset()
         {
             CancelRetrying();
         }

@@ -8,9 +8,8 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class VideoResolutionModule : UdonSharpBehaviour
+    public class VideoResolutionModule : KinelModule
     {
-
         [SerializeField] private Animator animator;
         
         [SerializeField] private int[] resolutionArray = new[] { 144, 240, 360, 480, 720, 1080, 1440, 2160 };
@@ -62,7 +61,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             UpdateUI();
         }
 
-        public void OnKinelVideoError()
+        public override void OnKinelVideoError()
         {
             ResolutionDown();
         }
