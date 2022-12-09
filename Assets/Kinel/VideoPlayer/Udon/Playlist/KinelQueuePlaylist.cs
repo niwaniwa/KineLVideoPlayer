@@ -177,7 +177,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             
             TakeOwnership();
             PlayerSettings();
-            videoPlayer.ChangeMode((KinelVideoMode) Enum.ToObject(typeof(KinelVideoMode), _modeQueue[index]));
+            videoPlayer.ChangeMode(_modeQueue[index] == 0 ? KinelVideoMode.Video : KinelVideoMode.Stream);
             videoPlayer.PlayByURL(_urls[index]);
             NowPlayingFlag = true;
             this.index = index;
