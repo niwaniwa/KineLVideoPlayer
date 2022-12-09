@@ -8,7 +8,7 @@ using VRC.Udon;
 
 namespace Kinel.VideoPlayer.Udon.Module
 {
-    public class VideoPlayerInformationModule : UdonSharpBehaviour
+    public class VideoPlayerInformationModule : KinelModule
     {
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
         [SerializeField] private VRCUrlInputField inputField;
@@ -88,37 +88,37 @@ namespace Kinel.VideoPlayer.Udon.Module
             UpdateUI();
         }
 
-        public void OnKinelUrlUpdate()
+        public override void OnKinelUrlUpdate()
         {
             UpdateUI();
         }
 
-        public void OnKinelVideoReady()
+        public override void OnKinelVideoReady()
         {
             UpdateUI();
         }
         
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             UpdateUI();
         }
 
-        public void OnKinelChangeVideoTime()
+        public override void OnKinelChangeVideoTime()
         {
             UpdateUI();
         }
 
-        public void OnKinelVideoModeChange()
+        public override void OnKinelVideoModeChange()
         {
             UpdateUI();
         }
 
-        public void OnKinelVideoLoop()
+        public override void OnKinelVideoLoop()
         {
             UpdateUI();
         }
 
-        public void OnKinelVideoEnd()
+        public override void OnKinelVideoEnd()
         {
             UpdateUI();
         }

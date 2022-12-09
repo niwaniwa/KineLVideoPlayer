@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class VideoFunctionExecuteModule : UdonSharpBehaviour
+    public class VideoFunctionExecuteModule : KinelModule
     {
 
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
