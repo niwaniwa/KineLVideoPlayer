@@ -1,4 +1,5 @@
 using System;
+using Kinel.VideoPlayer.Udon.Module;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,10 +8,8 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Playlist
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class KinelVideoHistory : UdonSharpBehaviour
+    public class KinelVideoHistory : KinelModule
     {
-        public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
-        
         [SerializeField] private KinelVideoPlayer videoPlayer;
         [SerializeField] private bool saveErrorUrl;
         [SerializeField] private GameObject playlistPrefab;
@@ -43,12 +42,12 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             _urls = new VRCUrl[0];
         }
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             
         }
 
-        public void OnKinelVideoEnd()
+        public override void OnKinelVideoEnd()
         {
             
         }
@@ -75,7 +74,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             
         }
         
-        public void OnKinelUrlUpdate()
+        public override void OnKinelUrlUpdate()
         {
             // TakeOwnership();
 

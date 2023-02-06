@@ -50,9 +50,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void UpdateRenderer()
         {
-            Debug.Log("UPDATE RENDERER");
             Texture texture = null;
-
             if (videoPlayer.IsPlaying)
             {
                 
@@ -88,21 +86,10 @@ namespace Kinel.VideoPlayer.Udon.Module
 
                 _propertyBlock.SetTexture(propertyName, texture);
 
-               
- 
-                
             }
-
-            // if (texture == null)
-            // {
-            //     _propertyBlock.Clear();
-            //     // _screenRenderer.set
-            // }
 
             _screenRenderer.SetPropertyBlock(_propertyBlock, materialIndex);
 
-            // videoPlayer.GetVideoPlayerController().GetUnityVideoPlayer().
-            
         }
         
         public override void OnKinelVideoModeChange()
@@ -134,8 +121,6 @@ namespace Kinel.VideoPlayer.Udon.Module
             }
             renderer.GetPropertyBlock(_propertyBlockInternal);
             return _propertyBlockInternal.GetTexture(propertyName);
-
-            
         }
 
         public void SetMirrorInversion(bool active)

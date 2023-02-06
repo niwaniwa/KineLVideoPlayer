@@ -5,6 +5,9 @@ namespace Kinel.VideoPlayer.Udon.Module
 {
     public class KinelModule : UdonSharpBehaviour
     {
+        
+        public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
+        public const string DEBUG_ERROR_PREFIX = "[<color=#dc143c>KineL</color>]";
 
         public virtual void OnKinelUrlUpdate(){}
         public virtual void OnKinelVideoReady(){}
