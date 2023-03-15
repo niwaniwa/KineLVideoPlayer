@@ -49,9 +49,11 @@ namespace Kinel.VideoPlayer.Editor
                 EditorGUILayout.LabelField("基本設定");
                 EditorGUI.indentLevel++;
                 EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(_kinelVideoPlayer);
-                AutoFillProperties();
-                KinelEditorUtilities.DrawFillMessage(_isAutoFill.enumValueIndex);
+                _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _playlist.gameObject, false);
+                if (_kinelVideoPlayer.objectReferenceValue)
+                    EditorGUILayout.LabelField(_kinelVideoPlayer.displayName, "自動設定されました。");
+                else
+                    EditorGUILayout.PropertyField(_kinelVideoPlayer);
                 EditorGUILayout.Space();
                 EditorGUI.indentLevel--;
             }
@@ -61,7 +63,6 @@ namespace Kinel.VideoPlayer.Editor
             
             if (serializedObject.ApplyModifiedProperties())
             {
-                ApplyPlaylistProperties();
                 ApplyUdonProperties();
             }
         }
@@ -88,19 +89,8 @@ namespace Kinel.VideoPlayer.Editor
 
         }
 
-        private void ApplyPlaylistProperties()
-        {
-            
-        }
 
-        private void AutoFillProperties()
-        {
-            
-            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _playlist.gameObject, false);
-        }
-        
-        
 
-        
+
     }
 }
