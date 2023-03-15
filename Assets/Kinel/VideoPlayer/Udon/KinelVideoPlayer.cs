@@ -13,8 +13,6 @@ namespace Kinel.VideoPlayer.Udon
     public class KinelVideoPlayer : UdonSharpBehaviour
     {
         public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
-        // public const int VIDEO_MODE = 0;
-        // public const int STREAM_MODE = 1;
 
         // SerializeField variables
         [SerializeField] private KinelVideoPlayerController videoPlayerController;
@@ -230,12 +228,14 @@ namespace Kinel.VideoPlayer.Udon
         /// <param name="eventName">イベント名</param>
         public void CallEvent(string eventName)
         {
+            if (_listeners == null) return;
             foreach (UdonSharpBehaviour listener in _listeners)
                 listener.SendCustomEvent(eventName);
         }
 
         public void CallEventDelayedFrames(string eventName, int frames)
         {
+            if (_listeners == null) return;
             foreach (UdonSharpBehaviour listener in _listeners)
                 listener.SendCustomEventDelayedFrames(eventName, frames);
         }

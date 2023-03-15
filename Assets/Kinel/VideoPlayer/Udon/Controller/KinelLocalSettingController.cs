@@ -58,13 +58,19 @@ namespace Kinel.VideoPlayer.Udon.Controller
 
         public void SetMirrorInversion(bool isMirrorInversion)
         {
-            foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
+            var videoPlayer = videoPlayerUI.GetVideoPlayer();
+            var screens = videoPlayer != null ? videoPlayer.GetKinelScreenModules() : null;
+            if (screens == null) return;
+            foreach (var screen in screens)
                 screen.SetMirrorInversion(isMirrorInversion);
         }
 
         public void ToggleMirrorInversion()
         {
-            foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
+            var videoPlayer = videoPlayerUI.GetVideoPlayer();
+            var screens = videoPlayer != null ? videoPlayer.GetKinelScreenModules() : null;
+            if (screens == null) return;
+            foreach (var screen in screens)
             {
                 screen.SetMirrorInversion(!screen.mirrorInverion);
                 screen.mirrorInverion = !screen.mirrorInverion;

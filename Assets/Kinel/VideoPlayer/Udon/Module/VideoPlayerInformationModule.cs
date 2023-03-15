@@ -57,9 +57,10 @@ namespace Kinel.VideoPlayer.Udon.Module
                 SendCustomEventDelayedSeconds(nameof(UpdateUI), 5f);
                 return;
             }
-
+            var videoPlayer = videoPlayerUI.GetVideoPlayer();
+            var owner = videoPlayer ? Networking.GetOwner(videoPlayer.gameObject) : null;
             masterTextComponent.text = $"{(master == null ? "... loading ..." : master.displayName)}";
-            ownerTextComponent.text = $"{(master == null ? "... loading ..." : Networking.GetOwner(videoPlayerUI.GetVideoPlayer().gameObject).displayName)}";
+            ownerTextComponent.text = $"{((master == null || owner == null) ? "... loading ..." : owner.displayName)}";
 #endif
             var url = videoPlayerUI.GetVideoPlayer().GetUrl();
             if (url != null)
