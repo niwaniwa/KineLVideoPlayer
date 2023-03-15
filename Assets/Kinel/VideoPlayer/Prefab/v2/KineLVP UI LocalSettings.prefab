@@ -1198,6 +1198,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 567420497441482238}
+  - component: {fileID: 4952094800930063803}
   m_Layer: 0
   m_Name: KineLVP UI LocalSettings
   m_TagString: Untagged
@@ -1220,6 +1221,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4952094800930063803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567420497441482225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6294c9f48e6d474883b21fedb1c89494, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 0}
+  isAutoFill: 2
 --- !u!1 &567420497465261646
 GameObject:
   m_ObjectHideFlags: 0
@@ -3211,6 +3226,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 1
   m_ShouldActivateOnSelect: 1
+  AllowSendingOnEndEdit: 1
 --- !u!114 &567420498848321171
 MonoBehaviour:
   m_ObjectHideFlags: 0
