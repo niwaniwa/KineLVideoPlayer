@@ -8,15 +8,13 @@ namespace Kinel.VideoPlayer.Udon.Module
     {
         [SerializeField] public KinelVideoPlayer videoPlayer;
         
-        [SerializeField] public string propertyName;
-        [SerializeField] public string screenName;
-        [SerializeField] public int materialIndex;
+        [SerializeField] private string propertyName;
+        [SerializeField] private string screenName;
+        [SerializeField] private int materialIndex;
 
-        [SerializeField] public bool mirrorInverion;
-        [SerializeField] public bool backCulling;
-        [SerializeField] public float transparency;
-
-        public bool isAutoFill = false;
+        [SerializeField] private bool mirrorInverion;
+        [SerializeField] private bool backCulling;
+        [SerializeField] private float transparency;
 
         private MaterialPropertyBlock _propertyBlock, _propertyBlockInternal;
         private Renderer _screenRenderer, _internalVideoRenderer, _internalAvProRenderer;
