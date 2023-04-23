@@ -19,10 +19,14 @@ namespace Kinel.VideoPlayer.Udon.Module
         private MaterialPropertyBlock _propertyBlock, _propertyBlockInternal;
         private Renderer _screenRenderer, _internalVideoRenderer, _internalAvProRenderer;
 
-        private const int VIDEO_MODE = 0;
-        private const int STREAM_MODE = 1;
-
         private Texture _mainTex;
+        private bool isMirrorInversion = false;
+
+        public bool IsMirrorInversion
+        {
+            get => isMirrorInversion;
+            set => isMirrorInversion = value;
+        }
         
         public void Start()
         {
@@ -30,35 +34,30 @@ namespace Kinel.VideoPlayer.Udon.Module
             _propertyBlockInternal = new MaterialPropertyBlock();
             _screenRenderer = gameObject.transform.Find("Screen").GetComponent<Renderer>();
             videoPlayer.RegisterListener(this);
-            _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(VIDEO_MODE);
-            _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(STREAM_MODE);
+            _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen((int) KinelVideoMode.Video);
+            _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen((int) KinelVideoMode.Stream);
             SetMirrorInversion(mirrorInverion);
             SetBackCulling(backCulling);
         }
 
-        public override void OnKinelVideoStart()
-        {
-            SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
-        }
+        public override void OnKinelVideoStart() => SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
 
-        public override void OnKinelVideoLoop()
-        {
-            UpdateRenderer();
-        }
+        public override void OnKinelVideoLoop() => UpdateRenderer();
+
+        public override void OnKinelVideoEnd() => UpdateRenderer();
 
         public void UpdateRenderer()
         {
             Texture texture = null;
             if (videoPlayer.IsPlaying)
             {
-                
                 if (_internalVideoRenderer == null)
-                    _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(VIDEO_MODE);
+                    _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(((int) KinelVideoMode.Video));
             
                 if(_internalAvProRenderer == null)
-                    _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(STREAM_MODE);
+                    _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen((int) KinelVideoMode.Stream);
             
-                texture = videoPlayer.GetCurrentVideoMode() == VIDEO_MODE
+                texture = videoPlayer.GetCurrentVideoMode() == ((int) KinelVideoMode.Video)
                     ? GetTexture(_internalVideoRenderer, false)
                     : GetTexture(_internalAvProRenderer, true);
             
@@ -67,28 +66,29 @@ namespace Kinel.VideoPlayer.Udon.Module
                     SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
                     return;
                 }
-                
-                // AVPro向けのシェーダー設定が動作しない
 
-                if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
+                if (videoPlayer.GetCurrentVideoMode() == (int) KinelVideoMode.Stream)
                 {
-                    // _screenRenderer.material.EnableKeyword("IS_AVPRO");
                     _propertyBlock.SetInt("_IsAVPRO", 1);
                 }
                 else
                 {
-                    // _screenRenderer.material.DisableKeyword("IS_AVPRO");
                     _propertyBlock.SetInt("_IsAVPRO", 0);
                 }
 
-
                 _propertyBlock.SetTexture(propertyName, texture);
 
+            }
+            
+            if (texture == null)
+            {
+                _propertyBlock.Clear();
             }
 
             _screenRenderer.SetPropertyBlock(_propertyBlock, materialIndex);
 
         }
+        
         
         public override void OnKinelVideoModeChange()
         {
