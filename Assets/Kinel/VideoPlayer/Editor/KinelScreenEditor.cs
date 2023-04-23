@@ -1,5 +1,7 @@
 using System;
 using System.Reflection;
+using Kinel.VideoPlayer.Editor.Internal;
+using Kinel.VideoPlayer.Scripts;
 using Kinel.VideoPlayer.Udon;
 using Kinel.VideoPlayer.Udon.Module;
 using UdonSharpEditor;
@@ -9,39 +11,34 @@ using VRC.SDK3.Video.Components.AVPro;
 
 namespace Kinel.VideoPlayer.Editor
 {
-    [CustomEditor(typeof(KinelScreenModule))]
+    [CustomEditor(typeof(KinelScreenScript))]
     public class KinelScreenEditor : KinelEditorBase
     {
 
-        private KinelScreenModule _screenModule;
+        private KinelScreenScript _screenModule;
 
         private SerializedProperty _kinelVideoPlayer, _screenName, _isAutoFill, _propertyName, _mirrorInverion, _transparency, _backCulling, _materialIndex;
 
 
         public void OnEnable()
         {
-            _screenModule = target as KinelScreenModule;
-            _kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelScreenModule.videoPlayer));
-            _screenName = serializedObject.FindProperty(nameof(KinelScreenModule.screenName));
-            _isAutoFill = serializedObject.FindProperty(nameof(KinelScreenModule.isAutoFill));
-            _propertyName = serializedObject.FindProperty(nameof(KinelScreenModule.propertyName));
-            _mirrorInverion = serializedObject.FindProperty(nameof(KinelScreenModule.mirrorInverion));
-            _transparency = serializedObject.FindProperty(nameof(KinelScreenModule.transparency));
-            _backCulling = serializedObject.FindProperty(nameof(KinelScreenModule.backCulling));
-            _materialIndex = serializedObject.FindProperty(nameof(KinelScreenModule.materialIndex));
+            _screenModule = target as KinelScreenScript;
+            _kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelScreenScript.videoPlayer));
+            _screenName = serializedObject.FindProperty(nameof(KinelScreenScript.screenName));
+            _isAutoFill = serializedObject.FindProperty(nameof(KinelScreenScript.isAutoFill));
+            _propertyName = serializedObject.FindProperty(nameof(KinelScreenScript.propertyName));
+            _mirrorInverion = serializedObject.FindProperty(nameof(KinelScreenScript.mirrorInverion));
+            _transparency = serializedObject.FindProperty(nameof(KinelScreenScript.transparency));
+            _backCulling = serializedObject.FindProperty(nameof(KinelScreenScript.backCulling));
+            _materialIndex = serializedObject.FindProperty(nameof(KinelScreenScript.materialIndex));
             
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            
-            if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)) 
-                return;
-
             serializedObject.Update();
             
-
             // playlist header
             EditorGUILayout.BeginVertical(GUI.skin.box);
             {
@@ -52,13 +49,12 @@ namespace Kinel.VideoPlayer.Editor
                 EditorGUILayout.LabelField("基本設定");
                 EditorGUI.indentLevel++;
                 EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(_kinelVideoPlayer);
-                AutoFillProperties();
-                if (_isAutoFill.boolValue)
-                    EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
-                else if (_kinelVideoPlayer.objectReferenceValue == null)
-                    EditorGUILayout.HelpBox("複数のビデオプレイヤーが存在するか、ビデオプレイヤーが存在していません。" +
-                                            "", MessageType.Warning);
+                _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _screenModule.gameObject, false);
+                if (_kinelVideoPlayer.objectReferenceValue)
+                    EditorGUILayout.LabelField(_kinelVideoPlayer.displayName, "自動設定されました。");
+                else
+                    EditorGUILayout.PropertyField(_kinelVideoPlayer);
+                
                 EditorGUI.indentLevel--;
                 EditorGUILayout.Space();
                 
@@ -94,42 +90,21 @@ namespace Kinel.VideoPlayer.Editor
 
         }
 
-
-        private void AutoFillProperties()
-        {
-            if (_kinelVideoPlayer.objectReferenceValue == null)
-            {
-
-                var playerScripts = GetVideoPlayers(); //
-                if (playerScripts.Length != 0)
-                {
-                    if (playerScripts.Length != 1)
-                        return;
-
-                    var system = playerScripts[0].gameObject.GetUdonSharpComponentsInChildren<KinelVideoPlayer>();
-                    if (system.Length >= 2 || system.Length == 0)
-                        return;
-
-                    _isAutoFill.boolValue = true;
-                    _kinelVideoPlayer.objectReferenceValue = system[0];
-                    
-                    
-                }
-
-            }
-            
-        }
-
         public override void ApplyUdonProperties()
         {
-            var screen = target as KinelScreenModule;
-            Undo.RecordObject(screen, "Instance attached");
-            screen.SetProgramVariable("propertyName", _propertyName.stringValue);
-            screen.SetProgramVariable("mirrorInverion", _mirrorInverion.boolValue);
-            screen.SetProgramVariable("transparency", _transparency.floatValue);
+            var screenUdon = _screenModule.GetComponent<KinelScreenModule>();
+            if (screenUdon == null)
+            {
+                Debug.LogError($"{DEBUG_ERROR_PREFIX} screenUdon null");
+                return;
+            }
+            Undo.RecordObject(screenUdon, "Instance attached");
+            screenUdon.SetProgramVariable("propertyName", _propertyName.stringValue);
+            screenUdon.SetProgramVariable("mirrorInverion", _mirrorInverion.boolValue);
+            screenUdon.SetProgramVariable("transparency", _transparency.floatValue);
 
-            UdonSharpEditorUtility.CopyProxyToUdon(_screenModule);
-            EditorUtility.SetDirty(screen);
+            UdonSharpEditorUtility.CopyProxyToUdon(screenUdon);
+            EditorUtility.SetDirty(screenUdon);
         }
     }
 }

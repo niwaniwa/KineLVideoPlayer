@@ -50,16 +50,11 @@ namespace Kinel.VideoPlayer.Editor.Playlist
                 EditorGUILayout.LabelField("基本設定");
                 EditorGUI.indentLevel++;
                 EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(_kinelVideoPlayer);
-                AutoFillProperties();
-                if (_isAutoFill.enumValueIndex == (int) FillResult.Success)
-                {
-                    EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
-                } 
-                else if (_isAutoFill.enumValueIndex == (int) FillResult.AlreadyExistence)
-                {
-                    EditorGUILayout.HelpBox("設定されました。", MessageType.Info);
-                }
+                _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _playlist.gameObject, false);
+                if (_isAutoFill.enumValueIndex == 0)
+                    EditorGUILayout.LabelField(_kinelVideoPlayer.displayName, "自動設定されました。");
+                else
+                    EditorGUILayout.PropertyField(_kinelVideoPlayer);
                 EditorGUILayout.Space();
                 EditorGUI.indentLevel--;
             }
@@ -89,11 +84,6 @@ namespace Kinel.VideoPlayer.Editor.Playlist
             EditorUtility.SetDirty(playlist);
             // AssetDatabase.SaveAssets();
 
-        }
-        
-        private void AutoFillProperties()
-        {
-            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _playlist.gameObject, false);
         }
 
     }

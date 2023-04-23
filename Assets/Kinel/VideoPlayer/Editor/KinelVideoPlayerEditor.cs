@@ -49,7 +49,7 @@ namespace Kinel.VideoPlayer.Editor
 
             if (serializedObject.ApplyModifiedProperties())
             {
-                ApplyPlayerProperties();
+                ApplyUdonProperties();
             }
             
         }
@@ -94,15 +94,13 @@ namespace Kinel.VideoPlayer.Editor
         }
         
 
-        private void ApplyPlayerProperties()
+        public override void ApplyUdonProperties()
         {
-            
             var videoPlayer = _videoPlayer.GetUdonSharpComponentInChildren<KinelVideoPlayer>(true);
-            if (videoPlayer == null)
-                return;
+            if (videoPlayer == null) return;
             
             Undo.RecordObject(videoPlayer, "Applay videoplayer properties.");
-            videoPlayer.UpdateProxy();
+            videoPlayer.UpdateProxy(); // Deleted in the near future: udon update
             videoPlayer.SetProgramVariable("deleyLimit", _deleyLimit.floatValue);
             videoPlayer.SetProgramVariable("retryLimit", _retryLimit.intValue);
             videoPlayer.SetProgramVariable("enableErrorRetry", _enableErrorRetry.boolValue);
@@ -110,7 +108,7 @@ namespace Kinel.VideoPlayer.Editor
             videoPlayer.SetProgramVariable("enableDefaultUrl", _enableDefaultUrl.boolValue);
             videoPlayer.SetProgramVariable("defaultPlayUrl", new VRCUrl(_defaultUrl.stringValue));
             videoPlayer.SetProgramVariable("defaultPlayUrlMode", _defaultUrlMode.intValue);
-            videoPlayer.ApplyProxyModifications();
+            videoPlayer.ApplyProxyModifications(); // Deleted in the near future: udon update
             UdonSharpEditorUtility.CopyProxyToUdon(videoPlayer);
             EditorUtility.SetDirty(videoPlayer);
         }
@@ -121,12 +119,7 @@ namespace Kinel.VideoPlayer.Editor
             // Debug.Log(editor.Length);
         }
 
-        public override void ApplyUdonProperties()
-        {
-            ApplyPlayerProperties();
-        } 
-        
-        
-        
+
+
     }
 }

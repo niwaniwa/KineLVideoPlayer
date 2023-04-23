@@ -51,17 +51,14 @@ namespace Kinel.VideoPlayer.Editor
 
         private void OnInternalInspector()
         {
-            EditorGUILayout.PropertyField(_kinelVideoPlayer);
-            EditorGUILayout.PropertyField(_animator);
             AutoFillProperties();
-            if (_isAutoFill.boolValue)
-            {
-                EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
-            }
+            _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _speedChangerScript.gameObject, false);
+            if (_kinelVideoPlayer.objectReferenceValue)
+                EditorGUILayout.LabelField(_kinelVideoPlayer.displayName, "自動設定されました。");
             else
-            {
-                EditorGUILayout.HelpBox("複数のビデオプレイヤーが存在するときは、`KineLVideoPlayer/KineLVP System/`を指定してあげてください。", MessageType.Info);
-            }
+                EditorGUILayout.PropertyField(_kinelVideoPlayer);
+
+            EditorGUILayout.PropertyField(_animator);
             
             _isOpen = EditorGUILayout.Foldout(_isOpen, "Internal / 内部用");
             if (_isOpen)
@@ -114,17 +111,6 @@ namespace Kinel.VideoPlayer.Editor
         
         private void AutoFillProperties()
         {
-            if (_kinelVideoPlayer.objectReferenceValue == null)
-            {
-                if (_speedChangerScript.transform.parent == null)
-                    return;
-                
-                Undo.RecordObject(_speedChangerScript, "Instance attached");
-                KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer,
-                    _speedChangerScript.transform.parent.gameObject, false);
-                EditorUtility.SetDirty(_speedChangerScript);
-                
-            }
             serializedObject.Update();
             if (_animator.objectReferenceValue == null)
             {
@@ -136,7 +122,6 @@ namespace Kinel.VideoPlayer.Editor
                 if (animators.Length >= 2 || animators.Length == 0)
                     return;
                 
-                _isAutoFill.boolValue = true;
                 _animator.objectReferenceValue = animators[0];
 
             }

@@ -42,9 +42,6 @@ namespace Kinel.VideoPlayer.Editor.Internal
                     serializedObject.ApplyModifiedProperties();
                     serializedObject.Update();
                 }
-                
-                editor.AutoFillProperties();
-                
                 editor.ApplyUdonProperties();
                 
                 serializedObject.ApplyModifiedProperties();
@@ -99,19 +96,19 @@ namespace Kinel.VideoPlayer.Editor.Internal
         {
             switch (fillResultInteger)
             {
-                case((int)FillResult.Success):
+                case((int) FillResult.Success):
                     EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
                     break;
-                case((int)FillResult.AlreadyExistence):
+                case((int) FillResult.AlreadyExistence):
                     EditorGUILayout.HelpBox("設定されています。", MessageType.Info);
                     break;
-                case((int)FillResult.MultipleExistence):
+                case((int) FillResult.MultipleExistence):
                     EditorGUILayout.HelpBox("複数のビデオプレイヤーが存在しています。動画プレイヤーを選択してください。", MessageType.Info);
                     break;
-                case((int)FillResult.NoExistence):
+                case((int) FillResult.NoExistence):
                     EditorGUILayout.HelpBox("動画プレイヤーが存在しません。", MessageType.Info);
                     break;
-                case((int)FillResult.NotInitialized):
+                case((int) FillResult.NotInitialized):
                     EditorGUILayout.HelpBox("... 初期化中 ...", MessageType.Info);
                     break;
                 default:

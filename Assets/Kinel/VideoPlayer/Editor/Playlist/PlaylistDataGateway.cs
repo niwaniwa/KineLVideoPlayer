@@ -10,7 +10,7 @@ namespace Kinel.VideoPlayer.Editor
     public static class PlaylistDataGateway
     {
 
-        private const string youtubePlaylistURL = "";/* AWS Url... */
+        private const string youtubePlaylistURL = "https://3c8qzpd1vl.execute-api.ap-northeast-1.amazonaws.com/Product/playlist/";/* AWS Url... */
 
         public static YoutubePlaylistDataResponce GetYoutubePlaylist(string url)
         {

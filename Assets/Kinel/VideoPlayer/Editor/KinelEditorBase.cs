@@ -77,11 +77,6 @@ namespace Kinel.VideoPlayer.Editor
             EditorGUILayout.Space();
         }
 
-        public KinelVideoPlayerScript[] GetVideoPlayers()
-        {
-            return FindObjectsOfType<KinelVideoPlayerScript>();
-        }
-
         /// <summary>
         /// From AAChair by Kamishiro (https://github.com/AoiKamishiro/VRChatPrefabs/blob/master/Assets/00Kamishiro/AAChair/AAChair-README_JP.md) mit license
         /// </summary>
@@ -153,8 +148,14 @@ namespace Kinel.VideoPlayer.Editor
                 }
             }
         }
+        
+        public KinelVideoPlayerScript[] GetVideoPlayers()
+        {
+            return FindObjectsOfType<KinelVideoPlayerScript>();
+        }
 
         public abstract void ApplyUdonProperties();
+        
 
 
     }
