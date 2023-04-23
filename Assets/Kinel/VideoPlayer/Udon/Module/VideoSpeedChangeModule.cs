@@ -6,7 +6,7 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class VideoSpeedChangeModule : UdonSharpBehaviour
+    public class VideoSpeedChangeModule : KinelModule
     {
         public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
         
@@ -62,23 +62,23 @@ namespace Kinel.VideoPlayer.Udon.Module
             initialized = true;
         }
 
-        public void OnKinelVideoPlayerLocked()
+        public override void OnKinelVideoPlayerLocked()
         {
             speedChangerSlider.interactable = false;
         }
 
-        public void OnKinelVideoPlayerUnlocked()
+        public override void OnKinelVideoPlayerUnlocked()
         {
             speedChangerSlider.interactable = true;
         }
 
-        public void OnKinelVideoModeChange()
+        public override void OnKinelVideoModeChange()
         {
             if(Networking.IsOwner(Networking.LocalPlayer, videoPlayer.gameObject))
                 ResetSpeedGlobal();
         }
 
-        public void OnKinelVideoPause()
+        public override void OnKinelVideoPause()
         {
             VideoTimeRecalculation();
         }

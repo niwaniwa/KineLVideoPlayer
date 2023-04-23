@@ -16,10 +16,7 @@ namespace Kinel.VideoPlayer.Udon.Controller
         [SerializeField] private GameObject[] lockToggleObjects;
         [SerializeField] private Slider lockSlider, modeSlider;
         [SerializeField] private Image lockBackground, modeBackground;
-        
-        public const int VIDEO_MODE = 0;
-        public const int STREAM_MODE = 1;
-        
+
         public void Start()
         {
             videoPlayerUI.RegisterListener(this);
@@ -65,11 +62,11 @@ namespace Kinel.VideoPlayer.Udon.Controller
             TakeOwnership();
             switch (videoPlayerUI.GetVideoPlayer().GetCurrentVideoMode())
             {
-                case VIDEO_MODE:
-                    videoPlayerUI.GetVideoPlayer().ChangeMode(STREAM_MODE);
+                case (int) KinelVideoMode.Video:
+                    videoPlayerUI.GetVideoPlayer().ChangeMode(KinelVideoMode.Stream);
                     break;
-                case STREAM_MODE:
-                    videoPlayerUI.GetVideoPlayer().ChangeMode(VIDEO_MODE);
+                case (int) KinelVideoMode.Stream:
+                    videoPlayerUI.GetVideoPlayer().ChangeMode(KinelVideoMode.Video);
                     break;
                 default:
                     break;
@@ -115,7 +112,7 @@ namespace Kinel.VideoPlayer.Udon.Controller
         {
             // uiAnimator.SetInteger("Mode", videoPlayerUI.GetVideoPlayer().GetCurrentVideoMode());
 
-            if (videoPlayerUI.GetVideoPlayer().GetCurrentVideoMode() == VIDEO_MODE)
+            if (videoPlayerUI.GetVideoPlayer().GetCurrentVideoMode() == (int) KinelVideoMode.Video)
             {
                 modeSlider.value = 0.15f;
                 modeBackground.color = new Color(1f, 1f, 1f, 1.0f);

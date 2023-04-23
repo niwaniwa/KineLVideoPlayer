@@ -25,8 +25,9 @@ namespace Kinel.VideoPlayer.Udon.Controller
                 mirrorInversionToggle = gameObject.transform.Find("Local/Mirror").GetComponent<Toggle>();
             }
 
-            mirrorInversionToggle.isOn = !mirrorInversion;
-            SetMirrorInversion(mirrorInversion);
+            mirrorInversionToggle.isOn = mirrorInversion;
+            // SetMirrorInversion(mirrorInversion); //多分ここを削除すると最初に反転しない問題が治る (はじめの一回目クリックがNO反応)
+
         }
 
 
@@ -57,13 +58,19 @@ namespace Kinel.VideoPlayer.Udon.Controller
 
         public void SetMirrorInversion(bool isMirrorInversion)
         {
-            foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
+            var videoPlayer = videoPlayerUI.GetVideoPlayer();
+            var screens = videoPlayer != null ? videoPlayer.GetKinelScreenModules() : null;
+            if (screens == null) return;
+            foreach (var screen in screens)
                 screen.SetMirrorInversion(isMirrorInversion);
         }
 
         public void ToggleMirrorInversion()
         {
-            foreach (var screen in videoPlayerUI.GetVideoPlayer().GetKinelScreenModules())
+            var videoPlayer = videoPlayerUI.GetVideoPlayer();
+            var screens = videoPlayer != null ? videoPlayer.GetKinelScreenModules() : null;
+            if (screens == null) return;
+            foreach (var screen in screens)
             {
                 screen.SetMirrorInversion(!screen.mirrorInverion);
                 screen.mirrorInverion = !screen.mirrorInverion;

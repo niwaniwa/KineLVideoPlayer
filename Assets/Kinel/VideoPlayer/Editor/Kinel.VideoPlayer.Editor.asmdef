@@ -1,0 +1,23 @@
+{
+    "name": "Kinel.VideoPlayer.Editor",
+    "references": [
+        "GUID:793e3a7644b28184eb9eb046fb3dac5e",
+        "GUID:3c1bc1267eab5884ebe7f232c09ee0d9",
+        "GUID:627c4d5cd580ddf41bd320e784fe8b9d",
+        "GUID:99835874ee819da44948776e0df4ff1d",
+        "GUID:84265b35cca3905448e623ef3903f0ff",
+        "GUID:f70a94b0bedfa8ec50ed757f72032810",
+        "GUID:f2d732cb19e49d341a9b0db5e649283f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

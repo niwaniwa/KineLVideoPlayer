@@ -7,7 +7,7 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class VideoTimeTextUpdateModule : UdonSharpBehaviour
+    public class VideoTimeTextUpdateModule : KinelModule
     {
 
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
@@ -69,7 +69,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             // UpdateVideoTimeText((int) seekModule.GetSeekSlider().value);
         }
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             
             if (!videoPlayerUI.IsVideo()){
@@ -79,7 +79,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             UpdateVideoText(0, videoPlayerUI.GetSystem().GetDuration());
         }
 
-        public void OnKinelChangeVideoTime()
+        public override void OnKinelChangeVideoTime()
         {
             if (!videoPlayerUI.IsVideo())
                 return;
@@ -88,7 +88,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             UpdateVideoTimeText(videoPlayerUI.GetVideoPlayer().VideoTime);
         }
 
-        public void OnKinelVideoReset()
+        public override void OnKinelVideoReset()
         {
             UpdateVideoText(0, 0);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Kinel.VideoPlayer.Udon.Module;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,25 +9,19 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Playlist
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class KinelPlaylist : UdonSharpBehaviour
+    public class KinelPlaylist : KinelModule
     {
-        
-        private const string DEBUG_LOG_PREFIX = "[<color=#58ACFA>KineL</color>]";
-        private const string DEBUG_ERROR_PREFIX = "[<color=#dc143c>KineL</color>]";
-
         [SerializeField] private KinelVideoPlayer videoPlayer;
 
         [SerializeField] private RectTransform content;
-        // [SerializeField] public GameObject listPrefab;
+
         [SerializeField] private GameObject loadingCover;
         [SerializeField] private GameObject disableCover;
-        // [SerializeField] public GameObject disableCover;
-
         [SerializeField] private string playlistInternalName;
         
         [SerializeField] private string[] titles;
         [SerializeField] private VRCUrl[] urls;
-        [SerializeField] private int[] playMode;
+        [SerializeField] private KinelVideoMode[] playMode;
         
         // Loopとauto playについて同期するか迷い
         // [SerializeField] private int autoPlayMode = 0; // 
@@ -65,7 +60,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             set
             {
                 nowPlayingItemIndex = value;
-                }
+            }
         }
 
         public bool Shuffle
@@ -76,14 +71,12 @@ namespace Kinel.VideoPlayer.Udon.Playlist
 
         public void Start()
         {
-
             if (urls.Length == 0)
             {
-                Debug.Log($"{DEBUG_LOG_PREFIX} Playlist disabled... {(String.IsNullOrEmpty(playlistInternalName) ? "" : $"#{playlistInternalName}")}");
+                Debug.Log($"{DEBUG_PREFIX} Playlist disabled... {(String.IsNullOrEmpty(playlistInternalName) ? "" : $"#{playlistInternalName}")}");
                 disableCover.SetActive(true);
                 return;
             }
-
             shuffleList = new bool[urls.Length];
             videoPlayer.RegisterListener(this);
             SetLoop(loopMode);
@@ -98,7 +91,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
         {
             if (urls.Length == 0)
             {
-                Debug.LogWarning($"{DEBUG_ERROR_PREFIX} Playlist disabled...");
+                Debug.LogWarning($"{DEBUG_PREFIX} Playlist disabled...");
                 return;
             }
             TakeOwnership();
@@ -202,7 +195,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 var trans = content.GetChild(i).GetChild(1);
                 if (trans == null)
                 {
-                    Debug.Log($"{DEBUG_ERROR_PREFIX} KineL Playlist Error. Please report (@ni_rilana) #ProgressNULL");
+                    Debug.Log($"{DEBUG_PREFIX} KineL Playlist Error. Please report (@ni_rilana) #ProgressNULL");
                     return;
                 }
                 progress = trans.GetComponent<Slider>();
@@ -256,7 +249,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             PlayVideo(select);
         }
 
-        public void OnKinelUrlUpdate()
+        public override void OnKinelUrlUpdate()
         {
             if(!videoPlayer.IsLock)
                 loadingCover.SetActive(true);
@@ -267,7 +260,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             }
         }
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             if(!videoPlayer.IsLock)
                 loadingCover.SetActive(false);
@@ -277,7 +270,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
                 ProgressBarSetting();
         }
 
-        public void OnKinelVideoEnd()
+        public override void OnKinelVideoEnd()
         {
             Debug.Log($"video end");
             progress = null;
@@ -341,14 +334,14 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             
         }
 
-        public void OnKinelVideoReset()
+        public override void OnKinelVideoReset()
         {
             loadingCover.SetActive(false);
             ResetProgressBars();
             ResetState();
         }
 
-        public void OnKinelVideoLoop()
+        public override void OnKinelVideoLoop()
         {
             
         }

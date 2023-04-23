@@ -1,4 +1,6 @@
-﻿using UdonSharp;
+﻿using System;
+using Kinel.VideoPlayer.Udon.Module;
+using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDK3.Components;
@@ -7,10 +9,8 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Playlist
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class KinelQueuePlaylist : UdonSharpBehaviour
+    public class KinelQueuePlaylist : KinelModule
     {
-        public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
-        
         [SerializeField] private KinelVideoPlayer videoPlayer;
 
         [SerializeField] private VRCUrlInputField inputField;
@@ -176,7 +176,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             
             TakeOwnership();
             PlayerSettings();
-            videoPlayer.ChangeMode(_modeQueue[index]);
+            videoPlayer.ChangeMode(_modeQueue[index] == 0 ? KinelVideoMode.Video : KinelVideoMode.Stream);
             videoPlayer.PlayByURL(_urls[index]);
             NowPlayingFlag = true;
             this.index = index;
@@ -406,7 +406,7 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             return select;
         }
 
-        public void OnKinelUrlUpdate()
+        public override void OnKinelUrlUpdate()
         {
             if (!videoPlayer.IsLock)
             {
@@ -430,23 +430,17 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             
         }
 
-        public void OnKinelVideoReady()
-        {
-            messageUI.SetActive(false);
-        }
+        public override void OnKinelVideoReady() => messageUI.SetActive(false);
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             if (!NowPlayingFlag)
                 return;
 
             ProgressBarSetting();
-            
-
-
         }
 
-        public void OnKinelVideoEnd()
+        public override void OnKinelVideoEnd()
         {
 
             if (!NowPlayingFlag)
@@ -483,19 +477,15 @@ namespace Kinel.VideoPlayer.Udon.Playlist
             }
         }
 
-        public void OnKinelVideoError()
-        {
-            messageUI.SetActive(false);
-            
-        }
+        public override void OnKinelVideoError() => messageUI.SetActive(false);
         
-        public void OnKinelVideoReset()
+        public override void OnKinelVideoReset()
         {
             messageUI.SetActive(false);
             ResetState();
         }
 
-        public void OnKinelVideoLoop()
+        public override void OnKinelVideoLoop()
         {
             if (!NowPlayingFlag)
                 return;

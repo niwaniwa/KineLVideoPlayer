@@ -4,21 +4,17 @@ using UnityEngine;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class KinelScreenModule : UdonSharpBehaviour
+    public class KinelScreenModule : KinelModule
     {
-
-        
         [SerializeField] public KinelVideoPlayer videoPlayer;
         
-        [SerializeField] public string propertyName;
-        [SerializeField] public string screenName;
-        [SerializeField] public int materialIndex;
+        [SerializeField] private string propertyName;
+        [SerializeField] private string screenName;
+        [SerializeField] private int materialIndex;
 
-        [SerializeField] public bool mirrorInverion;
-        [SerializeField] public bool backCulling;
-        [SerializeField] public float transparency;
-
-        public bool isAutoFill = false;
+        [SerializeField] private bool mirrorInverion;
+        [SerializeField] private bool backCulling;
+        [SerializeField] private float transparency;
 
         private MaterialPropertyBlock _propertyBlock, _propertyBlockInternal;
         private Renderer _screenRenderer, _internalVideoRenderer, _internalAvProRenderer;
@@ -40,21 +36,19 @@ namespace Kinel.VideoPlayer.Udon.Module
             SetBackCulling(backCulling);
         }
 
-        public void OnKinelVideoStart()
+        public override void OnKinelVideoStart()
         {
             SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
         }
 
-        public void OnKinelVideoLoop()
+        public override void OnKinelVideoLoop()
         {
             UpdateRenderer();
         }
 
         public void UpdateRenderer()
         {
-            Debug.Log("UPDATE RENDERER");
             Texture texture = null;
-
             if (videoPlayer.IsPlaying)
             {
                 
@@ -90,24 +84,13 @@ namespace Kinel.VideoPlayer.Udon.Module
 
                 _propertyBlock.SetTexture(propertyName, texture);
 
-               
- 
-                
             }
-
-            // if (texture == null)
-            // {
-            //     _propertyBlock.Clear();
-            //     // _screenRenderer.set
-            // }
 
             _screenRenderer.SetPropertyBlock(_propertyBlock, materialIndex);
 
-            // videoPlayer.GetVideoPlayerController().GetUnityVideoPlayer().
-            
         }
         
-        public void OnKinelVideoModeChange()
+        public override void OnKinelVideoModeChange()
         {
 #if UNITY_ANDROID
             // quest
@@ -136,8 +119,6 @@ namespace Kinel.VideoPlayer.Udon.Module
             }
             renderer.GetPropertyBlock(_propertyBlockInternal);
             return _propertyBlockInternal.GetTexture(propertyName);
-
-            
         }
 
         public void SetMirrorInversion(bool active)

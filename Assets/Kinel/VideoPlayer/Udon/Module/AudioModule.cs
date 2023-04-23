@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Kinel.VideoPlayer.Udon.Module
 {
-    public class AudioModule : UdonSharpBehaviour
+    public class AudioModule : KinelModule
     {
 
         [SerializeField] public AudioSource[] sources;

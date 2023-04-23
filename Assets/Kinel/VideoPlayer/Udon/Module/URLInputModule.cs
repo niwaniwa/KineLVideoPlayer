@@ -7,15 +7,13 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class URLInputModule : UdonSharpBehaviour
+    public class URLInputModule : KinelModule
     {
         public const string DEBUG_PREFIX = "[<color=#58ACFA>KineL</color>]";
 
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
         [SerializeField] private VRCUrlInputField inputField;
         [SerializeField] private GameObject loadingCover;
-
-        
 
         public void Start()
         {
@@ -67,22 +65,22 @@ namespace Kinel.VideoPlayer.Udon.Module
             return false;
         }
 
-        public void OnKinelUrlUpdate()
+        public override void OnKinelUrlUpdate()
         {
             loadingCover.SetActive(true);
         }
 
-        public void OnKinelVideoReady()
+        public override void OnKinelVideoReady()
         {
             loadingCover.SetActive(false);
         }
 
-        public void OnKinelVideoError()
+        public override void OnKinelVideoError()
         {
             loadingCover.SetActive(false);
         }
 
-        public void OnKinelVideoReset()
+        public override void OnKinelVideoReset()
         {
             inputField.SetUrl(VRCUrl.Empty);
             loadingCover.SetActive(false);

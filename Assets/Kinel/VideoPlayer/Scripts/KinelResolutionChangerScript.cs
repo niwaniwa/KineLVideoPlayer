@@ -1,3 +1,4 @@
+using Kinel.VideoPlayer.Scripts.Parameter;
 using Kinel.VideoPlayer.Udon;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ namespace Kinel.VideoPlayer.Scripts
         public Animator animator;
         public Text text;
         public int[] resolutionArray;
-        public bool isAutoFill;
+        public FillResult isAutoFill;
 
     }
 }

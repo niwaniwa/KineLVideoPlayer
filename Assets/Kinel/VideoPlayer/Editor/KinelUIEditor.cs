@@ -1,4 +1,5 @@
 using System;
+using Kinel.VideoPlayer.Editor.Internal;
 using Kinel.VideoPlayer.Scripts;
 using Kinel.VideoPlayer.Udon;
 using UdonSharpEditor;
@@ -8,30 +9,25 @@ using VRC.SDKBase.Editor.BuildPipeline;
 
 namespace Kinel.VideoPlayer.Editor
 {
-    [CustomEditor(typeof(KinelVideoPlayerUI))]
+    [CustomEditor(typeof(KinelUIScript))]
     public class KinelUIEditor : KinelEditorBase
     {
 
-        private KinelVideoPlayerUI _kinelVideoPlayerUI;
+        private KinelUIScript _kinelVideoPlayerUI;
         private SerializedProperty _kinelVideoPlayer, _isAutoFill;
         
         public void OnEnable()
         {
-            _kinelVideoPlayerUI = target as KinelVideoPlayerUI;
-            _kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelVideoPlayerUI.videoPlayer));
-            _isAutoFill = serializedObject.FindProperty(nameof(KinelVideoPlayerUI.isAutoFill));
+            _kinelVideoPlayerUI = target as KinelUIScript;
+            _kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelUIScript.videoPlayer));
+            _isAutoFill = serializedObject.FindProperty(nameof(KinelUIScript.isAutoFill));
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            
-            if (UdonSharpGUI.DrawConvertToUdonBehaviourButton(target) ||
-                UdonSharpGUI.DrawProgramSource(target))
-                return;
-            
+
             serializedObject.Update();
-            
             
             // UI header
             EditorGUILayout.BeginVertical(GUI.skin.box);
@@ -41,62 +37,35 @@ namespace Kinel.VideoPlayer.Editor
                 EditorGUILayout.LabelField("基本設定");
                 EditorGUI.indentLevel++;
                 EditorGUILayout.Space();
-                EditorGUILayout.PropertyField(_kinelVideoPlayer);
-                AutoFillProperties();
-                if (_isAutoFill.boolValue)
-                {
-                    EditorGUILayout.HelpBox("自動的に設定されました。", MessageType.Info);
-                }
+                _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _kinelVideoPlayerUI.gameObject, false);
+                if (_kinelVideoPlayer.objectReferenceValue)
+                    EditorGUILayout.LabelField(_kinelVideoPlayer.displayName, "自動設定されました。");
+                else
+                    EditorGUILayout.PropertyField(_kinelVideoPlayer);
                 
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
-
 
             if (serializedObject.ApplyModifiedProperties())
             {
                 ApplyUdonProperties();
             }
         }
-        
-        public void AutoFillProperties()
-        {
-            if (_kinelVideoPlayer.objectReferenceValue == null)
-            {
-
-                var playerScripts = GetVideoPlayers(); //
-                if (playerScripts.Length != 0)
-                {
-                    if (playerScripts.Length != 1)
-                        return;
-
-                    var system = playerScripts[0].gameObject.GetUdonSharpComponentsInChildren<KinelVideoPlayer>();
-                    if (system.Length >= 2 || system.Length == 0)
-                        return;
-
-                    _isAutoFill.boolValue = true;
-                    Undo.RecordObject(_kinelVideoPlayerUI, "Instance attached");
-                    _kinelVideoPlayer.objectReferenceValue = system[0]; // 時々nullになる
-                    _kinelVideoPlayer.serializedObject.ApplyModifiedProperties();
-                    EditorUtility.SetDirty(_kinelVideoPlayerUI);
-                    // _kinelVideoPlayerUI.SetProgramVariable("videoPlayer", _kinelVideoPlayer.objectReferenceValue);
-                    // _kinelVideoPlayerUI.videoPlayer = system[0];
-
-                }
-                
-                // Debug.LogError($"null? { _kinelVideoPlayer.objectReferenceValue == null}");
-
-            }
-
-        }
 
         public override void ApplyUdonProperties()
         {
+            var ui = _kinelVideoPlayerUI.GetComponentInChildren<KinelVideoPlayerUI>();
+            if (ui == null)
+            {
+                Debug.LogError($"{DEBUG_ERROR_PREFIX} UI null");
+                return;
+            }
             Undo.RecordObject(_kinelVideoPlayerUI, "Instance attached");
-            _kinelVideoPlayerUI.UpdateProxy();
-            _kinelVideoPlayerUI.SetProgramVariable("videoPlayer", _kinelVideoPlayer.objectReferenceValue);
-            _kinelVideoPlayerUI.ApplyProxyModifications();
-            UdonSharpEditorUtility.CopyProxyToUdon(_kinelVideoPlayerUI);
+            ui.UpdateProxy();
+            ui.SetProgramVariable("videoPlayer", _kinelVideoPlayer.objectReferenceValue);
+            ui.ApplyProxyModifications();
+            UdonSharpEditorUtility.CopyProxyToUdon(ui);
             
             EditorUtility.SetDirty(_kinelVideoPlayerUI);
             // _kinelVideoPlayerUI.UpdateProxy();

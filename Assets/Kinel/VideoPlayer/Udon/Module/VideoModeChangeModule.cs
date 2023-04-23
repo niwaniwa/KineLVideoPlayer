@@ -5,15 +5,11 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class VideoModeChangeModule : UdonSharpBehaviour
+    public class VideoModeChangeModule : KinelModule
     {
-
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
 
         private KinelVideoPlayer videoPlayer;
-        
-        private const int VIDEO_MODE = 0;
-        private const int STREAM_MODE = 1;
 
         public void Start()
         {
@@ -25,11 +21,11 @@ namespace Kinel.VideoPlayer.Udon.Module
             Networking.SetOwner(Networking.LocalPlayer, videoPlayer.gameObject);
             switch (videoPlayer.GetCurrentVideoMode())
             {
-                case VIDEO_MODE:
-                    videoPlayer.ChangeMode(STREAM_MODE);
+                case (int) KinelVideoMode.Video:
+                    videoPlayer.ChangeMode(KinelVideoMode.Stream);
                     break;
-                case STREAM_MODE:
-                    videoPlayer.ChangeMode(VIDEO_MODE);
+                case (int) KinelVideoMode.Stream:
+                    videoPlayer.ChangeMode(KinelVideoMode.Video);
                     break;
                 default:
                     break;

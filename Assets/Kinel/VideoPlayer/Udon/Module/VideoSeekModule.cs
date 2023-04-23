@@ -7,7 +7,7 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class VideoSeekModule : UdonSharpBehaviour
+    public class VideoSeekModule : KinelModule
     {
 
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
@@ -35,19 +35,19 @@ namespace Kinel.VideoPlayer.Udon.Module
             _controller = videoPlayerUI.GetVideoPlayer().GetVideoPlayerController();
         }
 
-        public void OnKinelVideoPlayerLocked()
+        public override void OnKinelVideoPlayerLocked()
         {
             _isLock = true;
             Lock();
         }
 
-        public void OnKinelVideoPlayerUnlocked()
+        public override void OnKinelVideoPlayerUnlocked()
         {
             _isLock = false;
             Unlock();
         }
 
-        public void OnKinelVideoReady()
+        public override void OnKinelVideoReady()
         {
             if (_controller.CurrentMode == STREAM_MODE)
             {
@@ -75,12 +75,12 @@ namespace Kinel.VideoPlayer.Udon.Module
             _isWait = true;
         }
 
-        public void OnKinelChangeVideoTime()
+        public override void OnKinelChangeVideoTime()
         {
             slider.value = videoPlayerUI.GetVideoPlayer().VideoTime;
         }
 
-        public void OnKinelVideoModeChange()
+        public override void OnKinelVideoModeChange()
         {
             slider.value = 0;
         }

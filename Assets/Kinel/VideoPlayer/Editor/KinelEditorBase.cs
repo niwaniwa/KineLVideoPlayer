@@ -11,9 +11,8 @@ namespace Kinel.VideoPlayer.Editor
 {
     public abstract class KinelEditorBase : UnityEditor.Editor
     {
-
-        internal const string DEBUG_LOG_PREFIX = "[<color=#58ACFA>KineL</color>]";
-        internal const string DEBUG_ERROR_PREFIX = "[<color=#dc143c>KineL</color>]";
+        protected internal const string DEBUG_LOG_PREFIX = "[<color=#58ACFA>KineL</color>]";
+        protected internal const string DEBUG_ERROR_PREFIX = "[<color=#dc143c>KineL</color>]";
 
         internal const string HEADER_IMAGE_GUID = "6bc2959ee80eb4d4dbdb46be56f94dfa";
         internal const string GITHUB_IMAGE_GUID = "109a0a0acaeaf4b42a8eae55a2a33bbc";
@@ -76,11 +75,6 @@ namespace Kinel.VideoPlayer.Editor
             EditorGUILayout.Space();
             DrawSocialLinks(textures, guids, urls);
             EditorGUILayout.Space();
-        }
-
-        public KinelVideoPlayerScript[] GetVideoPlayers()
-        {
-            return FindObjectsOfType<KinelVideoPlayerScript>();
         }
 
         /// <summary>
@@ -154,8 +148,14 @@ namespace Kinel.VideoPlayer.Editor
                 }
             }
         }
+        
+        public KinelVideoPlayerScript[] GetVideoPlayers()
+        {
+            return FindObjectsOfType<KinelVideoPlayerScript>();
+        }
 
         public abstract void ApplyUdonProperties();
+        
 
 
     }

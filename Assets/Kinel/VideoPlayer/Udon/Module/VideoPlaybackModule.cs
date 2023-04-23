@@ -5,21 +5,17 @@ using UnityEngine;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    public class VideoPlaybackModule : UdonSharpBehaviour
+    public class VideoPlaybackModule : KinelModule
     {
-
         [SerializeField] private KinelVideoPlayerUI videoPlayerUI;
         [SerializeField] private GameObject pause, play;
         [SerializeField] private int additionalTime;
 
-        public void Start()
-        {
-            videoPlayerUI.GetVideoPlayer().RegisterListener(this);
-        }
-
+        public void Start() => videoPlayerUI.GetVideoPlayer().RegisterListener(this);
+        
         public void TogglePause()
         {
-            Debug.Log("Toggle Pause");
+            Debug.Log($"{DEBUG_PREFIX} {name} Toggle pause");
             videoPlayerUI.GetVideoPlayer().TakeOwnership();
             if (!videoPlayerUI.GetVideoPlayer().IsPause)
             {
@@ -27,13 +23,6 @@ namespace Kinel.VideoPlayer.Udon.Module
                 Pause();
             }
             else
-            {
-                videoPlayerUI.GetVideoPlayer().Play();
-                Play();
-            }
-
-            
-            if (!videoPlayerUI.GetVideoPlayer().IsPlaying && !videoPlayerUI.GetVideoPlayer().IsPause)
             {
                 videoPlayerUI.GetVideoPlayer().Play();
                 Play();
@@ -69,20 +58,11 @@ namespace Kinel.VideoPlayer.Udon.Module
             videoPlayerUI.GetVideoPlayer().SetVideoTime(time);
         }
 
-        public void ResetVideoPlayer()
-        {
-            videoPlayerUI.GetVideoPlayer().ResetGlobal();
-        }
+        public void ResetVideoPlayer() => videoPlayerUI.GetVideoPlayer().ResetGlobal();
 
-        public void OnKinelVideoStart()
-        {
-            Play();
-        }
+        public override void OnKinelVideoStart() => Play();
 
-        public void OnKinelVideoEnd()
-        {
-            Pause();
-        }
+        public override void OnKinelVideoEnd() => Pause();
         
     }
 }

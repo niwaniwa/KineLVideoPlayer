@@ -6,22 +6,17 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.Udon.Module
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-    public class KinelLockModule : UdonSharpBehaviour
+    public class KinelLockModule : KinelModule
     {
-
         public KinelVideoPlayerUI videoPlayerUI;
         public GameObject[] toggleObjects, systemObjects;
 
-        public void Start()
-        {
-            videoPlayerUI.RegisterListener(this);
-        }
+        public void Start() =>videoPlayerUI.RegisterListener(this);
 
         public void ToggleLock()
         {
             if (!Networking.LocalPlayer.isMaster)
                 return;
-            
             
             var videoPlayer = videoPlayerUI.GetVideoPlayer();
             videoPlayer.TakeOwnership();
@@ -29,7 +24,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             videoPlayer.RequestSerialization();
         }
 
-        public void OnKinelVideoPlayerLocked()
+        public override void OnKinelVideoPlayerLocked()
         {
             
             foreach (var target in systemObjects)
@@ -46,7 +41,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             }
         }
 
-        public void OnKinelVideoPlayerUnlocked()
+        public override void OnKinelVideoPlayerUnlocked()
         {
             foreach (var target in systemObjects)
             {
