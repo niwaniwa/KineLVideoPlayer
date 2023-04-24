@@ -18,6 +18,11 @@ namespace Kinel.VideoPlayer.Editor
         
         public void OnEnable()
         {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             _kinelVideoPlayerUI = target as KinelUIScript;
             _kinelVideoPlayer = serializedObject.FindProperty(nameof(KinelUIScript.videoPlayer));
             _isAutoFill = serializedObject.FindProperty(nameof(KinelUIScript.isAutoFill));
@@ -55,6 +60,7 @@ namespace Kinel.VideoPlayer.Editor
 
         public override void ApplyUdonProperties()
         {
+            Initialize();
             var ui = _kinelVideoPlayerUI.GetComponentInChildren<KinelVideoPlayerUI>();
             if (ui == null)
             {
