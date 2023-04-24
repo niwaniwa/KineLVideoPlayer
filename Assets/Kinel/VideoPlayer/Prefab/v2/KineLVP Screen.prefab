@@ -53,7 +53,7 @@ MonoBehaviour:
   mirrorInverion: 0
   backCulling: 0
   transparency: 0
-  isAutoFill: 2
+  isAutoFill: 0
 --- !u!114 &-590502803506464194
 MonoBehaviour:
   m_ObjectHideFlags: 0

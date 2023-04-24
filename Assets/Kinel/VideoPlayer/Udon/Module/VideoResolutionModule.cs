@@ -10,6 +10,7 @@ namespace Kinel.VideoPlayer.Udon.Module
     [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class VideoResolutionModule : KinelModule
     {
+        [SerializeField] private KinelVideoPlayer videoPlayer;
         [SerializeField] private Animator animator;
         
         [SerializeField] private int[] resolutionArray = new[] { 144, 240, 360, 480, 720, 1080, 1440, 2160 };
@@ -19,6 +20,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void Start()
         {
+            animator = videoPlayer.GetComponent<Animator>();
             SetResolution(resolutionArray[4]);
         }
 

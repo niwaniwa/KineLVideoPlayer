@@ -683,8 +683,8 @@ MonoBehaviour:
   animationParameterMax: 2
   increaseSpeed: 0.1
   source: {fileID: 0}
+  isAutoFill: 0
   pitchChange: 0
-  isAutoFill: 1
   manual: 0
 --- !u!1 &5691897445928499022
 GameObject:

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kinel.VideoPlayer.Scripts;
 using Kinel.VideoPlayer.Udon;
+using Kinel.VideoPlayer.Udon.Module;
 using UdonSharp;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -33,8 +34,10 @@ namespace Kinel.VideoPlayer.Editor.Internal
             // 値の適用をしてほしいのは KinelUI, Kinel Playlist,
             var kinelUI = FindObjectsOfType<KinelUIScript>(true);
             var kinelPlaylist = FindObjectsOfType<KinelPlaylistScript>(true);
+            var resolution = FindObjectsOfType<KinelResolutionChangerScript>(true);
             ApplyUdonProperties<KinelUIEditor>(kinelUI);
             ApplyUdonProperties<KinelPlaylistEditor>(kinelPlaylist);
+            ApplyUdonProperties<KinelPlaylistEditor>(resolution);
             
             Debug.Log($"{DEBUG_LOG_PREFIX} ::::: Build process End");
         }
