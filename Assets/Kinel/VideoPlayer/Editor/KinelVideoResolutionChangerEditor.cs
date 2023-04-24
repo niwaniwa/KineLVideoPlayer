@@ -42,8 +42,6 @@ namespace Kinel.VideoPlayer.Editor
 
         private void OnInternalInspector()
         {
-            EditorGUILayout.PropertyField(_kinelVideoPlayer);
-            EditorGUILayout.PropertyField(_animator);
             _isAutoFill.enumValueIndex = (int) KinelEditorUtilities.FillUdonSharpInstance<KinelVideoPlayer>(ref _kinelVideoPlayer, _resolutionChangerScript.gameObject, false);
             if (_kinelVideoPlayer.objectReferenceValue)
                 EditorGUILayout.LabelField(_kinelVideoPlayer.displayName, "自動設定されました。");
@@ -85,6 +83,7 @@ namespace Kinel.VideoPlayer.Editor
             
             Undo.RecordObject(udon, "Applay Udon properties.");
             udon.UpdateProxy();
+            udon.SetProgramVariable("videoPlayer", _kinelVideoPlayer.objectReferenceValue);
             udon.SetProgramVariable("animator", _animator.objectReferenceValue);
             udon.SetProgramVariable("resolutionText", _text.objectReferenceValue);
             udon.SetProgramVariable("resolutionArray", resolutionArray.ToArray());

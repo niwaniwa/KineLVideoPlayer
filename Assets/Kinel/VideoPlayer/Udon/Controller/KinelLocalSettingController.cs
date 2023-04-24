@@ -72,8 +72,8 @@ namespace Kinel.VideoPlayer.Udon.Controller
             if (screens == null) return;
             foreach (var screen in screens)
             {
-                screen.SetMirrorInversion(!screen.mirrorInverion);
-                screen.mirrorInverion = !screen.mirrorInverion;
+                screen.SetMirrorInversion(!screen.IsMirrorInversion);
+                screen.IsMirrorInversion = !screen.IsMirrorInversion;
             }
         }
         

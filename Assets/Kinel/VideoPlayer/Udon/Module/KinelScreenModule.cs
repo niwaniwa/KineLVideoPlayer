@@ -8,7 +8,7 @@ namespace Kinel.VideoPlayer.Udon.Module
     {
         [SerializeField] public KinelVideoPlayer videoPlayer;
         
-        [SerializeField] private string propertyName;
+        [SerializeField] private string propertyName = "_MainTex";
         [SerializeField] private string screenName;
         [SerializeField] private int materialIndex;
 
@@ -19,68 +19,68 @@ namespace Kinel.VideoPlayer.Udon.Module
         private MaterialPropertyBlock _propertyBlock, _propertyBlockInternal;
         private Renderer _screenRenderer, _internalVideoRenderer, _internalAvProRenderer;
 
-        private const int VIDEO_MODE = 0;
-        private const int STREAM_MODE = 1;
-
         private Texture _mainTex;
+        private bool isMirrorInversion = false;
+
+        public bool IsMirrorInversion
+        {
+            get => isMirrorInversion;
+            set => isMirrorInversion = value;
+        }
         
         public void Start()
         {
             _propertyBlock = new MaterialPropertyBlock();
             _propertyBlockInternal = new MaterialPropertyBlock();
-            _screenRenderer = gameObject.transform.Find("Screen").GetComponent<Renderer>();
+            _screenRenderer = gameObject.transform.GetChild(0).GetComponent<Renderer>();
             videoPlayer.RegisterListener(this);
-            _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(VIDEO_MODE);
-            _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(STREAM_MODE);
+            _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Video);
+            _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Stream);
             SetMirrorInversion(mirrorInverion);
             SetBackCulling(backCulling);
         }
 
-        public override void OnKinelVideoStart()
-        {
-            SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
-        }
+        public override void OnKinelVideoStart() => SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
 
-        public override void OnKinelVideoLoop()
-        {
-            UpdateRenderer();
-        }
+        public override void OnKinelVideoLoop() => UpdateRenderer();
+
+        public override void OnKinelVideoEnd() => UpdateRenderer();
+
+        private int runCound = 0;
 
         public void UpdateRenderer()
         {
             Texture texture = null;
+            _propertyBlock.Clear();
             if (videoPlayer.IsPlaying)
             {
-                
                 if (_internalVideoRenderer == null)
-                    _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(VIDEO_MODE);
+                    _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Video);
             
                 if(_internalAvProRenderer == null)
-                    _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(STREAM_MODE);
-            
-                texture = videoPlayer.GetCurrentVideoMode() == VIDEO_MODE
+                    _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Stream);
+
+                texture = videoPlayer.GetCurrentVideoMode() == ((int) KinelVideoMode.Video)
                     ? GetTexture(_internalVideoRenderer, false)
                     : GetTexture(_internalAvProRenderer, true);
-            
+
                 if (texture == null)
                 {
-                    SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
+                    runCound++;
+                    if(runCound < 10)
+                        SendCustomEventDelayedFrames(nameof(UpdateRenderer), 50);
+                    else
+                    {
+                        Debug.LogError($"{DEBUG_ERROR_PREFIX} Failed to apply screen. (KineLScreenModule.cs)");
+                        Debug.LogError($"{DEBUG_ERROR_PREFIX} If this error persists, please contact me on twitter @ni_rilana.");
+                    }
                     return;
                 }
                 
-                // AVPro向けのシェーダー設定が動作しない
-
-                if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
-                {
-                    // _screenRenderer.material.EnableKeyword("IS_AVPRO");
+                if (videoPlayer.GetCurrentVideoMode() == (int) KinelVideoMode.Stream)
                     _propertyBlock.SetInt("_IsAVPRO", 1);
-                }
                 else
-                {
-                    // _screenRenderer.material.DisableKeyword("IS_AVPRO");
                     _propertyBlock.SetInt("_IsAVPRO", 0);
-                }
-
 
                 _propertyBlock.SetTexture(propertyName, texture);
 
@@ -89,6 +89,7 @@ namespace Kinel.VideoPlayer.Udon.Module
             _screenRenderer.SetPropertyBlock(_propertyBlock, materialIndex);
 
         }
+        
         
         public override void OnKinelVideoModeChange()
         {
