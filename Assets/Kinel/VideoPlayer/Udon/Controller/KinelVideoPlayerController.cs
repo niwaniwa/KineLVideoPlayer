@@ -121,13 +121,13 @@ namespace Kinel.VideoPlayer.Udon.Controller
 
         public override void OnVideoLoop() => videoPlayer.OnVideoLoop();
 
-        public Renderer GetInternalScreen(int mode)
+        public Renderer GetInternalScreen(KinelVideoMode mode)
         {
             switch (mode)
             {
-                case VIDEO_MODE:
+                case KinelVideoMode.Video:
                     return unityVideoScreenSource;
-                case STREAM_MODE:
+                case KinelVideoMode.Stream:
                     return avProVideoScreenSource;
                 default:
                     return unityVideoScreenSource;

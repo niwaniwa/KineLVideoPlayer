@@ -8,7 +8,7 @@ namespace Kinel.VideoPlayer.Udon.Module
     {
         [SerializeField] public KinelVideoPlayer videoPlayer;
         
-        [SerializeField] private string propertyName;
+        [SerializeField] private string propertyName = "_MainTex";
         [SerializeField] private string screenName;
         [SerializeField] private int materialIndex;
 
@@ -32,10 +32,10 @@ namespace Kinel.VideoPlayer.Udon.Module
         {
             _propertyBlock = new MaterialPropertyBlock();
             _propertyBlockInternal = new MaterialPropertyBlock();
-            _screenRenderer = gameObject.transform.Find("Screen").GetComponent<Renderer>();
+            _screenRenderer = gameObject.transform.GetChild(0).GetComponent<Renderer>();
             videoPlayer.RegisterListener(this);
-            _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen((int) KinelVideoMode.Video);
-            _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen((int) KinelVideoMode.Stream);
+            _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Video);
+            _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Stream);
             SetMirrorInversion(mirrorInverion);
             SetBackCulling(backCulling);
         }
@@ -46,43 +46,44 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public override void OnKinelVideoEnd() => UpdateRenderer();
 
+        private int runCound = 0;
+
         public void UpdateRenderer()
         {
             Texture texture = null;
+            _propertyBlock.Clear();
             if (videoPlayer.IsPlaying)
             {
                 if (_internalVideoRenderer == null)
-                    _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(((int) KinelVideoMode.Video));
+                    _internalVideoRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Video);
             
                 if(_internalAvProRenderer == null)
-                    _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen((int) KinelVideoMode.Stream);
-            
+                    _internalAvProRenderer = videoPlayer.GetVideoPlayerController().GetInternalScreen(KinelVideoMode.Stream);
+
                 texture = videoPlayer.GetCurrentVideoMode() == ((int) KinelVideoMode.Video)
                     ? GetTexture(_internalVideoRenderer, false)
                     : GetTexture(_internalAvProRenderer, true);
-            
+
                 if (texture == null)
                 {
-                    SendCustomEventDelayedFrames(nameof(UpdateRenderer), 5);
+                    runCound++;
+                    if(runCound < 10)
+                        SendCustomEventDelayedFrames(nameof(UpdateRenderer), 50);
+                    else
+                    {
+                        Debug.LogError($"{DEBUG_ERROR_PREFIX} Failed to apply screen. (KineLScreenModule.cs)");
+                        Debug.LogError($"{DEBUG_ERROR_PREFIX} If this error persists, please contact me on twitter @ni_rilana.");
+                    }
                     return;
                 }
-
+                
                 if (videoPlayer.GetCurrentVideoMode() == (int) KinelVideoMode.Stream)
-                {
                     _propertyBlock.SetInt("_IsAVPRO", 1);
-                }
                 else
-                {
                     _propertyBlock.SetInt("_IsAVPRO", 0);
-                }
 
                 _propertyBlock.SetTexture(propertyName, texture);
 
-            }
-            
-            if (texture == null)
-            {
-                _propertyBlock.Clear();
             }
 
             _screenRenderer.SetPropertyBlock(_propertyBlock, materialIndex);
