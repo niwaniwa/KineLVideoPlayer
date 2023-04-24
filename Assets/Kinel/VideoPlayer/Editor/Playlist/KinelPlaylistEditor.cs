@@ -325,7 +325,7 @@ namespace Kinel.VideoPlayer.Editor
             playlist.ApplyProxyModifications();
             UdonSharpEditorUtility.CopyProxyToUdon(playlist);
             
-            KinelEditorUtilities.UpdateKinelVideoUIComponents(playlist, _kinelVideoPlayer.objectReferenceValue);
+            // KinelEditorUtilities.UpdateKinelVideoUIComponents(playlist, _kinelVideoPlayer.objectReferenceValue);
             EditorUtility.SetDirty(playlist);
         }
 
