@@ -99,3 +99,4 @@ https://github.com/niwaniwa/KineLVideoPlayer/wiki
   - アップロード時にエラーが発生する問題を低減
   - スクリーンに何らかの原因で不正な画像が存在する問題を修正
   - 内部リファクタ
+- [[2.4.1]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.4.1) Androidビルド時のエラーを修正
