@@ -36,8 +36,8 @@ KineL式ビデオプレイヤーは以下のような特徴があります！
 - 更新する際は最新のunitypackageをそのまま上書きするのみで導入できます。但し念の為バックアップすることを強くおすすめします。
 
 ## 動作環境
-🟦 VRChat SDK3(最新)
-🟦 Udon Sharp(最新)
+🟦 VRChat SDK3(VCC)
+🟦 Udon Sharp(VCC)
 🟧 Unity 2019.4.31f1
 
 VCC以外での導入は非推奨となりました。
@@ -94,3 +94,8 @@ https://github.com/niwaniwa/KineLVideoPlayer/wiki
 - [[2.2.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.2.0) PlaylistをImportする際にPrefixを追加できるように修正
 - [2.2.1] Stream時に後から人がJoinするとOwnerが切り替わってしまう問題を修正
 - [[2.3.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.3.0) 動画解像度の変更を実装しました。
+- [[2.4.0]](https://github.com/niwaniwa/KineLVideoPlayer/releases/tag/2.4.0) 
+  - Editor拡張について適切な動作をするよう修正
+  - アップロード時にエラーが発生する問題を低減
+  - スクリーンに何らかの原因で不正な画像が存在する問題を修正
+  - 内部リファクタ

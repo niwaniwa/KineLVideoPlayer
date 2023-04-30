@@ -95,7 +95,7 @@ namespace Kinel.VideoPlayer.Udon.Module
         {
 #if UNITY_ANDROID
             // quest
-            if (videoPlayer.GetCurrentVideoMode() == STREAM_MODE)
+            if (videoPlayer.GetCurrentVideoMode() ==  (int) KinelVideoMode.Stream)
             {
                 var localScale = _screenRenderer.transform.localScale;
                 _screenRenderer.transform.localScale = new Vector3(localScale.x, -localScale.y, localScale.z);
