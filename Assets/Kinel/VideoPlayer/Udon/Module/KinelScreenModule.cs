@@ -46,8 +46,6 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public override void OnKinelVideoEnd() => UpdateRenderer();
 
-        private int runCound = 0;
-
         public void UpdateRenderer()
         {
             Texture texture = null;
@@ -66,14 +64,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
                 if (texture == null)
                 {
-                    runCound++;
-                    if(runCound < 10)
-                        SendCustomEventDelayedFrames(nameof(UpdateRenderer), 50);
-                    else
-                    {
-                        Debug.LogError($"{DEBUG_ERROR_PREFIX} Failed to apply screen. (KineLScreenModule.cs)");
-                        Debug.LogError($"{DEBUG_ERROR_PREFIX} If this error persists, please contact me on twitter @ni_rilana.");
-                    }
+                    SendCustomEventDelayedFrames(nameof(UpdateRenderer), 50);
                     return;
                 }
                 
