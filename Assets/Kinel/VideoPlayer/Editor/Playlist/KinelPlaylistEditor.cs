@@ -289,6 +289,7 @@ namespace Kinel.VideoPlayer.Editor
         
         public override void ApplyUdonProperties()
         {
+            if (_playlist == null) return;
             var playlist = _playlist.GetUdonSharpComponentInChildren<KinelPlaylist>();
             // var playlistUdon = _playlist.GetUdonSharpComponentInChildren<KinelPlaylist>();
             // var playlistSerialize = new SerializedObject(playlist);
