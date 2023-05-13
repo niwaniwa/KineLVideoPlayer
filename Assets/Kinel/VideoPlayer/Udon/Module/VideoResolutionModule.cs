@@ -20,6 +20,7 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void Start()
         {
+            if (videoPlayer == null) return;
             animator = videoPlayer.GetComponent<Animator>();
             SetResolution(resolutionArray[4]);
         }
