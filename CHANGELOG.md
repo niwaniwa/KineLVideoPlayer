@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## 2.4.3 - 2023-05-23
+### Fixed
+- Avoid errors during upload. ([#96](https://github.com/niwaniwa/KineLVideoPlayer/pull/96))
+
 ## 2.4.2 - 2023-05-08
 ### Fixed
 - Problem with video not appearing on screen during playback ([#92](https://github.com/niwaniwa/KineLVideoPlayer/issues/92))
