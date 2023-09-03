@@ -1,0 +1,46 @@
+####
+# 要件
+# 1. tagをpushしたら、releaseを作成する
+# 2. Releaseで自動的にChangelogのUnReleaseからRelease Noteを作成する
+# 3. ChangelogでUnReleaseの部分を自動的にRelease Noteに追加する
+# 4. ChangelogでUnReleaseの部分を追加後にバージョンを上げる
+# 5. バージョン更新後にChangelogにUnReleaseの部分を追加する
+###
+
+name: Create release note.
+
+on:
+  workflow_dispatch:
+    inputs:
+        version:
+            description: 'Version to release'
+            required: true
+            default: '0.0.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Changelog
+        uses: anatawa12/sh-actions/changelog/prepare-release@master
+
+      - name: Create Release
+        id: changelog
+        uses: anatawa12/sh-actions/changelog/prepare-release@master
+        with:
+          version: ${{ inputs.version  }}
+          tag-prefix: v
+          release-note-heading: |
+            Version: ${{ inputs.version  }}
+            ---
+
+      - uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          name: v${{ env.RELEASE_VERSION }}
+          body_path: ${{ github.workspace }}/release_notes_diff.txt
