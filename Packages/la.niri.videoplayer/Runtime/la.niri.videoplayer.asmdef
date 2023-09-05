@@ -1,0 +1,15 @@
+{
+  "name": "la.niri.videoplayer",
+  "references": [
+    "VRC.SDK3",
+    "VRC.SDKBase"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "defineConstraints": [],
+  "optionalUnityReferences": []
+}

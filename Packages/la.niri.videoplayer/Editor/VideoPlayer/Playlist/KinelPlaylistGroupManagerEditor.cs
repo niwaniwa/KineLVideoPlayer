@@ -21,7 +21,7 @@ namespace Kinel.VideoPlayer.Editor
     {
 
         private KinelPlaylistGroupManagerScript _kinelPlaylistGroupManager;
-        private SerializedProperty _videoPlayer, _playlistTabController, _playlists, _storePlaylist;
+        private SerializedProperty _videoPlayer, _playlists, _storePlaylist;
         
         
         private ReorderableList _reorderableList;
@@ -33,7 +33,7 @@ namespace Kinel.VideoPlayer.Editor
             _videoPlayer = serializedObject.FindProperty(nameof(KinelPlaylistGroupManagerScript.kinelVideoPlayer));
             _playlists = serializedObject.FindProperty(nameof(KinelPlaylistGroupManagerScript.playlists));
             _storePlaylist = serializedObject.FindProperty(nameof(KinelPlaylistGroupManagerScript.storePlaylist));
-            _playlistTabController = serializedObject.FindProperty(nameof(KinelPlaylistGroupManagerScript.controller));
+            // _playlistTabController = serializedObject.FindProperty(nameof(KinelPlaylistGroupManagerScript.controller));
 
             _reorderableList = new ReorderableList(serializedObject, _playlists)
             {
@@ -272,16 +272,16 @@ namespace Kinel.VideoPlayer.Editor
 
         private void PlaylistButtonInitializer(GameObject prefab, GameObject playlistPrefab, GameObject content)
         {
-            if (_playlistTabController.objectReferenceValue == null)
-            {
-                GetPlaylistTabController();
-                if (_playlistTabController.objectReferenceValue == null)
-                {
-                    EditorUtility.DisplayDialog("Error", "Editor error. Please contact me via Twitter @ni_rilana.", "OK");
-                    Debug.LogError($"{DEBUG_ERROR_PREFIX} Editor error. Please contact me via Twitter @ni_rilana. ");
-                    return;
-                }
-            }
+            // if (_playlistTabController.objectReferenceValue == null)
+            // {
+            //     GetPlaylistTabController();
+            //     if (_playlistTabController.objectReferenceValue == null)
+            //     {
+            //         EditorUtility.DisplayDialog("Error", "Editor error. Please contact me via Twitter @ni_rilana.", "OK");
+            //         Debug.LogError($"{DEBUG_ERROR_PREFIX} Editor error. Please contact me via Twitter @ni_rilana. ");
+            //         return;
+            //     }
+            // }
             
             var toggle = prefab.transform.Find("Dummy").GetComponent<Toggle>();
             var toggleGroup = content.GetComponent<ToggleGroup>();
@@ -322,12 +322,12 @@ namespace Kinel.VideoPlayer.Editor
 
         private void GetPlaylistTabController()
         {
-            if (_playlistTabController.objectReferenceValue != null)
-                return;
+            // if (_playlistTabController.objectReferenceValue != null)
+            //     return;
 
-            var tabController = _kinelPlaylistGroupManager.GetUdonSharpComponentInChildren<KinelPlaylistTabController>();
-
-            _playlistTabController.objectReferenceValue = tabController;
+            // var tabController = _kinelPlaylistGroupManager.GetUdonSharpComponentInChildren<KinelPlaylistTabController>();
+            //
+            // _playlistTabController.objectReferenceValue = tabController;
         }
 
         

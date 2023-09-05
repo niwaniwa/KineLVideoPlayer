@@ -1,0 +1,13 @@
+{
+  "name": "la.niri.videoplayer",
+  "displayName": "KineL Video Player",
+  "version": "0.0.1",
+  "description": "Video Player for VRChat",
+  "gitDependencies": {},
+  "vpmDependencies": {
+    "com.vrchat.udonsharp": "1.1.9"
+  },
+  "legacyFolders": {},
+  "legacyFiles": {},
+  "localPath": "F:\\Users\\konya\\VRChat\\2019\\World\\Kinel\\VRChat sdk3 Video Player VCC(git)\\Packages\\la.niri.videoplayer"
+}
