@@ -1,58 +1,72 @@
-####
-# 要件
-# 1. tagをpushしたら、releaseを作成する
-# 2. Releaseで自動的にChangelogのUnReleaseからRelease Noteを作成する
-# 3. ChangelogでUnReleaseの部分を自動的にRelease Noteに追加する
-# 4. ChangelogでUnReleaseの部分を追加後にバージョンを上げる
-# 5. バージョン更新後にChangelogにUnReleaseの部分を追加する
-###
+name: Build Release
 
-name: Create release note.
-
-on:
-  push:
-    tags:
-      - '*'
+on: 
   workflow_dispatch:
-    inputs:
-        version:
-            description: 'Version to release'
-            required: true
-            default: '0.0.0'
+
+env:
+  packageName: "la.niri.videoplayer"
+
+permissions:
+  contents: write
 
 jobs:
-  create-release:
+  build:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - name: Checkout code
+    
+      - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Extract tag name
-        shell: bash
-        run: echo "RELEASE_VERSION=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+    
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+        with: 
+            path: "Packages/${{env.packageName}}/package.json"
+            prop_path: "version"
 
       - name: Extract release notes
         id: release_notes
         run: |
-          RELEASE_NOTES="## Version ""$RELEASE_VERSION"$'\n'
+          RELEASE_NOTES="## Version ${{ steps.version.outputs.prop }}"$'\n'
           CURRENT_LINE=0
           while IFS= read -r line; do
-            if [[ "$line" == "## [$RELEASE_VERSION] - "* ]]; then
+            if [[ "$line" == "## ${{ steps.version.outputs.prop }} - "* ]]; then
               CURRENT_LINE=1
             elif [[ "$CURRENT_LINE" == 1 && "$line" == "## ["* ]]; then
               CURRENT_LINE=0
             elif [[ "$CURRENT_LINE" == 1 ]]; then
-              RELEASE_NOTES="$RELEASE_NOTES"$'\n'"$line"
+              RELEASE_NOTES+="$line"$'\n'
             fi
           done < "CHANGELOG.md"
           echo "$RELEASE_NOTES" > release_notes_diff.txt
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: Set Environment Variables
+        run: |
+          echo "zipFile=${{ env.packageName }}-${{ steps.version.outputs.prop }}".zip >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-${{ steps.version.outputs.prop }}.unitypackage" >> $GITHUB_ENV
+        
+      - name: Create Zip
+        uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
         with:
-          tag_name: v${{ env.RELEASE_VERSION }}
-          name: v${{ env.RELEASE_VERSION }}
+          type: "zip"
+          directory: "Packages/${{env.packageName}}/"
+          filename: "../../${{env.zipFile}}" # make the zip file two directories up, since we start two directories in above
+          
+      - run: find "Packages/${{env.packageName}}/" -name \*.meta >> metaList
+          
+      - name: Create UnityPackage
+        uses: pCYSl5EDgo/create-unitypackage@cfcd3cf0391a5ef1306342794866a9897c32af0b
+        with:
+          package-path: ${{ env.unityPackage }}
+          include-files: metaList
+        
+      - name: Make Release
+        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
+        with:
+          tag_name: ${{ steps.version.outputs.prop }}
+          name: v${{ steps.version.outputs.prop }}
           body_path: ${{ github.workspace }}/release_notes_diff.txt
+          files: |
+            ${{ env.zipFile }}
+            ${{ env.unityPackage }}
+            Packages/${{ env.packageName }}/package.json
