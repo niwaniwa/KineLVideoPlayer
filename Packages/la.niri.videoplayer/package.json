@@ -13,5 +13,10 @@
   "dependencies": {
     "com.vrchat.worlds": "3.2.0",
     "com.vrchat.udonsharp": "1.1.8"
-  }
+  },
+  "author": {
+    "name": "ni rila",
+    "url": "https://niri.la/"
+  },
+  "url": "https://github.com/niwaniwa/KineLVideoPlayer"
 }
