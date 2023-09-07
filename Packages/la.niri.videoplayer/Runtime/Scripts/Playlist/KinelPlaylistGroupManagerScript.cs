@@ -9,7 +9,7 @@ namespace Kinel.VideoPlayer.Scripts
     {
 
         public KinelVideoPlayer kinelVideoPlayer;
-        public KinelPlaylistTabController controller;
+        // public KinelPlaylistTabController controller;
 
         public Canvas[] playlistCanvas;
         public string[] playlists;
