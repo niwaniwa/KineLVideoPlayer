@@ -1,0 +1,58 @@
+####
+# 要件
+# 1. tagをpushしたら、releaseを作成する
+# 2. Releaseで自動的にChangelogのUnReleaseからRelease Noteを作成する
+# 3. ChangelogでUnReleaseの部分を自動的にRelease Noteに追加する
+# 4. ChangelogでUnReleaseの部分を追加後にバージョンを上げる
+# 5. バージョン更新後にChangelogにUnReleaseの部分を追加する
+###
+
+name: Create release note.
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+        version:
+            description: 'Version to release'
+            required: true
+            default: '0.0.0'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Extract tag name
+        shell: bash
+        run: echo "RELEASE_VERSION=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+
+      - name: Extract release notes
+        id: release_notes
+        run: |
+          RELEASE_NOTES="## Version ""$RELEASE_VERSION"$'\n'
+          CURRENT_LINE=0
+          while IFS= read -r line; do
+            if [[ "$line" == "## [$RELEASE_VERSION] - "* ]]; then
+              CURRENT_LINE=1
+            elif [[ "$CURRENT_LINE" == 1 && "$line" == "## ["* ]]; then
+              CURRENT_LINE=0
+            elif [[ "$CURRENT_LINE" == 1 ]]; then
+              RELEASE_NOTES="$RELEASE_NOTES"$'\n'"$line"
+            fi
+          done < "CHANGELOG.md"
+          echo "$RELEASE_NOTES" > release_notes_diff.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          name: v${{ env.RELEASE_VERSION }}
+          body_path: ${{ github.workspace }}/release_notes_diff.txt
