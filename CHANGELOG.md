@@ -12,10 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-- Fixed udon asmdef reference. [`#108`](https://github.com/niwaniwa/KineLVideoPlayer/issues/108)
-- Fixed PlaylistAPI URL. [`#109`](https://github.com/niwaniwa/KineLVideoPlayer/issues/109)
 
 ### Removed
+
+## 2.5.1 - 2023-09-12
+### Fixed
+- Fixed udon asmdef reference. [`#108`](https://github.com/niwaniwa/KineLVideoPlayer/issues/108)
+- Fixed PlaylistAPI URL. [`#109`](https://github.com/niwaniwa/KineLVideoPlayer/issues/109)
 
 ## 2.5.0 - 2023-09-07
 ### Changed

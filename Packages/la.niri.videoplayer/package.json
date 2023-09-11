@@ -1,19 +1,15 @@
 {
   "name": "la.niri.videoplayer",
   "displayName": "KineL Video Player",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Video Player for VRChat",
   "gitDependencies": {},
   "vpmDependencies": {
-    "com.vrchat.udonsharp": "1.1.9"
+    "com.vrchat.udonsharp": "^1.1.9"
   },
   "legacyFolders": {},
   "legacyFiles": {},
   "unity": "2019.4",
-  "dependencies": {
-    "com.vrchat.worlds": "3.2.0",
-    "com.vrchat.udonsharp": "1.1.8"
-  },
   "author": {
     "name": "ni rila",
     "url": "https://niri.la/"
