@@ -10,11 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Change to VPM. [`#56`](https://github.com/niwaniwa/KineLVideoPlayer/issues/56)
 
 ### Fixed
+- Fixed PlaylistAPI URL. [`#109`](https://github.com/niwaniwa/KineLVideoPlayer/issues/109)
 
 ### Removed
+
+## 2.5.0 - 2023-09-07
+### Changed
+- Change to VPM. [`#56`](https://github.com/niwaniwa/KineLVideoPlayer/issues/56)
 
 ## 2.4.3 - 2023-05-23
 ### Fixed
