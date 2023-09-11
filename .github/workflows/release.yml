@@ -84,7 +84,7 @@ jobs:
     uses: niwaniwa/vpm.niri.la/.github/workflows/update.yml@main
     needs: [build]
     with:
-      repository_name: playercounter
+      repository_name: KineLVideoPlayer
       version: ${{ needs.build.outputs.version }}
     secrets:
       access-token: ${{ secrets.ACCESS_REPO }}
