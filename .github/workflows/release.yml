@@ -12,6 +12,11 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    outputs:
+      package_name: ${{ steps.set_outputs.outputs.package_name }}
+      version: ${{ steps.set_outputs.outputs.version }}
+        
     steps:
     
       - name: Checkout
@@ -70,3 +75,16 @@ jobs:
             ${{ env.zipFile }}
             ${{ env.unityPackage }}
             Packages/${{ env.packageName }}/package.json
+      - name: Set outputs
+        id: set_outputs
+        run: |
+          echo "version=${{ steps.version.outputs.prop }}" >> "$GITHUB_OUTPUT"
+
+  publish-vpm:
+    uses: niwaniwa/vpm.niri.la/.github/workflows/update.yml@main
+    needs: [build]
+    with:
+      repository_name: playercounter
+      version: ${{ needs.build.outputs.version }}
+    secrets:
+      access-token: ${{ secrets.ACCESS_REPO }}
