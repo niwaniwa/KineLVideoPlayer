@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fixed mirror inversion. [`#112`](https://github.com/niwaniwa/KineLVideoPlayer/issues/112)
 
 ### Removed
 
