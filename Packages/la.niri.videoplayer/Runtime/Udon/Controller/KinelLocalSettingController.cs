@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using System;
+using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDKBase;
@@ -73,7 +74,6 @@ namespace Kinel.VideoPlayer.Udon.Controller
             foreach (var screen in screens)
             {
                 screen.SetMirrorInversion(!screen.IsMirrorInversion);
-                screen.IsMirrorInversion = !screen.IsMirrorInversion;
             }
         }
         

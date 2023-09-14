@@ -74,9 +74,9 @@ namespace Kinel.VideoPlayer.Udon.Module
                     _propertyBlock.SetInt("_IsAVPRO", 0);
 
                 _propertyBlock.SetTexture(propertyName, texture);
+                _propertyBlock.SetInt("_NoMirrorInversion", IsMirrorInversion ? 1 : 0);
 
             }
-
             _screenRenderer.SetPropertyBlock(_propertyBlock, materialIndex);
 
         }
@@ -115,29 +115,9 @@ namespace Kinel.VideoPlayer.Udon.Module
 
         public void SetMirrorInversion(bool active)
         {
-            if (active)
-            {
-                _propertyBlock.SetInt("_NoMirrorInversion", 1);
-            }
-            else
-            {
-                _propertyBlock.SetInt("_NoMirrorInversion", 0);
-            }
+            isMirrorInversion = active;
             UpdateRenderer();
         }
-        
-        // public void SetScreenInversion(bool active)
-        // {
-        //     if (active)
-        //     {
-        //         // _screenRenderer.transform.rotation
-        //         // _screenRenderer.materials[materialIndex].SetInt("_InvertUV", 1);
-        //     }
-        //     else
-        //     {
-        //         // _screenRenderer.materials[materialIndex].SetInt("_InvertUV", 0);
-        //     }
-        // }
 
         public void SetBrightness(float darkness)
         {
