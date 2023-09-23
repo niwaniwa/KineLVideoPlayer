@@ -37,7 +37,7 @@ jobs:
           while IFS= read -r line; do
             if [[ "$line" == "## ${{ steps.version.outputs.prop }} - "* ]]; then
               CURRENT_LINE=1
-            elif [[ "$CURRENT_LINE" == 1 && "$line" == "## ["* ]]; then
+            elif [[ "$CURRENT_LINE" == 1 && "$line" == "## "* ]]; then
               CURRENT_LINE=0
             elif [[ "$CURRENT_LINE" == 1 ]]; then
               RELEASE_NOTES+="$line"$'\n'
