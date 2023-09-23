@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+- Fixed default mirror inversion setting. [`#114`](https://kvvs.net/proxy?url=https://youtu.be/OVugWWmMADc?list=RDOVugWWmMADc)
 
 ### Removed
 
