@@ -12,9 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-- Fixed Editor set dirty. [`#116`](https://github.com/niwaniwa/KineLVideoPlayer/issues/116)
 
 ### Removed
+
+## 2.5.4 - 2023-10-04
+### Added
+- Added LegacyFolders setting. [`#118`](https://github.com/niwaniwa/KineLVideoPlayer/issues/118)
+
+### Fixed
+- Fixed Editor set dirty. [`#116`](https://github.com/niwaniwa/KineLVideoPlayer/issues/116)
 
 ## 2.5.3 - 2023-09-23
 ### Fixed
