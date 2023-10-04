@@ -74,6 +74,7 @@ namespace Kinel.VideoPlayer.Editor
             UdonSharpEditorUtility.CopyProxyToUdon(ui);
             
             EditorUtility.SetDirty(_kinelVideoPlayerUI);
+            EditorUtility.SetDirty(ui);
             // _kinelVideoPlayerUI.UpdateProxy();
         }
         
