@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Kinel.VideoPlayer.Scripts;
-using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -10,7 +8,7 @@ namespace Kinel.VideoPlayer.Editor
     public static class PlaylistDataGateway
     {
 
-        private const string youtubePlaylistURL = "https://playlist.niri.la/playlist/";/* AWS Url... */
+        private const string youtubePlaylistURL = "https://playlist.niri.la/playlist/";
 
         public static YoutubePlaylistDataResponce GetYoutubePlaylist(string url)
         {
