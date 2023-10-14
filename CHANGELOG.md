@@ -12,9 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-- Delete unused using state. [`#120`](https://github.com/niwaniwa/KineLVideoPlayer/issues/120)
 
 ### Removed
+
+## 2.5.5 - 2023-10-14
+### Fixed
+- Delete unused using state. [`#120`](https://github.com/niwaniwa/KineLVideoPlayer/issues/120)
 
 ## 2.5.4 - 2023-10-04
 ### Added
