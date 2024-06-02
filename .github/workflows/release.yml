@@ -26,9 +26,22 @@ jobs:
         id: version
         uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
         with: 
-            path: "Packages/${{env.packageName}}/package.json"
+            path: "package.json"
             prop_path: "version"
+    
+      - name: Set Environment Variables
+        run: |
+          echo "zipFile=${{ env.packageName }}-${{ steps.version.outputs.prop }}".zip >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-${{ steps.version.outputs.prop }}.unitypackage" >> $GITHUB_ENV
+        
+      - name: Create Zip
+        run: zip -r "$ZIP_NAME" . -x '.*'
+        env:
+          ZIP_NAME: "${{env.zipFile}}" 
 
+      - name: Create VPAI Package
+        run: curl -sL "https://api.anatawa12.com/create-vpai/?repo=https%3A%2F%2Fvpm.niri.la%2Fvpm.json&package=$packageName&version=${{ steps.set_outputs.outputs.version }}" > "$unityPackage"
+      
       - name: Extract release notes
         id: release_notes
         run: |
@@ -44,27 +57,7 @@ jobs:
             fi
           done < "CHANGELOG.md"
           echo "$RELEASE_NOTES" > release_notes_diff.txt
-    
-      - name: Set Environment Variables
-        run: |
-          echo "zipFile=${{ env.packageName }}-${{ steps.version.outputs.prop }}".zip >> $GITHUB_ENV
-          echo "unityPackage=${{ env.packageName }}-${{ steps.version.outputs.prop }}.unitypackage" >> $GITHUB_ENV
-        
-      - name: Create Zip
-        uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
-        with:
-          type: "zip"
-          directory: "Packages/${{env.packageName}}/"
-          filename: "../../${{env.zipFile}}" # make the zip file two directories up, since we start two directories in above
-          
-      - run: find "Packages/${{env.packageName}}/" -name \*.meta >> metaList
-          
-      - name: Create UnityPackage
-        uses: pCYSl5EDgo/create-unitypackage@cfcd3cf0391a5ef1306342794866a9897c32af0b
-        with:
-          package-path: ${{ env.unityPackage }}
-          include-files: metaList
-        
+  
       - name: Make Release
         uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
         with:
@@ -74,7 +67,7 @@ jobs:
           files: |
             ${{ env.zipFile }}
             ${{ env.unityPackage }}
-            Packages/${{ env.packageName }}/package.json
+            package.json
       - name: Set outputs
         id: set_outputs
         run: |
