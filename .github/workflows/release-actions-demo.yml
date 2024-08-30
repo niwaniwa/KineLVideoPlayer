@@ -185,9 +185,9 @@ jobs:
 
   publish-vpm:
     uses: niwaniwa/vpm.niri.la/.github/workflows/update.yml@main
-    needs: [build]
+    needs: [create-release]
     with:
       repository_name: KineLVideoPlayer
-      version: ${{ needs.build.outputs.version }}
+      version: ${{ needs.create-release.outputs.version }}
     secrets:
       access-token: ${{ secrets.ACCESS_REPO }}
