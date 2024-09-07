@@ -143,7 +143,6 @@ jobs:
       
       #### end 
 
-
       - name: Commit & tag version
         if: ${{ inputs.publish }}
         run: |
@@ -166,7 +165,9 @@ jobs:
 
           gh release create "v${{ steps.bumpup.outputs.next_version }}" \
             -F "$RELEASE_NOTE" \
-            ${{ fromJSON(env.PRERELEASE) && '--prerelease' || '' }}
+            ${{ fromJSON(env.PRERELEASE) && '--prerelease' || '' }} \
+            "${{ env.zipFile }}" \
+            "package.json" \
 
       - name: prepare next release version
         if: inputs.publish && !fromJSON(env.PRERELEASE)
@@ -188,6 +189,6 @@ jobs:
     needs: [create-release]
     with:
       repository_name: KineLVideoPlayer
-      version: ${{ needs.create-release.outputs.version }}
+      version: v${{ needs.create-release.outputs.version }}
     secrets:
       access-token: ${{ secrets.ACCESS_REPO }}
