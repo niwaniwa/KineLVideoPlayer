@@ -125,13 +125,13 @@ jobs:
       #### region vpm settings
       - name: Set Environment Variables
         run: |
-          echo "zipFile=${{ env.packageName }}-${{ steps.bumpup.outputs.next_version }}".zip >> $GITHUB_ENV
-          echo "unityPackage=${{ env.packageName }}-${{ steps.bumpup.outputs.next_version }}.unitypackage" >> $GITHUB_ENV
+          echo "zipFile=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}".zip >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}.unitypackage" >> $GITHUB_ENV
   
       - name: Set Environment Variables
         run: |
-          echo "zipFile=${{ env.packageName }}-${{ steps.bumpup.outputs.next_version }}".zip >> $GITHUB_ENV
-          echo "unityPackage=${{ env.packageName }}-${{ steps.bumpup.outputs.next_version }}.unitypackage" >> $GITHUB_ENV
+          echo "zipFile=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}".zip >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}.unitypackage" >> $GITHUB_ENV
         
       - name: Create Zip
         run: zip -r "$ZIP_NAME" . -x '.*'
