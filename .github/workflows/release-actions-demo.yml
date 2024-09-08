@@ -1,0 +1,194 @@
+name: release actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_kind:
+        type: choice
+        description: Release kind
+        default: none
+        required: true
+        options:
+          - prerelease
+          - start-rc
+          - stable
+      publish:
+        description: "publish release"
+        type: boolean
+        required: false
+
+env:
+  packageName: "la.niri.videoplayer"
+
+permissions:
+  contents: write
+
+# for vrchat package
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.bumpup.outputs.next_version }}
+
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+      - uses: snow-actions/git-config-user@v1.0.0
+
+      - name: Get package version
+        id: version
+        uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+        with: 
+            path: "package.json"
+            prop_path: "version"
+
+      - name: Show kind
+        run: echo type = ${{ github.event.inputs.release_kind }}
+
+      - name: Setup release kind
+        run: |
+          case "${{ github.event.inputs.release_kind }}" in
+            "prerelease" )
+              echo "RELEASE_KIND=beta" >> $GITHUB_ENV 
+              echo "PRERELEASE=true" >> $GITHUB_ENV 
+              ;;
+            "start-rc" )
+              echo "RELEASE_KIND=rc" >> $GITHUB_ENV 
+              echo "PRERELEASE=true" >> $GITHUB_ENV 
+              ;;
+            "stable" )
+              echo "RELEASE_KIND=none" >> $GITHUB_ENV 
+              echo "PRERELEASE=false" >> $GITHUB_ENV 
+              ;;
+            * )
+              echo "invalid release kind: ${{ github.event.inputs.release_kind }}"
+              exit 255
+              ;;
+          esac
+
+      - name: Get bump version
+        id: bumpup
+        uses: niwaniwa/version-next@v1.0.4
+        with:
+          version-input: ${{ steps.version.outputs.prop }}
+          release-type: ${{ env.RELEASE_KIND }}
+
+      - name: Set next version
+        run: jq --arg new_version "${{ steps.bumpup.outputs.next_version }}" '.version = $new_version' package.json > package.tmp && mv package.tmp package.json
+
+      - name: Show version
+        run: |
+          echo version = ${{ steps.bumpup.outputs.next_version }}
+
+      #### region release note settings
+      - id: changelog
+        uses: niwaniwa/sh-actions/changelog/prepare-release@master
+        with:
+            version: ${{ steps.bumpup.outputs.next_version }}
+            prerelease: ${{ env.PRERELEASE }}
+            tag-prefix: v
+            prerelease-note-heading: |
+                Version ${{ steps.bumpup.outputs.next_version }}
+                ---
+
+                **This is SNAPSHOT, not a stable release. make sure this may have many bugs.**
+            release-note-heading: |
+                Version ${{ steps.bumpup.outputs.next_version }}
+                ---
+      - name: Upload CHANGELOG.md
+        if: ${{ !fromJSON(env.PRERELEASE) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: CHANGELOG
+          path: CHANGELOG.md
+      - name: Upload CHANGELOG-PRERELEASE.md
+        uses: actions/upload-artifact@v4
+        with:
+          name: CHANGELOG-PRERELEASE
+          path: CHANGELOG-PRERELEASE.md
+
+      - run: cp "${{ steps.changelog.outputs.release-note }}" release-note.md
+
+      - name: Upload release note
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog
+          path: release-note.md
+      - run: rm release-note.md
+      ### end region
+
+      #### region vpm settings
+      - name: Set Environment Variables
+        run: |
+          echo "zipFile=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}".zip >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}.unitypackage" >> $GITHUB_ENV
+  
+      - name: Set Environment Variables
+        run: |
+          echo "zipFile=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}".zip >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-v${{ steps.bumpup.outputs.next_version }}.unitypackage" >> $GITHUB_ENV
+        
+      - name: Create Zip
+        run: zip -r "$ZIP_NAME" . -x '.*'
+        env:
+          ZIP_NAME: "${{env.zipFile}}" 
+
+      - name: Create VPAI Package
+        run: curl -sL "https://api.anatawa12.com/create-vpai/?repo=https%3A%2F%2Fvpm.niri.la%2Fvpm.json&package=$packageName&version=${{ steps.bumpup.outputs.next_version }}" > "$unityPackage"
+      
+      #### end 
+
+      - name: Commit & tag version
+        if: ${{ inputs.publish }}
+        run: |
+          git commit -am "chore: bump version to ${{ steps.bumpup.outputs.next_version }}"
+          git tag "v${{ steps.bumpup.outputs.next_version }}"
+
+      - name: Publish Release
+        if: ${{ inputs.publish }}
+        run: |
+          git push && git push origin "v${{ steps.bumpup.outputs.next_version }}"
+
+      - name: Publish release to github
+        if: ${{ inputs.publish }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_NOTE: ${{ steps.changelog.outputs.release-note }}
+        shell: bash
+        run: |
+          sleep 1
+
+          gh release create "v${{ steps.bumpup.outputs.next_version }}" \
+            -F "$RELEASE_NOTE" \
+            ${{ fromJSON(env.PRERELEASE) && '--prerelease' || '' }} \
+            "${{ env.zipFile }}" \
+            "package.json" \
+
+      - name: prepare next release version
+        if: inputs.publish && !fromJSON(env.PRERELEASE)
+        id: get-release-version
+        uses: niwaniwa/version-next@v1.0.4
+        with:
+          version-input: ${{ steps.bumpup.outputs.next_version }}
+          release-type: beta
+
+      - name: prepare next release & push
+        if: inputs.publish && !fromJSON(env.PRERELEASE)
+        run: |
+          jq --arg new_version "${{ steps.get-release-version.outputs.next_version }}" '.version = $new_version' package.json > package.tmp && mv package.tmp package.json
+          git commit -am "chore: prepare for next version: ${{ steps.get-release-version.outputs.next_version }}"
+          git push && git push --tags
+
+  publish-vpm:
+    uses: niwaniwa/vpm.niri.la/.github/workflows/update.yml@main
+    needs: [create-release]
+    with:
+      repository_name: KineLVideoPlayer
+      version: v${{ needs.create-release.outputs.version }}
+    secrets:
+      access-token: ${{ secrets.ACCESS_REPO }}
