@@ -15,7 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## 2.5.5 - 2026-03-10
+## v3.0.0-beta.2 - 2026-03-11
+
+### Changed
+- Bump up from KineL v3.0.0-beta.1
+
+## v3.0.0-beta.1 - 2026-03-10
 
 ### Changed
 - Bump up from KineL 2.5.5
