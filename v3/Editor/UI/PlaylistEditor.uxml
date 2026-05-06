@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+        xmlns:engine="UnityEngine.UIElements"
+        xmlns:editor="UnityEditor.UIElements"
+        xsi:noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <engine:VisualElement name="root" class="kinel-playlist-root">
+        <!-- ===== Top toolbar ===== -->
+        <engine:VisualElement name="toolbar" class="kinel-toolbar">
+            <editor:ObjectField name="behaviour-field" label="KinelPlaylistScript" allow-scene-objects="true"/>
+        </engine:VisualElement>
+
+        <!-- ===== Body: sidebar + main ===== -->
+        <engine:TwoPaneSplitView name="body"
+                                 class="kinel-body"
+                                 fixed-pane-index="0"
+                                 fixed-pane-initial-dimension="80"
+                                 orientation="Horizontal">
+            <!-- Sidebar: avatar list of playlists -->
+            <engine:VisualElement name="sidebar" class="kinel-sidebar">
+                <engine:ListView name="playlist-list"
+                                 reorderable="true"
+                                 reorder-mode="Animated"
+                                 show-add-remove-footer="true"
+                                 show-border="false"
+                                 selection-type="Single"
+                                 fixed-item-height="64"/>
+            </engine:VisualElement>
+
+            <!-- Main: header + track list + actions -->
+            <engine:VisualElement name="main" class="kinel-main">
+                <!-- Selected playlist header -->
+                <engine:VisualElement name="main-header" class="kinel-main-header">
+                    <engine:TextField name="playlist-name" class="kinel-playlist-name" is-delayed="true"/>
+                    <engine:Label name="playlist-meta" text="" class="kinel-playlist-meta"/>
+                </engine:VisualElement>
+
+                <engine:Label name="empty-hint"
+                              text="左から Playlist を選択してください"
+                              class="kinel-hint"/>
+
+                <engine:ListView name="track-list"
+                                 reorderable="true"
+                                 reorder-mode="Animated"
+                                 show-add-remove-footer="true"
+                                 show-border="false"
+                                 fixed-item-height="92"/>
+
+                <!-- Track-level actions -->
+                <engine:VisualElement name="actions" class="kinel-actions">
+                    <engine:Button name="reverse-button" text="逆順" class="kinel-secondary-button"/>
+                    <engine:Button name="clear-button" text="全削除" class="kinel-secondary-button"/>
+                    <engine:Button name="setall-avpro-button" text="全て AvPro" class="kinel-secondary-button"/>
+                    <engine:VisualElement class="kinel-spacer"/>
+                    <engine:TextField name="import-url" label="プレイリスト URL" class="kinel-import-input"/>
+                    <engine:Button name="import-button" text="動画を取得" class="kinel-secondary-button"/>
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:TwoPaneSplitView>
+
+        <!-- ===== Footer: dirty indicator + save ===== -->
+        <engine:VisualElement name="footer" class="kinel-footer">
+            <engine:Label name="dirty-indicator" text="● 未保存" class="kinel-dirty-indicator"/>
+            <engine:VisualElement class="kinel-spacer"/>
+            <engine:Button name="save-button" text="保存" class="kinel-save-button"/>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

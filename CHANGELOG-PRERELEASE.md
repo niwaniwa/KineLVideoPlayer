@@ -7,18 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+-  `KineLLocalVideoPlayer`をベースに v3 として `v3/`に移行。
+  - Prefab `v3/KineLVideoPlayer-v3.prefab`を追加
 
-### Changed
+- 機能実装
+  - ローカルで再生時間をオフセット出来るように
+  - AB Loop（`KinelABLoop` + UI + `KinelMinMaxSlider`）
 
-### Deprecated
+### Changed 
+- 同期システムを分離 (`KinelVariableSyncer`)
+- 速度変更を堅牢化
+- Listenerとcontrollerを分離
+  - v2に関しては互換性維持のため残しておく。今後移行用スクリプトを提供
 
-### Removed
-
-### Fixed
-
-### Security
 
 ## [3.0.0-beta.3] - 2026-03-10
+
+- unreleased
 
 ## v3.0.0-beta.2 - 2026-03-11
 

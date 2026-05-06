@@ -1,0 +1,348 @@
+/* ==========================================================================
+   Design tokens
+   ========================================================================== */
+.kinel-playlist-root {
+    /* Blue scale (Tailwind-aligned) */
+    --kinel-blue-50:  #EFF6FF;
+    --kinel-blue-100: #DBEAFE;
+    --kinel-blue-200: #BFDBFE;
+    --kinel-blue-500: #3B82F6;
+    --kinel-blue-600: #2563EB;
+    --kinel-blue-700: #1D4ED8;
+
+    /* Semantic blue tokens */
+    --kinel-primary:        var(--kinel-blue-500);
+    --kinel-primary-hover:  var(--kinel-blue-600);
+    --kinel-primary-active: var(--kinel-blue-700);
+    --kinel-primary-subtle: rgba(59, 130, 246, 0.12);
+    --kinel-primary-border: rgba(59, 130, 246, 0.45);
+
+    /* MediaType colors (Tailwind /500 family) */
+    --kinel-type-avpro:   #3B82F6;  /* blue */
+    --kinel-type-unity:   #10B981;  /* emerald */
+    --kinel-type-image:   #8B5CF6;  /* violet */
+    --kinel-type-iwasync: #F59E0B;  /* amber */
+
+    /* Geometry */
+    --kinel-radius-card:   6px;
+    --kinel-radius-button: 4px;
+    --kinel-radius-pill:   12px;
+
+    /* Status (warn/dirty) */
+    --kinel-warn: #F59E0B;
+
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   Top-level layout
+   ========================================================================== */
+.kinel-toolbar {
+    padding: 10px 14px;
+    background-color: var(--unity-colors-app_toolbar-background);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--unity-colors-default-border);
+    flex-shrink: 0;
+}
+
+.kinel-body {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.kinel-footer {
+    padding: 10px 14px;
+    border-top-width: 1px;
+    border-top-color: var(--unity-colors-default-border);
+    background-color: var(--unity-colors-app_toolbar-background);
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.kinel-spacer { flex-grow: 1; }
+
+/* ==========================================================================
+   Sidebar (Playlist avatars)
+   ========================================================================== */
+.kinel-sidebar {
+    flex-direction: column;
+    background-color: var(--unity-colors-helpbox-background);
+    border-right-width: 1px;
+    border-right-color: var(--unity-colors-default-border);
+}
+
+#playlist-list {
+    flex-grow: 1;
+    margin: 8px 0;
+}
+
+/* Hide the default drag handle / icons on sidebar rows for a cleaner avatar look */
+#playlist-list .unity-list-view__reorderable-handle {
+    display: none;
+}
+
+/* Sidebar row container (avatar + name placeholder removed) */
+.kinel-avatar-row {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 0;
+}
+
+/* The avatar tile itself */
+.kinel-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--kinel-radius-card);
+    background-color: var(--kinel-blue-100);
+    align-items: center;
+    justify-content: center;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
+}
+
+.kinel-avatar-letter {
+    -unity-font-style: bold;
+    font-size: 18px;
+    color: var(--kinel-blue-700);
+    margin: 0;
+    padding: 0;
+}
+
+/* Hovered playlist row (apply to ListView item) */
+#playlist-list .unity-list-view__item:hover .kinel-avatar {
+    background-color: var(--kinel-blue-200);
+}
+
+/* Selected playlist row */
+#playlist-list .unity-list-view__item:checked .kinel-avatar,
+#playlist-list .unity-collection-view__item--selected .kinel-avatar {
+    background-color: var(--kinel-primary);
+    border-color: var(--kinel-primary-border);
+}
+
+#playlist-list .unity-list-view__item:checked .kinel-avatar-letter,
+#playlist-list .unity-collection-view__item--selected .kinel-avatar-letter {
+    color: rgb(255, 255, 255);
+}
+
+/* Suppress default ListView item background since we visualize selection via avatar */
+#playlist-list .unity-list-view__item {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    border-left-width: 0;
+}
+
+#playlist-list .unity-list-view__item:hover {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* ==========================================================================
+   Main panel
+   ========================================================================== */
+.kinel-main {
+    flex-direction: column;
+    padding: 0 14px 14px 14px;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.kinel-main-header {
+    flex-direction: column;
+    padding: 14px 4px 10px 4px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--unity-colors-default-border);
+    margin-bottom: 8px;
+}
+
+.kinel-playlist-name {
+    -unity-font-style: bold;
+    font-size: 18px;
+    color: var(--unity-colors-default-text);
+    margin: 0;
+}
+
+/* Make the name TextField look like a heading (transparent until focus) */
+.kinel-playlist-name > .unity-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    padding: 4px 6px;
+    -unity-font-style: bold;
+    font-size: 18px;
+    color: var(--unity-colors-default-text);
+}
+
+.kinel-playlist-name > .unity-text-field__input:focus {
+    background-color: var(--unity-colors-input_field-background);
+    border-width: 1px;
+    border-color: var(--unity-colors-input_field-border-focus);
+}
+
+.kinel-playlist-meta {
+    color: var(--unity-colors-helpbox-text);
+    font-size: 11px;
+    padding: 0 6px;
+    margin-top: 2px;
+}
+
+/* ==========================================================================
+   Empty state (no playlist selected)
+   ========================================================================== */
+.kinel-hint {
+    color: var(--unity-colors-helpbox-text);
+    padding: 64px 24px;
+    -unity-font-style: italic;
+    -unity-text-align: middle-center;
+    font-size: 13px;
+    flex-grow: 1;
+    white-space: normal;
+}
+
+/* ==========================================================================
+   Track list
+   ========================================================================== */
+#track-list {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-bottom: 8px;
+}
+
+#track-list .unity-list-view__item {
+    border-radius: var(--kinel-radius-card);
+    margin: 0 4px;
+    padding: 4px 8px;
+    border-left-width: 3px;
+    border-left-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, border-left-color;
+    transition-duration: 0.12s;
+}
+
+#track-list .unity-list-view__item:hover {
+    background-color: var(--kinel-primary-subtle);
+}
+
+#track-list .unity-list-view__item:checked,
+#track-list .unity-collection-view__item--selected {
+    background-color: var(--kinel-primary-subtle);
+    border-left-color: var(--kinel-primary);
+}
+
+/* ----- Track row: header (Type chip) + body fields -----
+   ListView fixed-item-height=92, item padding 4+4=8, border 3,
+   残り 81px に収まる構成 (header 22+4 + title 20+2 + url 20+2 + buffer) */
+.kinel-track-row {
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 80px;
+}
+
+.kinel-track-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+    height: 22px;
+}
+
+.kinel-track-fields {
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.kinel-track-fields > .unity-base-field {
+    margin: 1px 0;
+}
+
+/* ==========================================================================
+   MediaType color chip (EnumField styled as a pill)
+   ========================================================================== */
+.kinel-type-chip {
+    border-radius: var(--kinel-radius-pill);
+    border-width: 0;
+    padding: 0;
+    margin-right: 8px;
+    min-width: 96px;
+    height: 22px;
+}
+
+.kinel-type-chip > .unity-enum-field__input {
+    border-radius: var(--kinel-radius-pill);
+    border-width: 0;
+    padding: 2px 12px;
+    -unity-font-style: bold;
+    font-size: 11px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+}
+
+.kinel-type-chip > .unity-enum-field__input > .unity-enum-field__text {
+    color: rgb(255, 255, 255);
+    margin-right: 2px;
+}
+
+.kinel-type-chip > .unity-enum-field__input > .unity-enum-field__arrow {
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+/* per-type background color */
+.kinel-type-chip--avpro   > .unity-enum-field__input { background-color: var(--kinel-type-avpro); }
+.kinel-type-chip--unity   > .unity-enum-field__input { background-color: var(--kinel-type-unity); }
+.kinel-type-chip--image   > .unity-enum-field__input { background-color: var(--kinel-type-image); }
+.kinel-type-chip--iwasync > .unity-enum-field__input { background-color: var(--kinel-type-iwasync); }
+
+/* ==========================================================================
+   Actions row (under track list)
+   ========================================================================== */
+.kinel-actions {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 0 0 0;
+}
+
+.kinel-import-input {
+    flex-grow: 1;
+    margin: 0 6px;
+    max-width: 280px;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.kinel-save-button {
+    min-width: 110px;
+    height: 28px;
+    padding: 0 18px;
+    -unity-font-style: bold;
+    border-radius: var(--kinel-radius-button);
+    background-color: var(--kinel-primary);
+    color: rgb(255, 255, 255);
+    border-width: 0;
+}
+
+.kinel-save-button:hover  { background-color: var(--kinel-primary-hover); }
+.kinel-save-button:active { background-color: var(--kinel-primary-active); }
+
+.kinel-secondary-button {
+    margin-right: 6px;
+    height: 24px;
+    border-radius: var(--kinel-radius-button);
+    min-width: 76px;
+}
+
+/* ==========================================================================
+   Dirty indicator (footer left)
+   ========================================================================== */
+.kinel-dirty-indicator {
+    color: var(--kinel-warn);
+    -unity-font-style: bold;
+    font-size: 11px;
+    padding: 0 4px;
+    margin: 0;
+}

@@ -1,0 +1,26 @@
+﻿{
+    "name":  "Kinel.VideoPlayer.V3.Scripts.Attribute",
+    "rootNamespace":  "",
+    "references":  [
+
+                   ],
+    "includePlatforms":  [
+
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  false,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
+}
