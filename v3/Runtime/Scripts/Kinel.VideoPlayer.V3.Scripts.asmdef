@@ -1,0 +1,30 @@
+﻿{
+    "name":  "Kinel.VideoPlayer.V3.Scripts",
+    "rootNamespace":  "",
+    "references":  [
+                       "GUID:3c1bc1267eab5884ebe7f232c09ee0d9",
+                       "GUID:99835874ee819da44948776e0df4ff1d",
+                       "GUID:3ca842002c51d0a43b73e45298809a13",
+                       "GUID:8db60ebac3ff4191a3c0245da08dea9f",
+                       "GUID:5fa2a23ae3a1466d82b48553fff355e9"
+                   ],
+    "includePlatforms":  [
+
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  false,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
+}

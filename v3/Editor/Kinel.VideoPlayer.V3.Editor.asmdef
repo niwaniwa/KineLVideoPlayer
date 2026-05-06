@@ -1,0 +1,38 @@
+﻿{
+    "name":  "Kinel.VideoPlayer.V3.Editor",
+    "rootNamespace":  "",
+    "references":  [
+                       "GUID:8db60ebac3ff4191a3c0245da08dea9f",
+                       "GUID:f51ebe6a0ceec4240a699833d6309b23",
+                       "GUID:c1bc8930003d8c746b8de9636ba0c3e3",
+                       "GUID:3ca842002c51d0a43b73e45298809a13",
+                       "GUID:36eb83e6b37c4ee4a81cea3147d14988",
+                       "GUID:84265b35cca3905448e623ef3903f0ff",
+                       "GUID:6c633d01c0e5cb4468f79fa0b8648cc4",
+                       "GUID:99835874ee819da44948776e0df4ff1d",
+                       "GUID:5fa2a23ae3a1466d82b48553fff355e9",
+                       "GUID:3c1bc1267eab5884ebe7f232c09ee0d9",
+                       "GUID:6055be8ebefd69e48b49212b09b47b2f",
+                       "UnityEngine.UIElementsModule",
+                       "UnityEditor.UIElementsModule"
+                   ],
+    "includePlatforms":  [
+                             "Editor"
+                         ],
+    "excludePlatforms":  [
+
+                         ],
+    "allowUnsafeCode":  false,
+    "overrideReferences":  false,
+    "precompiledReferences":  [
+
+                              ],
+    "autoReferenced":  false,
+    "defineConstraints":  [
+
+                          ],
+    "versionDefines":  [
+
+                       ],
+    "noEngineReferences":  false
+}
