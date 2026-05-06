@@ -5305,7 +5305,7 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 5458925906723640734}
   debugMode: 0
-  videoPlayer: {fileID: 0}
+  videoPlayer: {fileID: 3483061003433216518}
 --- !u!114 &5458925906723640734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6311,7 +6311,7 @@ MonoBehaviour:
   - {fileID: 4373142765720001532}
   - {fileID: 3032614352859914646}
   audioSource: {fileID: 3244997349852328215}
-  nowSelectedType: 0
+  nowSelectedType: 1
   maxRetryCount: 3
   retryIntervalSeconds: 5
 --- !u!114 &3463823080124285783
