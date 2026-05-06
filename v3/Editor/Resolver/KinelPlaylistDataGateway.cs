@@ -1,5 +1,4 @@
 ﻿using System;
-using Kinel.VideoPlayer.Scripts;
 using UnityEngine;
 using UnityEngine.Networking;
 
