@@ -14,10 +14,6 @@ using VRC.SDKBase;
 
 namespace Kinel.VideoPlayer.V3.Editor.UI
 {
-    /// <summary>
-    /// UIToolkit (UXML/USS) 繝吶・繧ｹ縺ｮ Playlist Editor Window (ADR-0017)縲・
-    /// Layout C: 繧ｵ繧､繝峨ヰ繝ｼ (Playlist 繧｢繝舌ち繝ｼ) + 繝｡繧､繝ｳ繝代ロ繝ｫ (繝倥ャ繝 + Track 邱ｨ髮・縲・
-    /// </summary>
     public class PlaylistEditorWindow : EditorWindow
     {
         private const string UxmlPath = "Packages/la.niri.localvideoplayer/Editor/UI/PlaylistEditor.uxml";
@@ -397,9 +393,8 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             }
         }
 
-        // ============================================================
-        //  Action buttons
-        // ============================================================
+        #region action
+
         private void OnReverseClicked()
         {
             var item = GetSelectedPlaylistItem();
@@ -507,9 +502,10 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             return _behaviour.playlists[index];
         }
 
-        // ============================================================
-        //  Dirty tracking
-        // ============================================================
+        #endregion
+
+        #region dirtytracking
+
         private void MarkDirty() => SetDirty(true);
 
         private void SetDirty(bool dirty)
@@ -525,9 +521,15 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             _dirtyIndicator.style.display = _isDirty ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
-        // ============================================================
-        //  Save logic (Editor List 竊・Udon parallel arrays)
-        // ============================================================
+        #endregion
+
+        #region savelogic
+
+        /// <summary>
+        /// Udonにデータを保存する
+        /// </summary>
+        /// <param name="behaviour">target playlist script (in editor)</param>
+        /// <param name="udon">runtime script</param>
         private static void SavePlaylistToUdon(KinelPlaylistScript behaviour, KinelPlaylist udon)
         {
             var urls = new List<VRCUrl>();
@@ -558,5 +560,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             UdonSharpEditorUtility.CopyProxyToUdon(udon);
             AssetDatabase.SaveAssets();
         }
+
+        #endregion
     }
 }
