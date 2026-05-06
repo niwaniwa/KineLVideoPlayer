@@ -6,17 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
 
 ### Changed
-
-### Deprecated
-
-### Removed
+- `PlaylistEditorWindow` の不要コメントを整理
 
 ### Fixed
+- v3 移行直後の Prefabとシーンの不整合を整理
+  - `v3/KineLVideoPlayer-v3.prefab`のudonをアップグレード
+  - `v3/Runtime/KinelVideoPlayer-V3.unity` から不要参照・オブジェクトを削除
+- `Kinel.VideoPlayer.V3.Editor` asmdef更新
+  - v2 Editor (`Kinel.VideoPlayer.Editor`) への参照を削除
+- `v3/` フォルダの .meta を追加
 
-### Security
 
 ## [3.0.0-beta.4] - 2026-05-06
 ### Added
