@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.0.0-beta.4] - 2026-05-06
+### Added
 -  `KineLLocalVideoPlayer`をベースに v3 として `v3/`に移行。
   - Prefab `v3/KineLVideoPlayer-v3.prefab`を追加
 
