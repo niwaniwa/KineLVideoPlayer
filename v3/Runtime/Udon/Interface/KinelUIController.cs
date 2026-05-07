@@ -32,36 +32,6 @@ namespace Kinel.VideoPlayer.V3.Udon.Module
 
         #endregion
 
-
-#if KINEL_IWASYNC
-
-        [SerializeField] private IwasyncProxy iwasyncProxy;
-        // [SerializeField] private VideoCore iwasyncCore;
-
-        public bool IsIwasync
-        {
-            get => _isIwasync;
-            set
-            {
-                _isIwasync = value;
-
-                if (!value)
-                {
-                    UnLock();
-                    controller.SwitchToPreviousMedia();
-                }
-                else
-                {
-                    Lock();
-                    controller.SwitchToIwasync();
-                }
-            }
-        }
-
-        [FieldChangeCallback(nameof(IsIwasync))]
-#endif
-        private bool _isIwasync = false;
-
         [SerializeField] private Canvas canvas;
 
         [FormerlySerializedAs("_animator")] [SerializeField]
@@ -84,24 +54,11 @@ namespace Kinel.VideoPlayer.V3.Udon.Module
         [SerializeField] [KinelUIEvent(nameof(OnVolumeChanged), UIEventType.SliderChanged)]
         private Slider volumeSlider;
 
-#if KINEL_IWASYNC
-        [KinelUIEvent(nameof(OnIwasyncVolumeChanged), UIEventType.SliderChanged)]
-#endif
-        [SerializeField]
-        private Slider masterVolumeSlider;
-
         [SerializeField] private Slider seekSlider;
 
         # region [WIP] 本リリースではbuttonをKinelUIButtonに。Canvas関連のコンポーネントはAnimatorで制御
 
-#if KINEL_IWASYNC
-        [KinelUIEvent(nameof(OnToggleIwasyncMode), UIEventType.ButtonClick)]
-#endif
-        [SerializeField]
-        private Button iwasyncToggle = null;
-
         // 以下は将来的にKinelUIButton.onClickみたいな感じで関数をトリガーできるようにしたい。KinelUIEventはKinelUIButtonで呼び出したい
-
         [Header("Playback Control")] [SerializeField, KinelUIEvent(nameof(OnResumed), UIEventType.ButtonClick)]
         private Button resumeButton;
 
@@ -1110,29 +1067,6 @@ namespace Kinel.VideoPlayer.V3.Udon.Module
             if (resolution1440Button != null) resolution1440Button.interactable = resolution != 7;
             if (resolution2160Button != null) resolution2160Button.interactable = resolution != 8;
         }
-
-        #endregion
-
-        #region Iwasync
-
-#if KINEL_IWASYNC
-
-        public void OnIwasyncVolumeChanged()
-        {
-            iwasyncProxy.SetVolume(masterVolumeSlider.value);
-        }
-
-        public void OnToggleIwasyncMode()
-        {
-            Log($"Toggle Iwasync Mode {IsIwasync} to {!IsIwasync}");
-            IsIwasync = !IsIwasync;
-            if (IsIwasync && iwasyncProxy.IsPlaying())
-                BeginSeekingOnVideoStart();
-
-            // controller.NowSelectedMediaModule.ResetScreen();
-        }
-
-#endif
 
         #endregion
 
