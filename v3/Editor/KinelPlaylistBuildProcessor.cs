@@ -15,7 +15,7 @@ using UnityEngine.UI;
 using VRC.Udon;
 using VRC.Udon.Wrapper.Modules;
 
-namespace Editor
+namespace Kinel.VideoPlayer.V3.Editor
 {
     public class KinelPlaylistBuildProcessor : BaseKinelVideoPlayerEditor, IProcessSceneWithReport
     {
