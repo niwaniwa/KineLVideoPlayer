@@ -1,4 +1,4 @@
-﻿namespace Kinel.VideoPlayer.V3.Udon.Module
+﻿namespace Kinel.VideoPlayer.V3.Udon.Interface
 {
     /// <summary>
     /// UIについて色や配置などを動的に変更出来るようにする処理の集約モジュール

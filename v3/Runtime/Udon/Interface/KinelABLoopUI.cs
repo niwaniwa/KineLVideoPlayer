@@ -7,7 +7,7 @@ using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Kinel.VideoPlayer.V3.Udon.Module
+namespace Kinel.VideoPlayer.V3.Udon.Interface
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class KinelABLoopUI : KinelVideoListener

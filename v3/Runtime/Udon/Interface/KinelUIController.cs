@@ -15,7 +15,7 @@ using VRC.SDKBase;
 using VRC.Udon.Wrapper.Modules;
 using Kinel.VideoPlayer.V3.Udon.Yttl;
 
-namespace Kinel.VideoPlayer.V3.Udon.Module
+namespace Kinel.VideoPlayer.V3.Udon.Interface
 {
     /// <summary>
     /// UIの内部システムに関する処理の集約モジュール
