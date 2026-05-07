@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Editor用基底クラスの追加
 
 ### Changed
 
@@ -18,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [3.0.0-beta.7] - 2026-05-07
+### Added
+- Editor用基底クラスの追加
 
 ## [3.0.0-beta.6] - 2026-05-07
 ### Changed
