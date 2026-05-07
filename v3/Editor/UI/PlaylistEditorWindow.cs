@@ -382,14 +382,12 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             typeField.RemoveFromClassList("kinel-type-chip--avpro");
             typeField.RemoveFromClassList("kinel-type-chip--unity");
             typeField.RemoveFromClassList("kinel-type-chip--image");
-            typeField.RemoveFromClassList("kinel-type-chip--iwasync");
 
             switch (type)
             {
                 case KinelMediaType.AvPro: typeField.AddToClassList("kinel-type-chip--avpro"); break;
                 case KinelMediaType.UnityVideo: typeField.AddToClassList("kinel-type-chip--unity"); break;
                 case KinelMediaType.Image: typeField.AddToClassList("kinel-type-chip--image"); break;
-                case KinelMediaType.Iwasync: typeField.AddToClassList("kinel-type-chip--iwasync"); break;
             }
         }
 

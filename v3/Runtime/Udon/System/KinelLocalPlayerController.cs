@@ -361,31 +361,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         /// </summary>
         public void SwitchMediaType(KinelMediaType type)
         {
-            if (type == KinelMediaType.Iwasync) return;
             if (GetMediaByType(type) == null) return;
             NowSelectedType = type;
-        }
-
-        private KinelMediaType _oldMediaType = KinelMediaType.AvPro;
-
-        public void SwitchToIwasync()
-        {
-            var oldMedia = NowSelectedMediaModule;
-            oldMedia.gameObject.SetActive(false);
-            _oldMediaType = oldMedia.MediaType;
-            NowSelectedType = KinelMediaType.Iwasync;
-            var media = GetMediaByType(KinelMediaType.Iwasync);
-            media.gameObject.SetActive(true);
-        }
-
-        public void SwitchToPreviousMedia()
-        {
-            var oldMedia = NowSelectedMediaModule;
-            oldMedia.gameObject.SetActive(false);
-            NowSelectedType = _oldMediaType;
-            var media = GetMediaByType(_oldMediaType);
-            media.gameObject.SetActive(true);
-            media.ResetScreen();
         }
 
         public void ResetMedia()

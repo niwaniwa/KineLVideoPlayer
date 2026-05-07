@@ -5,6 +5,5 @@
         UnityVideo = 0,
         AvPro = 1,
         Image = 2,
-        Iwasync = 3,
     }
 }
