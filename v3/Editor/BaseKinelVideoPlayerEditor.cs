@@ -1,5 +1,4 @@
-﻿using KineLCore.Editor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Kinel.VideoPlayer.V3.Editor
 {
