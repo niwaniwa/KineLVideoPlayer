@@ -9,17 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- プレイリストのEditorWindowをtools配下に移動
 
 ### Deprecated
 
 ### Removed
-- AVProVideo Trial版の自動ダウンロード機構を削除。AVPro は別途 RenderHeads から取得し、Tools メニューの "Setup AvProVideo" でシンボルを有効化する運用に変更。
-- iwasync由来の参照を削除し正常に動作するように
 
 ### Fixed
 
 ### Security
+
+## [3.0.0-beta.6] - 2026-05-07
+### Changed
+- プレイリストのEditorWindowをtools配下に移動
+
+### Removed
+- AVProVideo Trial版の自動ダウンロード機構を削除。AVPro は別途 RenderHeads から取得し、Tools メニューの "Setup AvProVideo" でシンボルを有効化する運用に変更。
+- iwasync由来の参照を削除し正常に動作するように
 
 ## [3.0.0-beta.5] - 2026-05-07
 
