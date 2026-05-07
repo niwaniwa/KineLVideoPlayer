@@ -50,7 +50,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
         // --- Local state ---
         private bool _isRemoteAction;
-        private bool _isRemoteLoad; // 繝ｪ繝｢繝ｼ繝郁ｵｷ蝗縺ｮ繝ｭ繝ｼ繝我ｸｭ繝輔Λ繧ｰ (髱槫酔譛溷ｯｾ蠢・
+        private bool _isRemoteLoad; // リモート起因のロード中フラグ (非同期対応用)
         private float _lastSyncCheckTime;
         private float _localTimeOffset = 0f;
 
@@ -73,12 +73,12 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 if (Networking.IsOwner(gameObject)) return;
 
                 Log($"Remote URL received: {_syncedUrl}");
-                _isRemoteAction = true; // 蜷梧悄繧ｳ繝ｼ繝ｫ繝舌ャ繧ｯ逕ｨ LoadUrl -> OnKinelPostUrlInput繧偵ヶ繝ｭ繝・け
-                _isRemoteLoad = true; // 髱槫酔譛溘さ繝ｼ繝ｫ繝舌ャ繧ｯ逕ｨ OnKinelVideoPlay/Start繧偵ヶ繝ｭ繝・け
+                _isRemoteAction = true; // 同期コールバック用 LoadUrl -> OnKinelPostUrlInput をブロック
+                _isRemoteLoad = true; // 非同期コールバック用 OnKinelVideoPlay/Start をブロック
                 controller.NowSelectedType = (KinelMediaType)_syncedMediaType;
                 controller.LoadUrl(_syncedUrl);
-                _isRemoteAction = false; // 蜷梧悄繧ｳ繝ｼ繝ｫ繝舌ャ繧ｯ螳御ｺ・ｒ繝√ぉ繝・け
-                // _isRemoteLoad縺ｯ繝ｭ繝ｼ繝牙ｮ御ｺ・う繝吶Φ繝医∪縺ｧ菫晄戟
+                _isRemoteAction = false; // 同期コールバック完了をチェック
+                // _isRemoteLoad はロード完了イベントまで保持
             }
         }
 
@@ -301,7 +301,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
             if (!Networking.IsOwner(gameObject)) return;
 
-            // OnKinelVideoPlay 縺悟・縺ｫ蜃ｦ逅・ｸ医∩縺ｮ蝣ｴ蜷医・繧ｹ繧ｭ繝・・ (resume譎ゅ・莠碁㍾蜃ｦ逅・亟豁｢)
+            // OnKinelVideoPlay が先に処理済みの場合はスキップ (resume時の二重処理回避用)
             if (SyncedState == STATE_PLAYING)
             {
                 Log($"OnKinelVideoStart: already PLAYING, skipping (handled by OnKinelVideoPlay)");
@@ -327,7 +327,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
             if (_isRemoteLoad)
             {
-                // Start/Play 荳｡譁ｹ縺ｧ繧ｷ繝ｼ繧ｯ(驥崎､・ｮ溯｡後・辟｡螳ｳ縲・・ｺ城撼萓晏ｭ倥・縺溘ａ)
+                // Start/Play 両方でシーク (重複実行は問題なし。状態非依存のため)
                 if (!controller.IsStream() && _syncedState == STATE_PLAYING)
                 {
                     float expected = CalcExpectedPosition();
@@ -352,7 +352,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             }
             else if (SyncedState != STATE_PLAYING)
             {
-                // LOADING/IDLE 竊・PLAYING: 譁ｰ隕丞・逕溘・髢句ｧ区凾蛻ｻ繧定ｨ倬鹸
+                // LOADING/IDLE から PLAYING: 新規再生の開始時刻を記録
                 SyncedVideoStartGlobalTime = Networking.GetServerTimeInSeconds();
                 Log($"OnKinelVideoPlay: fresh play, SyncedVideoStartGlobalTime={_syncedVideoStartGlobalTime}");
             }
@@ -536,7 +536,6 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             _localTimeOffset = Mathf.Clamp(offset, -5f, 5f);
             Log($"LocalTimeOffset set to {_localTimeOffset:F1}");
 
-            // 蜊ｳ譎ょ渚譏: 蜀咲函荳ｭ縺ｪ繧牙・繧ｷ繝ｼ繧ｯ
             if (SyncedState == STATE_PLAYING && controller.IsPlaying() &&
                 !controller.IsStream())
             {
@@ -584,7 +583,6 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 SyncedState = STATE_IDLE;
             }
 
-            // AB Loop 迥ｶ諷九ｂ繧ｹ繝翫ャ繝励す繝ｧ繝・ヨ
             if (abLoop != null)
             {
                 _syncedPointA = abLoop.PointA;
@@ -592,13 +590,12 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 _syncedABLoopEnabled = abLoop.IsABLoopEnabled;
             }
 
-            // 繝ｫ繝ｼ繝礼憾諷九ｂ繧ｹ繝翫ャ繝励す繝ｧ繝・ヨ
             _syncedLoop = controller.Loop;
         }
 
         /// <summary>
-        /// 迴ｾ蝨ｨ縺ｮ繧ｵ繝ｼ繝舌・譎ょ綾縺九ｉ譛溷ｾ・＆繧後ｋ蜍慕判蜀咲函菴咲ｽｮ繧定ｨ育ｮ励☆繧九・
-        /// SyncedVideoStartGlobalTime 縺ｯ縲碁溷ｺｦ霎ｼ縺ｿ縺ｮ莉ｮ諠ｳ髢句ｧ区凾蛻ｻ縲・now - pos/speed) 縺ｨ縺励※險ｭ螳壹＆繧後ｋ蜑肴署縲・
+        /// 現在のサーバの時刻から期待される動画再生位置を計算する。
+        /// SyncedVideoStartGlobalTime は「速度込みの仮想開始時刻」(now - pos/speed) として設定される前提。
         /// </summary>
         private float CalcExpectedPosition()
         {
@@ -608,13 +605,13 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
         private void DriftCheck()
         {
-            if (Networking.IsOwner(gameObject)) return; // owner縺悟渕貅悶↓縺ｪ繧狗ぜ
+            if (Networking.IsOwner(gameObject)) return; // owner が基準になる為
 
             float expected = CalcExpectedPosition();
             float actual = controller.GetTime();
             float duration = controller.GetDuration();
 
-            // AB Loop 譛牙柑譎・ expected 繧・A-B 遽・峇縺ｫ謚倥ｊ霑斐☆
+            // AB Loop 有効時、expected を A-B 範囲に折り返す
             if (abLoop != null && abLoop.IsABLoopEnabled
                                && abLoop.PointA >= 0f && abLoop.PointB > abLoop.PointA)
             {

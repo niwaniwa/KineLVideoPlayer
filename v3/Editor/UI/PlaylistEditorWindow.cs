@@ -79,7 +79,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             rootVisualElement.Q<Button>("setall-avpro-button").clicked += OnSetAllAvProClicked;
             rootVisualElement.Q<Button>("import-button").clicked += OnImportClicked;
 
-            // Track 霑ｽ蜉繝ｻ蜑企勁縺ｧ繝｡繧ｿ繝ｩ繝吶Ν繧呈峩譁ｰ縺・dirty 縺ｫ縺吶ｋ (荳蠎ｦ縺縺題ｳｼ隱ｭ)
+            // Track 追加・削除でメタラベルを更新し dirty にする (一度だけ購読)
             _trackList.itemsAdded += OnTrackListChanged;
             _trackList.itemsRemoved += OnTrackListChanged;
 
@@ -332,8 +332,8 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             row.Add(fields);
 
             // Type change: update color chip class + dirty
-            // 豕ｨ諢・ binding 隗｣謾ｾ譎・(繧｢繧､繝・Β蜑企勁縺ｪ縺ｩ) 縺ｫ繧・newValue=null 縺ｧ逋ｺ轣ｫ縺吶ｋ縲・
-            // 蛟､蝙・enum 縺ｸ縺ｮ逶ｴ謗･繧ｭ繝｣繧ｹ繝医ｒ驕ｿ縺代（s 繝代ち繝ｼ繝ｳ縺ｧ null 螳牙・縺ｫ縺吶ｋ縲・
+            // 注意: binding 解放時 (アイテム削除など) にも newValue=null で発火する。
+            // 値型 enum への直接キャストを避け、is パターンで null 安全にする。
             typeField.RegisterValueChangedCallback(evt =>
             {
                 if (evt.newValue is KinelMediaType v)
@@ -358,7 +358,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             var typeProp = elemProp.FindPropertyRelative("Type");
             var titleProp = elemProp.FindPropertyRelative("Title");
             var urlProp = elemProp.FindPropertyRelative("Url");
-            // VRCUrl 縺ｮ蜀・Κ string 繝輔ぅ繝ｼ繝ｫ繝・(VRCSDK 縺ｮ繝舌・繧ｸ繝ｧ繝ｳ縺ｧ "m_Url" or "url")
+            // VRCUrl の内部 string フィールド (VRCSDK のバージョンで "m_Url" or "url")
             var urlStringProp = urlProp != null
                 ? (urlProp.FindPropertyRelative("m_Url") ?? urlProp.FindPropertyRelative("url"))
                 : null;
@@ -367,8 +367,8 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             {
                 var current = (KinelMediaType)typeProp.intValue;
                 typeField.BindProperty(typeProp);
-                // BindProperty 縺ｯ蛟､螟牙喧縺後↑縺・→陦ｨ遉ｺ繧呈峩譁ｰ縺励↑縺・％縺ｨ縺後≠繧九◆繧∵・遉ｺ逧・↓蜷梧悄蜿肴丐縺吶ｋ縲・
-                // SerializedProperty 繧帝≦蟒ｶ繧ｯ繝ｭ繝ｼ繧ｸ繝｣縺ｧ謗ｴ繧縺ｨ驟榊・蜑企勁譎ゅ↓ NRE 縺ｫ縺ｪ繧九・縺ｧ value 縺ｮ縺ｿ謐墓拷縲・
+                // BindProperty は値変化がないと表示を更新しないことがあるため明示的に同期反映する。
+                // SerializedProperty を遅延クロージャで掴むと配列削除時に NRE になるので value のみ捕捉。
                 typeField.SetValueWithoutNotify(current);
                 ApplyTypeChipClass(typeField, current);
             }
@@ -484,7 +484,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
 
         private void OnTrackListChanged(IEnumerable<int> _)
         {
-            // ListView 蛛ｴ縺ｮ驟榊・謫堺ｽ懃峩蠕後↓蜻ｼ縺ｰ繧後ｋ縲４O 縺ｮ迥ｶ諷九→ UI 繧貞・蜷梧悄縺吶ｋ縲・
+            // ListView 側の配列操作直後に呼ばれる。SO の状態と UI を再同期する。
             _selectedItemSO?.ApplyModifiedProperties();
             _selectedItemSO?.Update();
             var item = GetSelectedPlaylistItem();
