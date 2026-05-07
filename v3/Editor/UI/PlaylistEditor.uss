@@ -21,7 +21,6 @@
     --kinel-type-avpro:   #3B82F6;  /* blue */
     --kinel-type-unity:   #10B981;  /* emerald */
     --kinel-type-image:   #8B5CF6;  /* violet */
-    --kinel-type-iwasync: #F59E0B;  /* amber */
 
     /* Geometry */
     --kinel-radius-card:   6px;
@@ -295,7 +294,6 @@
 .kinel-type-chip--avpro   > .unity-enum-field__input { background-color: var(--kinel-type-avpro); }
 .kinel-type-chip--unity   > .unity-enum-field__input { background-color: var(--kinel-type-unity); }
 .kinel-type-chip--image   > .unity-enum-field__input { background-color: var(--kinel-type-image); }
-.kinel-type-chip--iwasync > .unity-enum-field__input { background-color: var(--kinel-type-iwasync); }
 
 /* ==========================================================================
    Actions row (under track list)

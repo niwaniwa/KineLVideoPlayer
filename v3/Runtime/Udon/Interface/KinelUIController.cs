@@ -261,10 +261,6 @@ namespace Kinel.VideoPlayer.V3.Udon.Module
             ApplyResolutionUI(controller.GetResolution());
 
             _selectorParent = playlistUI.transform.Find("Playlist Selector/Parent/Viewport/Content").gameObject;
-
-#if KINEL_IWASYNC
-
-#endif
         }
 
         public void Update()
