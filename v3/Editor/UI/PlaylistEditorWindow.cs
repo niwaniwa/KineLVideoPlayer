@@ -36,7 +36,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
         private TextField _importUrlField;
         private Label _dirtyIndicator;
 
-        [MenuItem("Window/Playlist Editor")]
+        [MenuItem("Tools/にりらぼ(kinel)/Playlist Editor")]
         public static void Open()
         {
             var window = GetWindow<PlaylistEditorWindow>();
