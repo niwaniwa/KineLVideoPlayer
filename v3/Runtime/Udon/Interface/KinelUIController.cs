@@ -1,5 +1,4 @@
 ﻿using System;
-using HoshinoLabs.IwaSync3.Udon;
 using Kinel.VideoPlayer.V3.Scripts.Attribute;
 using Kinel.VideoPlayer.V3.Udon.System;
 using Kinel.VideoPlayer.V3.Udon.System.Component;
