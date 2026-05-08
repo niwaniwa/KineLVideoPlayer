@@ -7,7 +7,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Yttl
 {
     public class KinelYttlBridge : KinelVideoListener
     {
-        [SerializeField] private KinelLocalPlayerController controller;
+        [SerializeField] private KinelPlayerController controller;
         [SerializeField] private YttlManager manager;
 
         protected String author;

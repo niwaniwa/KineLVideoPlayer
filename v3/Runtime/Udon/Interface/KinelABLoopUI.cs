@@ -13,7 +13,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
     public class KinelABLoopUI : KinelVideoListener
     {
         [SerializeField] private KinelABLoop abLoop;
-        [SerializeField] private KinelLocalPlayerController controller;
+        [SerializeField] private KinelPlayerController controller;
         [SerializeField] private KinelMinMaxSlider rangeSlider;
 
         [Header("Buttons")] [SerializeField, KinelUIEvent(nameof(OnSetPointA), UIEventType.ButtonClick)]

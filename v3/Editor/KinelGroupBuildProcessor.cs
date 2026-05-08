@@ -50,7 +50,7 @@ namespace Kinel.VideoPlayer.V3.Editor
                 var groupName = string.IsNullOrEmpty(config.DisplayName) ? config.name : config.DisplayName;
 
                 var coresInGroup = groupTags
-                    .Select(t => t.GetComponent<KinelLocalPlayerController>())
+                    .Select(t => t.GetComponent<KinelPlayerController>())
                     .Where(c => c != null)
                     .Distinct()
                     .ToList();
@@ -58,7 +58,7 @@ namespace Kinel.VideoPlayer.V3.Editor
                 if (coresInGroup.Count == 0)
                 {
                     throw new BuildFailedException(
-                        $"{LogPrefix} Group '{groupName}' has no KinelLocalPlayerController. " +
+                        $"{LogPrefix} Group '{groupName}' has no KinelPlayerController. " +
                         "Attach a KinelGroupTag to the Core GameObject.");
                 }
 
@@ -66,7 +66,7 @@ namespace Kinel.VideoPlayer.V3.Editor
                 {
                     var coreNames = string.Join(", ", coresInGroup.Select(c => c.name));
                     throw new BuildFailedException(
-                        $"{LogPrefix} Group '{groupName}' has {coresInGroup.Count} KinelLocalPlayerController instances ({coreNames}). " +
+                        $"{LogPrefix} Group '{groupName}' has {coresInGroup.Count} KinelPlayerController instances ({coreNames}). " +
                         "Each group must contain exactly one Core.");
                 }
 
@@ -93,7 +93,7 @@ namespace Kinel.VideoPlayer.V3.Editor
             }
         }
 
-        private static int WireField<T>(GameObject go, string fieldName, KinelLocalPlayerController core)
+        private static int WireField<T>(GameObject go, string fieldName, KinelPlayerController core)
             where T : UdonSharpBehaviour
         {
             var components = go.GetComponents<T>();

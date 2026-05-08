@@ -8,7 +8,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
     [RequireComponent(typeof(RawImage))]
     public class KinelUIScreen : KinelVideoListener
     {
-        [SerializeField] private KinelLocalPlayerController handler;
+        [SerializeField] private KinelPlayerController handler;
         [SerializeField] private Texture idleTexture;
         
         private RawImage _targetRawImage;

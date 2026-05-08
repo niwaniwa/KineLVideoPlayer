@@ -24,7 +24,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
     {
         #region Udon
 
-        [SerializeField] private KinelLocalPlayerController controller;
+        [SerializeField] private KinelPlayerController controller;
         [SerializeField] private KinelPlaylist playlist;
         [SerializeField] private KinelQueueList queueList;
         [SerializeField] private KinelYttlBridge yttlBridge;
@@ -218,7 +218,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public GameObject PlaylistUI => playlistUI;
 
-        public KinelLocalPlayerController Controller => controller;
+        public KinelPlayerController Controller => controller;
 
         #endregion
 

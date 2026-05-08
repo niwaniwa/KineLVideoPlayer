@@ -7,7 +7,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class KinelABLoop : KinelVideoListener
     {
-        [SerializeField] private KinelLocalPlayerController controller;
+        [SerializeField] private KinelPlayerController controller;
 
         private float _pointA = -1f;
         private float _pointB = -1f;
