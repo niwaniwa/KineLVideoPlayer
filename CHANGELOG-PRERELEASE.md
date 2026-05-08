@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - 未使用のKinelInputModuleを削除
 - iwaSync 連携の残骸を削除
+- Networkフォルダ内の不要なyttl loaderを削除
 
 ### Fixed
 - v3 ソースコード内のコメント文字化けを解消
