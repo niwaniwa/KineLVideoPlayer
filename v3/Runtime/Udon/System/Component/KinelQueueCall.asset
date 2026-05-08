@@ -121,7 +121,7 @@ MonoBehaviour:
       Data: 7|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Kinel.VideoPlayer.V3.Udon.Module.KinelUIController, Kinel.VideoPlayer.V3.Udon
+      Data: Kinel.VideoPlayer.V3.Udon.Interface.KinelUIController, Kinel.VideoPlayer.V3.Udon
     - Name: 
       Entry: 8
       Data: 

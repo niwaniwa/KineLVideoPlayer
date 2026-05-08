@@ -20,7 +20,7 @@ MonoBehaviour:
   compiledVersion: 2
   behaviourSyncMode: 1
   hasInteractEvent: 0
-  scriptID: -7651518672140324717
+  scriptID: -1983449542825084170
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -247,7 +247,7 @@ MonoBehaviour:
       Data: 16|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Kinel.VideoPlayer.V3.Udon.Module.KinelMinMaxSlider, Kinel.VideoPlayer.V3.Udon
+      Data: Kinel.VideoPlayer.V3.Udon.Interface.KinelMinMaxSlider, Kinel.VideoPlayer.V3.Udon
     - Name: 
       Entry: 8
       Data: 
