@@ -36,7 +36,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 
             int before = _urls.Length;
             _urls = KinelUtilities.AddArray(_urls, url);
-            if (_urls.Length == before) return; // URL 驥崎､・〒繧ｹ繧ｭ繝・・縺輔ｌ縺・
+            if (_urls.Length == before) return; // URL 重複でスキップされた
 
             _titles = KinelUtilities.AppendArray(_titles, title);
             _types = KinelUtilities.AppendArray(_types, type);

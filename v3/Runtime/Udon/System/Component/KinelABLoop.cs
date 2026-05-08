@@ -141,7 +141,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         {
             _abLoopEnabled = true;
 
-            // 繝昴う繝ｳ繝域悴險ｭ螳壹↑繧峨ョ繝輔か繝ｫ繝育ｯ・峇繧偵そ繝・ヨ
+            // ポイント未設定ならデフォルト範囲をセット
             float duration = controller.GetDuration();
             if (_pointA < 0f)
                 _pointA = 0f;
@@ -181,7 +181,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 
         public override void OnKinelVideoStart()
         {
-            // start縺励◆蝣ｴ蜷医〒繧よｭ｢繧√◆縺・°繧・
+            // start した場合でも止めたいかも
             // ClearABLoop();
         }
 
