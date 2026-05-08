@@ -6,7 +6,7 @@ using VRC.SDKBase;
 
 namespace Kinel.VideoPlayer.V3.Udon.System
 {
-    public class KinelLocalPlayerController : KinelVideoListener
+    public class KinelPlayerController : KinelVideoListener
     {
         // UDONSYNCEDは分離する -> to KinelVariableSyncer
 

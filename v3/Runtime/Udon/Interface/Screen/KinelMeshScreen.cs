@@ -7,7 +7,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
     [RequireComponent(typeof(Renderer))]
     public class KinelMeshScreen : KinelVideoListener
     {
-        [SerializeField] KinelLocalPlayerController handler;
+        [SerializeField] KinelPlayerController handler;
         [SerializeField] Renderer targetRenderer;
         [SerializeField] string texturePropertyName = "_MainTex";
         [SerializeField] Texture idleTexture;

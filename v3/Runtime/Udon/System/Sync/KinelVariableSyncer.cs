@@ -11,7 +11,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         protected new const string DebugPrefix = "[<color=#f0e68c>KineL</color>]";
 
 
-        [SerializeField] private KinelLocalPlayerController controller;
+        [SerializeField] private KinelPlayerController controller;
         [SerializeField] private KinelABLoop abLoop;
         [SerializeField] private float syncInterval = 5.0f;
         [SerializeField] private float driftThreshold = 1.0f;

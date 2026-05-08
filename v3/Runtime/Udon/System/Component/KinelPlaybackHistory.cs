@@ -5,7 +5,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 {
     public class KinelPlaybackHistory : KinelVideoListener
     {
-        [SerializeField] private KinelLocalPlayerController videoPlayer;
+        [SerializeField] private KinelPlayerController videoPlayer;
 
         private VRCUrl[] _urls;
         private string[] _titles;

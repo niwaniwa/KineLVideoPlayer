@@ -19,8 +19,8 @@ namespace Kinel.VideoPlayer.V3.Editor
 {
     public class KinelPlaylistBuildProcessor : BaseKinelVideoPlayerEditor, IProcessSceneWithReport
     {
-        public const string ParentPrefabGUID = "a16d39c42caffdd4a9466a577b7e222f";
-        public const string ContentPrefabGUID = "5b432422c691dfc41821420864c342c7";
+        public const string ParentPrefabGUID = "856f152d9ab34f80ad92e701a034ca7b";
+        public const string ContentPrefabGUID = "de68a33a73954ff0b707196856d35ff7";
 
         public int callbackOrder
         {
