@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Kinel.VideoPlayer.V3.Scripts;
-using Kinel.VideoPlayer.V3.Udon.Module;
+using Kinel.VideoPlayer.V3.Udon.Interface;
 using Kinel.VideoPlayer.V3.Udon.System;
 using Kinel.VideoPlayer.V3.Udon.System.Component;
 using Kinel.VideoPlayer.V3.Udon.System.Sync;
@@ -80,7 +80,6 @@ namespace Kinel.VideoPlayer.V3.Editor
                     wired += WireField<KinelVariableSyncer>(go, "controller", core);
                     wired += WireField<KinelABLoop>(go, "controller", core);
                     wired += WireField<KinelABLoopUI>(go, "controller", core);
-                    wired += WireField<KinelInputModule>(go, "controller", core);
                     wired += WireField<KinelPlaybackHistory>(go, "videoPlayer", core);
                     wired += WireField<KinelYttlBridge>(go, "controller", core);
                 }

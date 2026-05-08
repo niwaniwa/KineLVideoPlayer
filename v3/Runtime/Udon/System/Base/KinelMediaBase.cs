@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using Kinel.VideoPlayer.V3.Udon.Interface;
+using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
 using VRC.SDK3.Components.Video;

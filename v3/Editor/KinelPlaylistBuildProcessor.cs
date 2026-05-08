@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Kinel.VideoPlayer.V3.Editor;
-using Kinel.VideoPlayer.V3.Udon.Module;
+using Kinel.VideoPlayer.V3.Udon.Interface;
 using Kinel.VideoPlayer.V3.Udon.System;
 using Kinel.VideoPlayer.V3.Udon.System.Component;
 using TMPro;
