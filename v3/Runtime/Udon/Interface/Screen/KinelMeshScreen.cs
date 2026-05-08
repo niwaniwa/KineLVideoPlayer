@@ -2,7 +2,7 @@
 using UnityEngine;
 using VRC.SDKBase;
 
-namespace Kinel.VideoPlayer.V3.Udon.Module
+namespace Kinel.VideoPlayer.V3.Udon.Interface
 {
     [RequireComponent(typeof(Renderer))]
     public class KinelMeshScreen : KinelVideoListener
