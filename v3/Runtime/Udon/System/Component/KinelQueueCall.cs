@@ -1,4 +1,4 @@
-﻿using Kinel.VideoPlayer.V3.Udon.Module;
+﻿using Kinel.VideoPlayer.V3.Udon.Interface;
 using UnityEngine;
 using UnityEngine.UI;
 
