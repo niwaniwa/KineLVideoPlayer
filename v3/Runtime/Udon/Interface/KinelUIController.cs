@@ -79,14 +79,16 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         [SerializeField, KinelUIEvent(nameof(OnVolumeUnMute), UIEventType.ButtonClick)]
         private Button volumeUnMute;
 
-        [SerializeField, KinelUIEvent(nameof(OnMasterVolumeMute), UIEventType.ButtonClick)]
-        private Button masterVolumeMute;
+        [SerializeField, KinelUIEvent(nameof(OnVolumeMute), UIEventType.ButtonClick)]
+        private Button volumeZero;
 
-        [SerializeField, KinelUIEvent(nameof(OnMasterVolumeMute), UIEventType.ButtonClick)]
-        private Button volumeDownButton;
+        [FormerlySerializedAs("volumeDownButton")]
+        [SerializeField, KinelUIEvent(nameof(OnVolumeMute), UIEventType.ButtonClick)]
+        private Button volumeMedium;
 
-        [SerializeField, KinelUIEvent(nameof(OnMasterVolumeMute), UIEventType.ButtonClick)]
-        private Button volumeUpButton;
+        [FormerlySerializedAs("volumeUpButton")]
+        [SerializeField, KinelUIEvent(nameof(OnVolumeMute), UIEventType.ButtonClick)]
+        private Button volumeLoud;
 
         [Header("Menu & Toggles")] [SerializeField, KinelUIEvent(nameof(OnPlaylistToggle), UIEventType.ButtonClick)]
         private Button playlistButton;
@@ -583,12 +585,18 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         {
             if (playlistUI == null) return;
             playlistUI.SetActive(!playlistUI.activeSelf); // 閉じても開いていたPlaylistは保持しておきたいのですべての親をToggleする
+
+            if (settingsUI == null) return;
+            settingsUI.SetActive(false);
         }
 
         public void OnSettingToggle()
         {
             if (settingsUI == null) return;
             settingsUI.SetActive(!settingsUI.activeSelf);
+
+            if (playlistUI == null) return;
+            playlistUI.SetActive(false);
         }
 
         public void OnABLoopToggle()
@@ -815,36 +823,45 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         {
             if (volumeMute != null) volumeMute.gameObject.SetActive(false);
             if (volumeUnMute != null) volumeUnMute.gameObject.SetActive(true);
-            if (volumeDownButton != null) volumeDownButton.gameObject.SetActive(false);
-            if (volumeUpButton != null) volumeUpButton.gameObject.SetActive(false);
+            if (volumeZero != null) volumeZero.gameObject.SetActive(false);
+            if (volumeMedium != null) volumeMedium.gameObject.SetActive(false);
+            if (volumeLoud != null) volumeLoud.gameObject.SetActive(false);
         }
 
         public void ApplyVolumeUnMute()
         {
             if (volumeMute != null) volumeMute.gameObject.SetActive(true);
             if (volumeUnMute != null) volumeUnMute.gameObject.SetActive(false);
-            if (volumeDownButton != null) volumeDownButton.gameObject.SetActive(false);
-            if (volumeUpButton != null) volumeUpButton.gameObject.SetActive(false);
+            if (volumeZero != null) volumeZero.gameObject.SetActive(false);
+            if (volumeMedium != null) volumeMedium.gameObject.SetActive(false);
+            if (volumeLoud != null) volumeLoud.gameObject.SetActive(false);
         }
 
-        private void ApplyVolumeDown()
+        public void ApplyVolumeZero()
         {
             if (volumeMute != null) volumeMute.gameObject.SetActive(false);
             if (volumeUnMute != null) volumeUnMute.gameObject.SetActive(false);
-            if (volumeDownButton != null) volumeDownButton.gameObject.SetActive(true);
-            if (volumeUpButton != null) volumeUpButton.gameObject.SetActive(false);
+            if (volumeZero != null) volumeZero.gameObject.SetActive(true);
+            if (volumeMedium != null) volumeMedium.gameObject.SetActive(false);
+            if (volumeLoud != null) volumeLoud.gameObject.SetActive(false);
         }
 
-        private void ApplyVolumeUp()
+        private void ApplyVolumeMedium()
         {
             if (volumeMute != null) volumeMute.gameObject.SetActive(false);
             if (volumeUnMute != null) volumeUnMute.gameObject.SetActive(false);
-            if (volumeDownButton != null) volumeDownButton.gameObject.SetActive(false);
-            if (volumeUpButton != null) volumeUpButton.gameObject.SetActive(true);
+            if (volumeZero != null) volumeZero.gameObject.SetActive(false);
+            if (volumeMedium != null) volumeMedium.gameObject.SetActive(true);
+            if (volumeLoud != null) volumeLoud.gameObject.SetActive(false);
         }
 
-        public void OnMasterVolumeMute()
+        private void ApplyVolumeLoud()
         {
+            if (volumeMute != null) volumeMute.gameObject.SetActive(false);
+            if (volumeUnMute != null) volumeUnMute.gameObject.SetActive(false);
+            if (volumeZero != null) volumeZero.gameObject.SetActive(false);
+            if (volumeMedium != null) volumeMedium.gameObject.SetActive(false);
+            if (volumeLoud != null) volumeLoud.gameObject.SetActive(true);
         }
 
         private void VolumeInitialize()
@@ -855,18 +872,14 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         {
             controller.SetVolume(volumeSlider.value);
 
-            if (volumeSlider.value < 0.2)
-            {
-                ApplyVolumeMute();
-            }
-            else if (volumeSlider.value < 0.7)
-            {
-                ApplyVolumeDown();
-            }
-            else if (volumeSlider.value <= 1)
-            {
-                ApplyVolumeUp();
-            }
+            if (controller.Mute) return;
+
+            if (volumeSlider.value <= 0f)
+                ApplyVolumeZero();
+            else if (volumeSlider.value < 0.5f)
+                ApplyVolumeMedium();
+            else
+                ApplyVolumeLoud();
         }
 
         #endregion
