@@ -9,9 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Udon.Interface内のnamespaceにModuleとなっており一致していないファイルを変更
 
 ### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.0.0-beta.8] - 2026-05-08
+### Changed
+- Udon.Interface内のnamespaceにModuleとなっており一致していないファイルを変更
 
 ### Removed
 - 未使用のKinelInputModuleを削除
@@ -20,8 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - v3 ソースコード内のコメント文字化けを解消
-
-### Security
 
 ## [3.0.0-beta.7] - 2026-05-07
 ### Added
