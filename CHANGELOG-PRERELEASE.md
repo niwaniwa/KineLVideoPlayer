@@ -9,13 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Udon.Interface内のnamespaceにModuleとなっており一致していないファイルを変更
 
 ### Deprecated
 
 ### Removed
+- 未使用のKinelInputModuleを削除
 - iwaSync 連携の残骸を削除
 
 ### Fixed
+- v3 ソースコード内のコメント文字化けを解消
 
 ### Security
 
