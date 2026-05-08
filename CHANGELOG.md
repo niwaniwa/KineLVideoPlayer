@@ -8,12 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- v3 アーキテクチャへの移行 (`KineLLocalVideoPlayer` をベースに `v3/` 配下へ実装)
+  - Prefab `v3/KineLVideoPlayer-v3.prefab` を追加
+  - 同期システムを `KinelVariableSyncer` として独立
+  - Listener と controller を分離 (v2 は互換維持のため残置、移行用スクリプトを今後提供)
+- AB Loop 機能 (`KinelABLoop` + UI + `KinelMinMaxSlider`)
+- ローカル再生時間オフセット機能
+- Editor 用基底クラス (`BaseKinelEditor` / `BaseKinelVideoPlayerEditor`)
 
 ### Changed
+- プレイリストの EditorWindow を Tools 配下に移動
+- `Udon.Interface` 内の namespace `Module` を `Interface` に統一
+- 速度変更ロジックを堅牢化
+- `Kinel.VideoPlayer.V3.Editor` asmdef から v2 Editor (`Kinel.VideoPlayer.Editor`) への参照を独立
 
 ### Fixed
+- v3 移行直後の prefab とシーンの不整合を整理
+  - `v3/KineLVideoPlayer-v3.prefab` の Udon をアップグレード
+  - `v3/Runtime/KinelVideoPlayer-V3.unity` から不要参照・オブジェクトを削除
+- `v3/` フォルダの .meta を追加
+- v3 ソースコード内のコメント文字化けを解消
+- `PlaylistEditorWindow` の不要コメントを整理
 
 ### Removed
+- AVProVideo Trial 版の自動ダウンロード機構 (ライセンス安全性のため)。AVPro は別途 RenderHeads から取得し、Tools メニューの "Setup AvProVideo" でシンボル有効化する運用に変更
+- iwaSync 連携の残骸 (関連スクリプト・prefab フィールド・USS スタイル)
+- 未使用の `KinelInputModule`
+- `Network` フォルダ内の不要な yttl loader
 
 ## 2.5.5 - 2023-10-14
 ### Fixed
