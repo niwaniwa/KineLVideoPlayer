@@ -145,35 +145,38 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             foreach (var group in grouped)
             {
                 hasAny = true;
-                var foldout = new Foldout
-                {
-                    text = group.Key.ToString(),
-                    value = true
-                };
-                foldout.AddToClassList("kinel-modulemgr-category-foldout");
+
+                var section = new VisualElement();
+                section.AddToClassList("kinel-modulemgr-category-section");
+
+                var header = new Label(group.Key.ToString());
+                header.AddToClassList("kinel-modulemgr-category-header");
+                section.Add(header);
 
                 foreach (var entry in group)
                 {
-                    foldout.Add(BuildEntryRow(entry));
+                    section.Add(BuildRow(entry));
                 }
-                _categoriesHost.Add(foldout);
+
+                _categoriesHost.Add(section);
             }
 
             if (_emptyHint != null)
                 _emptyHint.style.display = hasAny ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
-        private VisualElement BuildEntryRow(KinelModuleScanner.Entry entry)
+        private VisualElement BuildRow(KinelModuleScanner.Entry entry)
         {
             var row = new VisualElement();
-            row.AddToClassList("kinel-modulemgr-entry-row");
+            row.AddToClassList("kinel-modulemgr-row");
+            row.tooltip = $"{entry.DisplayName}\n({entry.Target.gameObject.name})";
 
             var name = new Label(entry.DisplayName);
-            name.AddToClassList("kinel-modulemgr-entry-name");
+            name.AddToClassList("kinel-modulemgr-row-name");
             row.Add(name);
 
-            var sub = new Label(entry.Target.gameObject.name);
-            sub.AddToClassList("kinel-modulemgr-entry-sub");
+            var sub = new Label($"({entry.Target.gameObject.name})");
+            sub.AddToClassList("kinel-modulemgr-row-sub");
             row.Add(sub);
 
             row.RegisterCallback<MouseDownEvent>(_ => SetTarget(entry.Target));
@@ -186,12 +189,12 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
         {
             _currentTarget = target;
 
-            // 行ハイライト更新
+            // 行のハイライト更新
             foreach (var row in _entryRows)
             {
                 bool selected = row.userData == (object)target;
-                if (selected) row.AddToClassList("kinel-modulemgr-entry-row--selected");
-                else row.RemoveFromClassList("kinel-modulemgr-entry-row--selected");
+                if (selected) row.AddToClassList("kinel-modulemgr-row--selected");
+                else row.RemoveFromClassList("kinel-modulemgr-row--selected");
             }
 
             DisposeEditor();

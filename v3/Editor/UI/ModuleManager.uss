@@ -27,7 +27,7 @@
 }
 
 /* ==========================================================================
-   Sidebar (left): category foldouts + entry rows
+   Sidebar (left): category sections + module cards
    ========================================================================== */
 .kinel-modulemgr-sidebar {
     flex-grow: 1;
@@ -43,36 +43,54 @@
     padding: 4px 4px 8px 4px;
 }
 
-.kinel-modulemgr-category-foldout {
-    margin-bottom: 4px;
+.kinel-modulemgr-category-section {
+    margin-bottom: 8px;
 }
 
-.kinel-modulemgr-entry-row {
-    flex-direction: row;
-    align-items: center;
-    padding: 4px 6px;
-    margin-left: 12px;
-    margin-right: 2px;
-    border-radius: 3px;
-}
-
-.kinel-modulemgr-entry-row:hover {
-    background-color: var(--unity-colors-highlight-background-hover);
-}
-
-.kinel-modulemgr-entry-row--selected {
-    background-color: var(--unity-colors-highlight-background);
-}
-
-.kinel-modulemgr-entry-name {
-    flex-grow: 1;
+.kinel-modulemgr-category-header {
+    -unity-font-style: bold;
+    font-size: 11px;
+    color: var(--unity-colors-helpbox-text);
+    padding: 6px 8px 2px 8px;
     -unity-text-align: middle-left;
 }
 
-.kinel-modulemgr-entry-sub {
+.kinel-modulemgr-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 8px;
+    margin: 1px 4px;
+    border-radius: 3px;
+    border-left-width: 3px;
+    border-left-color: rgba(0, 0, 0, 0);
+    transition-property: background-color, border-left-color;
+    transition-duration: 0.12s;
+}
+
+.kinel-modulemgr-row:hover {
+    background-color: rgba(59, 130, 246, 0.10);
+}
+
+.kinel-modulemgr-row--selected {
+    background-color: rgba(59, 130, 246, 0.18);
+    border-left-color: rgba(59, 130, 246, 1);
+}
+
+.kinel-modulemgr-row-name {
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+    -unity-font-style: normal;
+}
+
+.kinel-modulemgr-row-sub {
     opacity: 0.55;
-    margin-left: 6px;
     -unity-font-style: italic;
+    -unity-text-align: middle-right;
+    margin-left: 8px;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .kinel-modulemgr-hint {
