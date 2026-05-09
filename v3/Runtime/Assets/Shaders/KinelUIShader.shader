@@ -58,6 +58,7 @@ Shader "Kinel/MSDF"
 
             fixed4 _FGColor, _BGColor;
             float _UseBG, _AlphaMultiplier;
+            float4 _ClipRect;
 
             struct appdata
             {

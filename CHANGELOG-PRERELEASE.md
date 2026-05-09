@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- UI 向け MSDF シェーダ (`Kinel/MSDF`) で `_ClipRect` 未宣言によりコンパイルエラーが発生する問題を修正 ([#145](https://github.com/niwaniwa/KineLVideoPlayer/issues/145))
 
 ### Security
 
