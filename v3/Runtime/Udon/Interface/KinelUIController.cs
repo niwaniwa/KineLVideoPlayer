@@ -20,6 +20,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
     /// <summary>
     /// UIの内部システムに関する処理の集約モジュール
     /// </summary>
+    [KinelModuleAttribute(KinelModuleCategory.UI, "UI Controller", 90)]
     public class KinelUIController : KinelVideoListener
     {
         #region Udon
