@@ -1,4 +1,5 @@
-﻿using Kinel.VideoPlayer.V3.Udon.System.Component;
+﻿using Kinel.VideoPlayer.V3.Scripts.Attribute;
+using Kinel.VideoPlayer.V3.Udon.System.Component;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -6,6 +7,7 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [KinelModuleAttribute(KinelModuleCategory.Sync, "Variable Syncer", 30)]
     public class KinelVariableSyncer : KinelVideoListener
     {
         protected new const string DebugPrefix = "[<color=#f0e68c>KineL</color>]";
