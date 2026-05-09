@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using Kinel.VideoPlayer.V3.Scripts.Attribute;
+using UnityEngine;
 using VRC.SDKBase;
 
 namespace Kinel.VideoPlayer.V3.Udon.System.Component
 {
+    [KinelModuleAttribute(KinelModuleCategory.Feature, "Playback History", 60)]
     public class KinelPlaybackHistory : KinelVideoListener
     {
         [SerializeField] private KinelPlayerController videoPlayer;

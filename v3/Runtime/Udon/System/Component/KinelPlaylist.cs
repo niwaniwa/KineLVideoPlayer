@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Kinel.VideoPlayer.V3.Scripts.Attribute;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ using VRC.SDKBase;
 namespace Kinel.VideoPlayer.V3.Udon.System.Component
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [KinelModuleAttribute(KinelModuleCategory.Feature, "Playlist", 40)]
     public class KinelPlaylist : KinelSystemBase
     {
         public const string ModuleName = "KinelPlaylist";

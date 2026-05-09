@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+        xmlns:engine="UnityEngine.UIElements"
+        xmlns:editor="UnityEditor.UIElements"
+        xsi:noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <engine:VisualElement name="root" class="kinel-modulemgr-root">
+        <!-- ===== Top toolbar ===== -->
+        <engine:VisualElement name="toolbar" class="kinel-modulemgr-toolbar">
+            <editor:ObjectField name="hub-field" label="Module Hub" allow-scene-objects="true"/>
+            <engine:Button name="refresh-button" text="Refresh" class="kinel-modulemgr-secondary-button"/>
+        </engine:VisualElement>
+
+        <!-- ===== Body: sidebar + main ===== -->
+        <engine:TwoPaneSplitView name="body"
+                                 class="kinel-modulemgr-body"
+                                 fixed-pane-index="0"
+                                 fixed-pane-initial-dimension="280"
+                                 orientation="Horizontal">
+
+            <!-- Sidebar: category foldouts populated at runtime -->
+            <engine:VisualElement name="sidebar" class="kinel-modulemgr-sidebar">
+                <engine:ScrollView name="sidebar-scroll" class="kinel-modulemgr-sidebar-scroll">
+                    <engine:VisualElement name="categories-host" class="kinel-modulemgr-categories-host"/>
+                </engine:ScrollView>
+                <engine:Label name="empty-hint"
+                              text="シーン内に KinelModuleHub が見つかりません。"
+                              class="kinel-modulemgr-hint"/>
+            </engine:VisualElement>
+
+            <!-- Main: header + inspector body -->
+            <engine:VisualElement name="main" class="kinel-modulemgr-main">
+                <engine:VisualElement name="main-header" class="kinel-modulemgr-main-header">
+                    <engine:Label name="main-title" text="モジュールを選択してください" class="kinel-modulemgr-main-title"/>
+                    <engine:VisualElement class="kinel-modulemgr-spacer"/>
+                    <engine:Button name="ping-button" text="Ping" class="kinel-modulemgr-secondary-button"/>
+                    <engine:Button name="open-inspector-button" text="Inspector" class="kinel-modulemgr-secondary-button"/>
+                    <engine:Button name="frame-button" text="Frame" class="kinel-modulemgr-secondary-button"/>
+                </engine:VisualElement>
+
+                <engine:ScrollView name="inspector-scroll" class="kinel-modulemgr-inspector-scroll">
+                    <engine:VisualElement name="inspector-host" class="kinel-modulemgr-inspector-host"/>
+                </engine:ScrollView>
+            </engine:VisualElement>
+        </engine:TwoPaneSplitView>
+    </engine:VisualElement>
+</engine:UXML>

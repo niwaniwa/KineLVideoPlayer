@@ -1,0 +1,121 @@
+/* ==========================================================================
+   Module Manager — overall layout
+   ========================================================================== */
+.kinel-modulemgr-root {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.kinel-modulemgr-toolbar {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: var(--unity-colors-app_toolbar-background);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--unity-colors-default-border);
+    flex-shrink: 0;
+}
+
+.kinel-modulemgr-toolbar > .unity-object-field {
+    flex-grow: 1;
+    margin-right: 6px;
+}
+
+.kinel-modulemgr-body {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* ==========================================================================
+   Sidebar (left): category foldouts + entry rows
+   ========================================================================== */
+.kinel-modulemgr-sidebar {
+    flex-grow: 1;
+    flex-direction: column;
+    background-color: var(--unity-colors-window-background);
+}
+
+.kinel-modulemgr-sidebar-scroll {
+    flex-grow: 1;
+}
+
+.kinel-modulemgr-categories-host {
+    padding: 4px 4px 8px 4px;
+}
+
+.kinel-modulemgr-category-foldout {
+    margin-bottom: 4px;
+}
+
+.kinel-modulemgr-entry-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 6px;
+    margin-left: 12px;
+    margin-right: 2px;
+    border-radius: 3px;
+}
+
+.kinel-modulemgr-entry-row:hover {
+    background-color: var(--unity-colors-highlight-background-hover);
+}
+
+.kinel-modulemgr-entry-row--selected {
+    background-color: var(--unity-colors-highlight-background);
+}
+
+.kinel-modulemgr-entry-name {
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+.kinel-modulemgr-entry-sub {
+    opacity: 0.55;
+    margin-left: 6px;
+    -unity-font-style: italic;
+}
+
+.kinel-modulemgr-hint {
+    padding: 12px;
+    opacity: 0.65;
+    white-space: normal;
+}
+
+/* ==========================================================================
+   Main (right): header + inspector
+   ========================================================================== */
+.kinel-modulemgr-main {
+    flex-grow: 1;
+    flex-direction: column;
+    background-color: var(--unity-colors-window-background);
+}
+
+.kinel-modulemgr-main-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: var(--unity-colors-toolbar-background);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--unity-colors-default-border);
+}
+
+.kinel-modulemgr-main-title {
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+}
+
+.kinel-modulemgr-spacer {
+    flex-grow: 1;
+}
+
+.kinel-modulemgr-secondary-button {
+    margin-left: 4px;
+}
+
+.kinel-modulemgr-inspector-scroll {
+    flex-grow: 1;
+}
+
+.kinel-modulemgr-inspector-host {
+    padding: 8px 12px;
+}

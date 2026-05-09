@@ -1,10 +1,12 @@
-﻿using Kinel.VideoPlayer.V3.Udon.System;
+﻿using Kinel.VideoPlayer.V3.Scripts.Attribute;
+using Kinel.VideoPlayer.V3.Udon.System;
 using UdonSharp;
 using UnityEngine;
 
 namespace Kinel.VideoPlayer.V3.Udon.System.Component
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [KinelModuleAttribute(KinelModuleCategory.Feature, "AB Loop", 70)]
     public class KinelABLoop : KinelVideoListener
     {
         [SerializeField] private KinelPlayerController controller;

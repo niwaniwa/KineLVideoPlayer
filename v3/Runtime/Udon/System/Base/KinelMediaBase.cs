@@ -1,4 +1,5 @@
-﻿using Kinel.VideoPlayer.V3.Udon.Interface;
+﻿using Kinel.VideoPlayer.V3.Scripts.Attribute;
+using Kinel.VideoPlayer.V3.Udon.Interface;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,6 +8,7 @@ using VRC.SDKBase;
 
 namespace Kinel.VideoPlayer.V3.Udon.System
 {
+    [KinelModuleAttribute(KinelModuleCategory.Media, "Media", 10)]
     public abstract class KinelMediaBase : KinelModule
     {
         public KinelVideoListener VideoKinelVideoListener { get; set; }
