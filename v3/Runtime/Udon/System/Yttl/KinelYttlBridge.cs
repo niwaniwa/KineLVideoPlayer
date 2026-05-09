@@ -1,10 +1,12 @@
 ﻿using System;
+using Kinel.VideoPlayer.V3.Scripts.Attribute;
 using Kinel.VideoPlayer.V3.Udon.System;
 using UnityEngine;
 using VRC.SDKBase;
 
 namespace Kinel.VideoPlayer.V3.Udon.Yttl
 {
+    [KinelModule(KinelModuleCategory.Feature, "VideoTitleViewer", 80)]
     public class KinelYttlBridge : KinelVideoListener
     {
         [SerializeField] private KinelPlayerController controller;
