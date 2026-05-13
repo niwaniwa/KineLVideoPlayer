@@ -8,8 +8,6 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 {
     public class KinelPlayerController : KinelVideoListener
     {
-        // UDONSYNCEDは分離する -> to KinelVariableSyncer
-
         [SerializeField] private KinelMediaBase[] mediaModule;
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private KinelMediaType nowSelectedType;
@@ -87,11 +85,15 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         public void SetResolution(int resolution)
         {
-            var url = NowSelectedMediaModule.SourceUrl;
-            if (url != null && !url.Equals(VRCUrl.Empty))
+            if (IsPlaying())
             {
-                _isReloading = true;
+                var url = NowSelectedMediaModule.SourceUrl;
+                if (url != null && !url.Equals(VRCUrl.Empty))
+                {
+                    _isReloading = true;
+                }
             }
+
             NowSelectedMediaModule.SetResolution(resolution);
         }
 
@@ -151,6 +153,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             {
                 SendCustomEventDelayedFrames(nameof(_ClearReloading), 1);
             }
+
             foreach (var listener in Listeners)
             {
                 listener.OnKinelVideoStart();
@@ -381,6 +384,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
                 NowSelectedMediaModule.ReloadMedia();
                 return;
             }
+
             _isReloading = true;
             _retryCount = 0;
             _lastLoadedUrl = url;

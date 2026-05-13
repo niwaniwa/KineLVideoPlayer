@@ -130,6 +130,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             this.resolution = Mathf.Clamp(resolution, 1, 8);
             Log($"Resolution Changed: {this.resolution}");
             if (_animator != null) _animator.SetInteger(resolutionAnimatorFlag, this.resolution);
+            
+            if (!IsPlaying()) return;
             ReloadMedia();
         }
 
