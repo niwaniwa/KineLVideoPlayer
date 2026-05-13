@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Editor;
 using Kinel.VideoPlayer.V3.Scripts;
 using Kinel.VideoPlayer.V3.Scripts.VideoPlayer;
@@ -23,7 +23,11 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
         private KinelPlaylistScript _behaviour;
         private SerializedObject _serializedObject;
         private SerializedObject _selectedItemSO;
+        private SerializedProperty _tracksProperty;
         private bool _isDirty;
+
+        // VRCUrl の内部 string フィールド名は SDK バージョンで "m_Url" / "url" のいずれか。BindMain で probe する。
+        private string _urlRelativeBindingPath = nameof(KinelMediaTrackImpl.Url) + ".m_Url";
 
         // ===== UI elements =====
         private ObjectField _behaviourField;
@@ -79,14 +83,12 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             rootVisualElement.Q<Button>("setall-avpro-button").clicked += OnSetAllAvProClicked;
             rootVisualElement.Q<Button>("import-button").clicked += OnImportClicked;
 
-            // Track 追加・削除でメタラベルを更新し dirty にする (一度だけ購読)
+            // CreateGUI は一度しか呼ばれないので += で OK
             _trackList.itemsAdded += OnTrackListChanged;
             _trackList.itemsRemoved += OnTrackListChanged;
 
-            // Any bound serialized property change marks dirty
             rootVisualElement.RegisterCallback<SerializedPropertyChangeEvent>(_ => MarkDirty());
 
-            // Playlist name field updates sidebar / meta on edit
             _playlistNameField.RegisterValueChangedCallback(evt =>
             {
                 if (_behaviour == null || _behaviour.playlists == null || _playlistList == null) return;
@@ -265,20 +267,39 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
         {
             _trackList.Unbind();
             _selectedItemSO = new SerializedObject(playlistItem);
+            _tracksProperty = _selectedItemSO.FindProperty(nameof(KinelPlaylistItem.Tracks));
 
-            // Header: name + meta
             var nameProp = _selectedItemSO.FindProperty(nameof(KinelPlaylistItem.playlistName));
             _playlistNameField.BindProperty(nameProp);
             UpdateMetaLabel(playlistItem);
 
-            // Track list
-            var tracksProp = _selectedItemSO.FindProperty(nameof(KinelPlaylistItem.Tracks));
+            _urlRelativeBindingPath = ResolveUrlRelativeBindingPath(_selectedItemSO);
+
             _trackList.makeItem = MakeTrackRow;
-            _trackList.bindItem = (element, index) => BindTrackRow(element, index, tracksProp);
+            _trackList.bindItem = BindTrackRow;
+            _trackList.unbindItem = UnbindTrackRow;
             _trackList.bindingPath = nameof(KinelPlaylistItem.Tracks);
             _trackList.Bind(_selectedItemSO);
 
             ShowMain(true);
+        }
+
+        private static string ResolveUrlRelativeBindingPath(SerializedObject so)
+        {
+            const string defaultName = "m_Url";
+            var defaultPath = $"{nameof(KinelMediaTrackImpl.Url)}.{defaultName}";
+            if (so == null) return defaultPath;
+
+            var tracks = so.FindProperty(nameof(KinelPlaylistItem.Tracks));
+            if (tracks == null || !tracks.isArray || tracks.arraySize == 0) return defaultPath;
+
+            var elem = tracks.GetArrayElementAtIndex(0);
+            var url = elem?.FindPropertyRelative(nameof(KinelMediaTrackImpl.Url));
+            if (url == null) return defaultPath;
+
+            if (url.FindPropertyRelative("m_Url") != null) return $"{nameof(KinelMediaTrackImpl.Url)}.m_Url";
+            if (url.FindPropertyRelative("url") != null) return $"{nameof(KinelMediaTrackImpl.Url)}.url";
+            return defaultPath;
         }
 
         private void UpdateMetaLabel(KinelPlaylistItem item)
@@ -307,7 +328,9 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
         // ============================================================
         private VisualElement MakeTrackRow()
         {
-            var row = new VisualElement();
+            // BindableElement にしないと bindItem 内の Bind(SO) で SerializedObjectBindEvent が伝播せず、
+            // 子の相対 bindingPath が解決されない。
+            var row = new BindableElement();
             row.AddToClassList("kinel-track-row");
 
             var header = new VisualElement();
@@ -316,6 +339,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             var typeField = new EnumField(KinelMediaType.AvPro);
             typeField.AddToClassList("kinel-type-chip");
             typeField.name = "track-type";
+            typeField.bindingPath = nameof(KinelMediaTrackImpl.Type);
             header.Add(typeField);
 
             row.Add(header);
@@ -324,16 +348,15 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             fields.AddToClassList("kinel-track-fields");
 
             var titleField = new TextField("Title") { name = "track-title" };
+            titleField.bindingPath = nameof(KinelMediaTrackImpl.Title);
             fields.Add(titleField);
 
             var urlField = new TextField("URL") { name = "track-url" };
+            urlField.bindingPath = _urlRelativeBindingPath;
             fields.Add(urlField);
 
             row.Add(fields);
 
-            // Type change: update color chip class + dirty
-            // 注意: binding 解放時 (アイテム削除など) にも newValue=null で発火する。
-            // 値型 enum への直接キャストを避け、is パターンで null 安全にする。
             typeField.RegisterValueChangedCallback(evt =>
             {
                 if (evt.newValue is KinelMediaType v)
@@ -346,35 +369,26 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
             return row;
         }
 
-        private void BindTrackRow(VisualElement element, int index, SerializedProperty tracksProp)
+        private void BindTrackRow(VisualElement element, int index)
         {
-            if (index < 0 || index >= tracksProp.arraySize) return;
-            var elemProp = tracksProp.GetArrayElementAtIndex(index);
+            // Unbind → bindingPath → Bind(SO) の順で呼ぶことで行リサイクル時の binding 残留を防ぎつつ
+            // SerializedObjectBindEvent を子に伝播させる (UI Toolkit ListView の canonical pattern)。
+            if (!(element is BindableElement bindable)) return;
+            if (_tracksProperty == null || index < 0 || index >= _tracksProperty.arraySize) return;
 
+            var elemProp = _tracksProperty.GetArrayElementAtIndex(index);
+            bindable.Unbind();
+            bindable.bindingPath = elemProp.propertyPath;
+            bindable.Bind(elemProp.serializedObject);
+
+            // binding 反映は SetValueWithoutNotify 経由なので ChangeEvent が発火しない場合がある。
             var typeField = element.Q<EnumField>("track-type");
-            var titleField = element.Q<TextField>("track-title");
-            var urlField = element.Q<TextField>("track-url");
+            if (typeField != null) ApplyTypeChipClass(typeField, (KinelMediaType)typeField.value);
+        }
 
-            var typeProp = elemProp.FindPropertyRelative("Type");
-            var titleProp = elemProp.FindPropertyRelative("Title");
-            var urlProp = elemProp.FindPropertyRelative("Url");
-            // VRCUrl の内部 string フィールド (VRCSDK のバージョンで "m_Url" or "url")
-            var urlStringProp = urlProp != null
-                ? (urlProp.FindPropertyRelative("m_Url") ?? urlProp.FindPropertyRelative("url"))
-                : null;
-
-            if (typeField != null && typeProp != null)
-            {
-                var current = (KinelMediaType)typeProp.intValue;
-                typeField.BindProperty(typeProp);
-                // BindProperty は値変化がないと表示を更新しないことがあるため明示的に同期反映する。
-                // SerializedProperty を遅延クロージャで掴むと配列削除時に NRE になるので value のみ捕捉。
-                typeField.SetValueWithoutNotify(current);
-                ApplyTypeChipClass(typeField, current);
-            }
-
-            if (titleField != null && titleProp != null) titleField.BindProperty(titleProp);
-            if (urlField != null && urlStringProp != null) urlField.BindProperty(urlStringProp);
+        private void UnbindTrackRow(VisualElement element, int index)
+        {
+            if (element is BindableElement bindable) bindable.Unbind();
         }
 
         private static void ApplyTypeChipClass(VisualElement typeField, KinelMediaType type)
@@ -484,7 +498,7 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
 
         private void OnTrackListChanged(IEnumerable<int> _)
         {
-            // ListView 側の配列操作直後に呼ばれる。SO の状態と UI を再同期する。
+            // ListView の +/- 直後に SO と UI を再同期する
             _selectedItemSO?.ApplyModifiedProperties();
             _selectedItemSO?.Update();
             var item = GetSelectedPlaylistItem();
