@@ -37,17 +37,12 @@ namespace Kinel.VideoPlayer.V3.Editor
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
                 DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
-            }else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)){
-                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
-            }else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
-                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux";
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
                 _applicationYtdlpPath = Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp.exe");
             }else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)){
+                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
                 _applicationYtdlpPath = Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp");
             }else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
+                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux";
                 _applicationYtdlpPath = Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp_linux");
             }
         }
