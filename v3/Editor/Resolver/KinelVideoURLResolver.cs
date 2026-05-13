@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading;
+using System.Runtime.InteropServices;
 using Cysharp.Threading.Tasks;
 using Kinel.VideoPlayer.V3.Scripts;
 using UnityEditor;
@@ -18,14 +19,13 @@ namespace Kinel.VideoPlayer.V3.Editor
         public static string YtdlpPath;
         public static string UtilitiesPath = "Kinel";
 
-        private static readonly string _applicationYtdlpPath =
-            Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp.exe");
+        private static readonly string _applicationYtdlpPath;
 
         private static readonly string _vrChatYtdlpPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow",
                 "VRChat", "VRChat", "Tools", "yt-dlp.exe");
 
-        private const string DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+        private static readonly string DownloadUrl;
 
         static KinelVideoURLResolver()
         {
@@ -34,6 +34,17 @@ namespace Kinel.VideoPlayer.V3.Editor
 #if KINEL_AVPRO_VIDEO_ENABLED
             KinelAvProVideoResolver.StartResolveURLCoroutine = ResolveURL;
 #endif
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
+                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+                _applicationYtdlpPath = Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp.exe");
+            }else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)){
+                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
+                _applicationYtdlpPath = Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp");
+            }else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
+                DownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux";
+                _applicationYtdlpPath = Path.Combine(Application.dataPath, UtilitiesPath, "yt-dlp_linux");
+            }
         }
 
 
@@ -114,7 +125,7 @@ namespace Kinel.VideoPlayer.V3.Editor
             var success = await DownloadYoutubeDLAsync(_applicationYtdlpPath);
 
             if (success)
-                EditorUtility.DisplayDialog("お知らせ", $"yt-dlp.exe を {_applicationYtdlpPath} に保存しました", "ok");
+                EditorUtility.DisplayDialog("お知らせ", $"yt-dlp を {_applicationYtdlpPath} に保存しました", "ok");
             else
                 EditorUtility.DisplayDialog("お知らせ", $"ダウンロード中にエラーが発生しました", "ok");
         }
@@ -152,7 +163,7 @@ namespace Kinel.VideoPlayer.V3.Editor
             {
                 try
                 {
-                    Debug.Log("yt-dlp.exe をダウンロード中...");
+                    Debug.Log("yt-dlp をダウンロード中...");
 
                     using (HttpResponseMessage response =
                            await client.GetAsync(DownloadUrl, HttpCompletionOption.ResponseHeadersRead))
@@ -167,7 +178,7 @@ namespace Kinel.VideoPlayer.V3.Editor
                         }
                     }
 
-                    Debug.Log($"{DebugLogPrefix} yt-dlp.exe を {savePath} に保存しました。");
+                    Debug.Log($"{DebugLogPrefix} yt-dlp を {savePath} に保存しました。");
                 }
                 catch (Exception ex)
                 {
