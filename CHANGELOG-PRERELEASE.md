@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - モジュールを一覧・編集するエディタ拡張を追加
+- Join時に自動再生設定できるモジュールを追加
 
 ### Changed
 
