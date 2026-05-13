@@ -18,7 +18,9 @@ namespace Kinel.VideoPlayer.V3.Scripts
 
         public KinelMediaTrackImpl()
         {
-            Url = VRCUrl.Empty;
+            // VRCUrl.Empty は static シングルトンなので、複数 Track の Url に共有で代入すると
+            // SerializedProperty 経由の編集で全 Track が同じ URL を指してしまう。fresh インスタンスを作る。
+            Url = new VRCUrl(string.Empty);
             Title = string.Empty;
             Type = KinelMediaType.AvPro;
         }

@@ -1,75 +1,33 @@
-﻿using System.Collections.Generic;
-using Kinel.VideoPlayer.V3.Scripts;
+using Kinel.VideoPlayer.V3.Editor.UI;
+using Kinel.VideoPlayer.V3.Scripts.VideoPlayer;
 using UnityEditor;
 using UnityEngine;
-using Kinel.VideoPlayer.V3.Udon.System.Component; // KinelPlaylist
+using Kinel.VideoPlayer.V3.Udon.System.Component;
 
 [CustomEditor(typeof(KinelPlaylist))]
 public class PlaylistInspector : UnityEditor.Editor
 {
-    // ボタンを押したあとに表示するためのキャッシュ
-    private bool _showContents = false;
-    private List<KinelMediaTrackImpl[]> _cachedPlaylists;
-
     public override void OnInspectorGUI()
     {
-        // まず通常のフィールドを描画
-        DrawDefaultInspector();
-
         GUILayout.Space(8);
 
-        // 「Show Playlist Contents」ボタン
-        if (GUILayout.Button("Show Playlist Contents"))
-        {
-            FetchAndCachePlaylists();
-            _showContents = true;
-        }
+        DrawDefaultInspector();
 
-        // キャッシュがあれば中身を描画
-        if (_showContents && _cachedPlaylists != null)
+        if (GUILayout.Button("Open Playlist Editor"))
         {
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("── Playlist Contents ──", EditorStyles.boldLabel);
-
-            for (int i = 0; i < _cachedPlaylists.Count; i++)
+            var udon = (KinelPlaylist)target;
+            var script = udon != null ? udon.GetComponent<KinelPlaylistScript>() : null;
+            if (script != null)
             {
-                var tracks = _cachedPlaylists[i];
-                EditorGUILayout.LabelField($"Playlist #{i}:", EditorStyles.label);
-                EditorGUI.indentLevel++;
-
-                if (tracks == null || tracks.Length == 0)
-                {
-                    EditorGUILayout.LabelField(" (empty)", EditorStyles.miniLabel);
-                }
-                else
-                {
-                    for (int j = 0; j < tracks.Length; j++)
-                    {
-                        var t = tracks[j];
-                        if (t != null)
-                        {
-                            EditorGUILayout.LabelField(
-                                $"{j}: {t.Title}  ({t.Url})",
-                                EditorStyles.miniLabel
-                            );
-                        }
-                        else
-                        {
-                            EditorGUILayout.LabelField(
-                                $"{j}: <null>",
-                                EditorStyles.miniLabel
-                            );
-                        }
-                    }
-                }
-
-                EditorGUI.indentLevel--;
-                EditorGUILayout.Space();
+                PlaylistEditorWindow.Open(script);
+            }
+            else
+            {
+                EditorUtility.DisplayDialog(
+                    "KineL Playlist Editor",
+                    "同一 GameObject に KinelPlaylistScript が見つかりません。proxy script を追加してください。",
+                    "OK");
             }
         }
-    }
-
-    private void FetchAndCachePlaylists()
-    {
     }
 }
