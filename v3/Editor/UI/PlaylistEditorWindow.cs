@@ -16,8 +16,8 @@ namespace Kinel.VideoPlayer.V3.Editor.UI
 {
     public class PlaylistEditorWindow : EditorWindow
     {
-        private const string UxmlPath = "Packages/la.niri.localvideoplayer/Editor/UI/PlaylistEditor.uxml";
-        private const string UssPath = "Packages/la.niri.localvideoplayer/Editor/UI/PlaylistEditor.uss";
+        private const string UxmlPath = "Packages/la.niri.videoplayer/v3/Editor/UI/PlaylistEditor.uxml";
+        private const string UssPath = "Packages/la.niri.videoplayer/v3/Editor/UI/PlaylistEditor.uss";
 
         // ===== State =====
         private KinelPlaylistScript _behaviour;
