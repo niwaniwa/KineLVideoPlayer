@@ -69,7 +69,7 @@ namespace Kinel.VideoPlayer.V3.Udon
 
         public static bool IsValidUrl(VRCUrl url)
         {
-            return url.Get().StartsWith("http://") || url.Get().StartsWith("https://");
+            return url.Get().StartsWith("http://") || url.Get().StartsWith("https://") || url.Get().StartsWith("rtsp://") || url.Get().StartsWith("rtspt://");
         }
     }
 }
