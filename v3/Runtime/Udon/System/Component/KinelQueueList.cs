@@ -32,17 +32,19 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             return KinelMediaTrack.New(_urls[index], _titles[index], _types[index]);
         }
 
-        public void AddTrack(VRCUrl url, string title, KinelMediaType type)
+        public bool AddTrack(VRCUrl url, string title, KinelMediaType type)
         {
-            if (!KinelUtilities.IsValidUrl(url)) return;
+            if (!KinelUtilities.IsValidUrl(url)) return false;
 
             int before = _urls.Length;
             _urls = KinelUtilities.AddArray(_urls, url);
-            if (_urls.Length == before) return; // URL 重複でスキップされた
+            if (_urls.Length == before) return false; // URL 重複でスキップされた
 
             _titles = KinelUtilities.AppendArray(_titles, title);
             _types = KinelUtilities.AppendArray(_types, type);
             Log($"Queue add count={_urls.Length}");
+
+            return true;
         }
 
         public void RemoveTrackAt(int index)

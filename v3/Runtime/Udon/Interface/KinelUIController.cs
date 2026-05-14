@@ -487,8 +487,11 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnQueueAdd()
         {
             var url = queueInputField.GetUrl();
-            queueList.AddTrack(url, url.ToString(), controller.NowSelectedType);
+            bool added = queueList.AddTrack(url, url.ToString(), controller.NowSelectedType);
             queueInputField.SetUrl(VRCUrl.Empty);
+
+            if(!added)return;
+
             var queueContent = Instantiate(queuePrefab, queueListUIContent.transform);
             var text = queueContent.GetComponentInChildren<TMP_Text>();
 
