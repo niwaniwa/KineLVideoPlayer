@@ -19,6 +19,7 @@ namespace Kinel.VideoPlayer.V3.Editor
 {
     public class KinelPlaylistBuildProcessor : BaseKinelVideoPlayerEditor, IProcessSceneWithReport
     {
+        public const string PlaylistUIPrefabGUID = "12a1992afc0441dfa54df7464ea1d97b";
         public const string ParentPrefabGUID = "856f152d9ab34f80ad92e701a034ca7b";
         public const string ContentPrefabGUID = "de68a33a73954ff0b707196856d35ff7";
 
@@ -29,6 +30,7 @@ namespace Kinel.VideoPlayer.V3.Editor
 
         public void OnProcessScene(Scene scene, BuildReport report)
         {
+            var playlistUI = KinelEditorUtility.LoadPrefabByGUID<GameObject>(PlaylistUIPrefabGUID);
             var parent = KinelEditorUtility.LoadPrefabByGUID<GameObject>(ParentPrefabGUID);
             var content = KinelEditorUtility.LoadPrefabByGUID<GameObject>(ContentPrefabGUID);
 
@@ -65,11 +67,10 @@ namespace Kinel.VideoPlayer.V3.Editor
                 {
                     Log($"playlist {i}");
                     var tracks = playlist.GetPlaylist(i);
-                    var playlistContent = Instantiate(parent, playlistParent.transform);
+                    var playlistContent = Instantiate(playlistUI, playlistParent.transform);
                     playlistContent.SetActive(false);
                     var trackParent = playlistContent.transform.Find("Parent/Viewport/Content");
                     var udonBehaviour = udon.GetComponent<UdonBehaviour>();
-
 
                     foreach (var track in tracks)
                     {
