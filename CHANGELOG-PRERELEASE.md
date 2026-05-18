@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Queueプレイリストに同期処理を追加 ([#150](https://github.com/niwaniwa/KineLVideoPlayer/issues/150))
 
 ### Changed
 
@@ -18,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [3.0.1-beta.2] - 2026-05-18
+### Added
+- Queueプレイリストに同期処理を追加 ([#150](https://github.com/niwaniwa/KineLVideoPlayer/issues/150))
 
 ## [3.0.1-beta.1] - 2026-05-13
 ### Added
