@@ -324,6 +324,34 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         #endregion
 
+        #region queue event
+
+        public override void OnKinelQueueAdded()
+        {
+            foreach (var listener in Listeners)
+            {
+                listener.OnKinelQueueAdded();
+            }
+        }
+
+        public override void OnKinelQueueRemoved()
+        {
+            foreach (var listener in Listeners)
+            {
+                listener.OnKinelQueueRemoved();
+            }
+        }
+
+        public override void OnKinelQueueStart()
+        {
+            foreach (var listener in Listeners)
+            {
+                listener.OnKinelQueueStart();
+            }
+        }
+
+        #endregion
+
         #region Loop
 
         private bool _loop;
