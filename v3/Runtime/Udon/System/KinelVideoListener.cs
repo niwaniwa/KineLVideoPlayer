@@ -128,5 +128,24 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         }
 
         #endregion
+
+        #region queue event
+
+        /// <summary>キューにトラックが追加された際に発火する</summary>
+        public virtual void OnKinelQueueAdded()
+        {
+        }
+
+        /// <summary>キューからトラックが削除された際に発火する（自動送り含む）</summary>
+        public virtual void OnKinelQueueRemoved()
+        {
+        }
+
+        /// <summary>キューの先頭トラックが再生開始した際に発火する</summary>
+        public virtual void OnKinelQueueStart()
+        {
+        }
+
+        #endregion
     }
 }
