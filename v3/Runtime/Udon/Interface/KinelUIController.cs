@@ -933,19 +933,24 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             if (queueList == null || queueListUIContent == null || queuePrefab == null) return;
 
             var trans = queueListUIContent.transform;
-            int oldCount = trans.childCount;
-            for (int i = 0; i < oldCount; i++)
+            int currentCount = trans.childCount;
+            int count = queueList.Count;
+
+            for (int i = currentCount - 1; i >= count; i--)
                 Destroy(trans.GetChild(i).gameObject);
 
-            int count = queueList.Count;
+            for (int i = currentCount; i < count; i++)
+            {
+                var row = Instantiate(queuePrefab, trans);
+                var caller = row.GetComponent<KinelQueueCall>();
+                if (caller != null) caller.UiController = this;
+            }
+
             string[] titles = queueList.Titles;
             for (int i = 0; i < count; i++)
             {
-                var row = Instantiate(queuePrefab, trans);
-                var text = row.GetComponentInChildren<TMP_Text>();
+                var text = trans.GetChild(i).GetComponentInChildren<TMP_Text>();
                 if (text != null) text.text = titles[i];
-                var caller = row.GetComponent<KinelQueueCall>();
-                if (caller != null) caller.UiController = this;
             }
         }
 
