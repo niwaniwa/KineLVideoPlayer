@@ -334,6 +334,17 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public override void OnKinelYttlDataLoaded()
         {
             ApplyTitleUI(ReconstructTitleUI());
+            RebuildQueueUI();
+        }
+
+        public override void OnKinelQueueAdded()
+        {
+            RebuildQueueUI();
+        }
+
+        public override void OnKinelQueueRemoved()
+        {
+            RebuildQueueUI();
         }
 
         public override void OnKinelMediaReset()
@@ -489,40 +500,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             var url = queueInputField.GetUrl();
             bool added = queueList.AddTrack(url, url.ToString(), controller.NowSelectedType);
             queueInputField.SetUrl(VRCUrl.Empty);
-
-            if(!added)return;
-
-            var queueContent = Instantiate(queuePrefab, queueListUIContent.transform);
-            var text = queueContent.GetComponentInChildren<TMP_Text>();
-
-            var caller = queueContent.GetComponent<KinelQueueCall>();
-
+            if (!added) return;
             Log($"Queue Add. url: {url}, count: {queueList.Count}");
-
-            if (caller != null)
-            {
-                caller.UiController = this;
-            }
-
-            text.text = url.ToString();
-        }
-
-        public void OnQueuePlay()
-        {
-            Transform trans = queueListUIContent.transform;
-            for (int i = 0; i < trans.childCount; i++)
-            {
-                GameObject obj = trans.GetChild(i).gameObject;
-                if (!obj.activeSelf)
-                {
-                    controller.LoadUrl(queueList.Urls[i]);
-                    obj.SetActive(true);
-                    Log($"Queue Play. index: {i}");
-                    return;
-                }
-            }
-
-            LogWarning("target queue is not found.");
         }
 
         public void OnQueuePlayByIndex(int index)
@@ -531,20 +510,10 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             controller.LoadUrl(queueList.Urls[index]);
         }
 
-        public void OnQueueRemove()
+        public void OnQueueRemoveByIndex(int index)
         {
-            Transform trans = queueListUIContent.transform;
-            for (int i = 0; i < trans.childCount; i++)
-            {
-                GameObject obj = trans.GetChild(i).gameObject;
-                if (!obj.activeSelf)
-                {
-                    queueList.RemoveTrackAt(i);
-                    Destroy(obj);
-                    Log($"Queue Play. index: {i}");
-                    return;
-                }
-            }
+            if (index < 0) return;
+            queueList.RemoveTrackAt(index);
         }
 
         /// <summary>
@@ -957,6 +926,27 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         {
             if (animator == null) return;
             animator.SetBool(LoadingFlag, false);
+        }
+
+        private void RebuildQueueUI()
+        {
+            if (queueList == null || queueListUIContent == null || queuePrefab == null) return;
+
+            var trans = queueListUIContent.transform;
+            int oldCount = trans.childCount;
+            for (int i = 0; i < oldCount; i++)
+                Destroy(trans.GetChild(i).gameObject);
+
+            int count = queueList.Count;
+            string[] titles = queueList.Titles;
+            for (int i = 0; i < count; i++)
+            {
+                var row = Instantiate(queuePrefab, trans);
+                var text = row.GetComponentInChildren<TMP_Text>();
+                if (text != null) text.text = titles[i];
+                var caller = row.GetComponent<KinelQueueCall>();
+                if (caller != null) caller.UiController = this;
+            }
         }
 
 
