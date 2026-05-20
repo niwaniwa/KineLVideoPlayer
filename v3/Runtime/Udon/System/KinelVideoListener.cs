@@ -114,9 +114,9 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         }
 
         /// <summary>
-        /// ループ設定が変更された際に発火する
+        /// ループモードが変更された際に発火する
         /// </summary>
-        public virtual void OnKinelLoopChanged(bool loop)
+        public virtual void OnKinelLoopModeChanged(LoopMode loopMode)
         {
         }
 

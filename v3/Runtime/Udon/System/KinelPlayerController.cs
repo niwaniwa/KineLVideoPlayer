@@ -106,6 +106,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         public void Initialize()
         {
+            _loopMode = _initialLoopMode;
             foreach (var module in mediaModule)
             {
                 module.VideoKinelVideoListener = this;
@@ -246,7 +247,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         public override void OnKinelMediaTypeChanged()
         {
-            NowSelectedMediaModule.SetLoop(_loop);
+            NowSelectedMediaModule.SetLoop(_loopMode == LoopMode.Single);
 
             foreach (var listener in Listeners)
             {
@@ -354,17 +355,18 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         #region Loop
 
-        private bool _loop;
+        [SerializeField] private LoopMode _initialLoopMode = LoopMode.None;
+        private LoopMode _loopMode;
 
-        public bool Loop => _loop;
+        public LoopMode LoopMode => _loopMode;
 
-        public void SetLoop(bool loop)
+        public void SetLoopMode(LoopMode loopMode)
         {
-            _loop = loop;
-            NowSelectedMediaModule.SetLoop(loop);
+            _loopMode = loopMode;
+            NowSelectedMediaModule.SetLoop(loopMode == LoopMode.Single);
             foreach (var listener in Listeners)
             {
-                listener.OnKinelLoopChanged(loop);
+                listener.OnKinelLoopModeChanged(loopMode);
             }
         }
 

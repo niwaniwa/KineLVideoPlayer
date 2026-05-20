@@ -74,6 +74,11 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         [SerializeField, KinelUIEvent(nameof(OnLoopToggle), UIEventType.ButtonClick)]
         private Button loopToggleButton;
 
+        [SerializeField] private Image loopButtonIcon;
+        [SerializeField] private Sprite loopNoneSprite;
+        [SerializeField] private Sprite loopSingleSprite;
+        [SerializeField] private Sprite loopPlaylistSprite;
+
         [Header("Volume Control")] [SerializeField, KinelUIEvent(nameof(OnVolumeMute), UIEventType.ButtonClick)]
         private Button volumeMute;
 
@@ -262,6 +267,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             ApplyPauseStateUI();
             ApplyMediaTypeUI();
             ApplyResolutionUI(controller.GetResolution());
+            OnKinelLoopModeChanged(controller.LoopMode);
 
             _selectorParent = playlistUI.transform.Find("Playlist Selector/Parent/Viewport/Content").gameObject;
         }
@@ -551,7 +557,19 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnLoopToggle()
         {
-            controller.SetLoop(!controller.Loop);
+            var next = (LoopMode)(((int)controller.LoopMode + 1) % 3);
+            controller.SetLoopMode(next);
+        }
+
+        public override void OnKinelLoopModeChanged(LoopMode loopMode)
+        {
+            if (loopButtonIcon == null) return;
+            if (loopMode == LoopMode.Single)
+                loopButtonIcon.sprite = loopSingleSprite;
+            else if (loopMode == LoopMode.Playlist)
+                loopButtonIcon.sprite = loopPlaylistSprite;
+            else
+                loopButtonIcon.sprite = loopNoneSprite;
         }
 
         public void OnPlaylistToggle()
