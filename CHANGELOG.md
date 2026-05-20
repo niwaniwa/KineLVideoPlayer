@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- モジュールを一覧・編集するエディタ拡張を追加
+- Join時に自動再生設定できるモジュールを追加
+- Queueプレイリストに同期処理を追加 ([#150](https://github.com/niwaniwa/KineLVideoPlayer/issues/150))
 
 ### Changed
 
@@ -15,8 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- UI 向け MSDF シェーダ (`Kinel/MSDF`) で `_ClipRect` 未宣言によりコンパイルエラーが発生する問題を修正 ([#145](https://github.com/niwaniwa/KineLVideoPlayer/issues/145))
+- PlaylistのEditorにおいてTrackを手入力しようとしたときに正しく値が反映されない問題を修正 [#152](https://github.com/niwaniwa/KineLVideoPlayer/issues/152)
+- 解像度設定変更時、プレイしていない状況でもReloadされてしまう問題を修正 [#149](https://github.com/niwaniwa/KineLVideoPlayer/issues/149)
 
 ### Security
+
+### Added
 
 ## [3.0.0] - 2026-05-08
 
