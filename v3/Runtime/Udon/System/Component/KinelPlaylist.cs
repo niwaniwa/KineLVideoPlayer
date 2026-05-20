@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Kinel.VideoPlayer.V3.Scripts.Attribute;
 using UdonSharp;
@@ -11,9 +11,11 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     [KinelModuleAttribute(KinelModuleCategory.Feature, "Playlist", 40)]
-    public class KinelPlaylist : KinelSystemBase
+    public class KinelPlaylist : KinelVideoListener
     {
         public const string ModuleName = "KinelPlaylist";
+
+        [SerializeField] private KinelPlayerController controller;
 
         [SerializeField] private string playlistIdentifyName = "Playlist";
         [SerializeField] private string[] playlistNames;
@@ -21,6 +23,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         [SerializeField] private string[] titles;
         [SerializeField] private KinelMediaType[] types;
         [SerializeField] private int[] playlistIndex; // 各配列の開始位置を示す。
+
+        private int _currentIndex = -1;
 
         public String[] PlaylistNames => playlistNames;
 
@@ -71,9 +75,45 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             return null;
         }
 
+        public void PlayFromIndex(int index)
+        {
+            var track = GetTrack(index);
+            if (track == null) return;
+            _currentIndex = index;
+            controller.NowSelectedType = track.Type();
+            controller.LoadUrl(track.Url());
+        }
+
+        public override void OnKinelVideoEnd()
+        {
+            if (_currentIndex < 0) return;
+
+            var nextIndex = _currentIndex + 1;
+            if (nextIndex >= Count)
+            {
+                if (controller.LoopMode == LoopMode.Playlist)
+                {
+                    PlayFromIndex(0);
+                }
+                else
+                {
+                    _currentIndex = -1;
+                }
+                return;
+            }
+
+            PlayFromIndex(nextIndex);
+        }
+
+        public override void OnKinelQueueStart()
+        {
+            _currentIndex = -1;
+        }
 
         public void Start()
         {
+            if (controller != null)
+                controller.AddListener(this);
         }
     }
 }
