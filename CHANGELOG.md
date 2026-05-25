@@ -15,11 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+### Security
+
+## [3.1.0] - 2026-05-25
+### Fixed
 - Loopモードの修正
   - Playlistを考慮していなかったが、正しくプレイリスト内の動画をループするように
   - Loopを別モジュールに切り出して安定化
-
-### Security
 
 ## [3.0.1] - 2026-05-20
 ### Added
