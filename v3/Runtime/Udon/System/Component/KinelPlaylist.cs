@@ -25,6 +25,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         [SerializeField] private int[] playlistIndex; // 各配列の開始位置を示す。
 
         private int _currentIndex = -1;
+        private int _currentPlaylistGroup = -1;
 
         public String[] PlaylistNames => playlistNames;
 
@@ -103,6 +104,21 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             return null;
         }
 
+        private int FindPlaylistGroup(int globalIndex)
+        {
+            if (playlistIndex.Length == 0) return -1;
+            int lo = 0, hi = playlistIndex.Length - 1;
+            while (lo < hi)
+            {
+                int mid = (lo + hi + 1) / 2;
+                if (playlistIndex[mid] <= globalIndex)
+                    lo = mid;
+                else
+                    hi = mid - 1;
+            }
+            return playlistIndex[lo] <= globalIndex ? lo : -1;
+        }
+
         private void SetCurrentIndex(int value)
         {
             bool wasActive = _currentIndex >= 0;
@@ -115,6 +131,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         {
             var track = GetTrack(index);
             if (track == null) return;
+            _currentPlaylistGroup = FindPlaylistGroup(index);
             SetCurrentIndex(index);
             controller.NowSelectedType = track.Type();
             controller.LoadUrl(track.Url());
@@ -125,17 +142,18 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             if (_currentIndex < 0) return;
 
             var nextIndex = _currentIndex + 1;
-            if (nextIndex >= Count)
+
+            int playlistStart = _currentPlaylistGroup >= 0 ? playlistIndex[_currentPlaylistGroup] : 0;
+            int playlistEnd = (_currentPlaylistGroup >= 0 && _currentPlaylistGroup + 1 < playlistIndex.Length)
+                ? playlistIndex[_currentPlaylistGroup + 1]
+                : urls.Length;
+
+            if (nextIndex >= playlistEnd)
             {
                 if (controller.LoopMode == LoopMode.Playlist)
-                {
-                    PlayFromIndex(0);
-                }
+                    PlayFromIndex(playlistStart);
                 else
-                {
                     SetCurrentIndex(-1);
-                }
-
                 return;
             }
 
