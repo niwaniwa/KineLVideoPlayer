@@ -28,6 +28,12 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 
         public String[] PlaylistNames => playlistNames;
 
+        public void Start()
+        {
+            if (controller != null)
+                controller.AddListener(this);
+        }
+
         public KinelMediaTrack[] GetPlaylist(int index)
         {
             Log($"GetPlaylist index {index}, playlistIndex length {playlistIndex.Length}");
@@ -70,6 +76,28 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 #endif
         }
 
+        public KinelMediaTrack GetTrackFromPlaylist(int targetPlaylistIndex, int trackIndex)
+        {
+            if (targetPlaylistIndex < 0 || targetPlaylistIndex >= playlistIndex.Length) return null;
+            var playlistEnd = (targetPlaylistIndex + 1 < playlistIndex.Length)
+                ? playlistIndex[targetPlaylistIndex + 1]
+                : urls.Length;
+            var playlistTrackCount = playlistEnd - playlistIndex[targetPlaylistIndex];
+            if (trackIndex < 0 || trackIndex >= playlistTrackCount) return null;
+            return GetTrack(playlistIndex[targetPlaylistIndex] + trackIndex);
+        }
+
+        public void PlayFromPlaylist(int targetPlaylistIndex, int trackIndex)
+        {
+            if (targetPlaylistIndex < 0 || targetPlaylistIndex >= playlistIndex.Length) return;
+            var playlistEnd = (targetPlaylistIndex + 1 < playlistIndex.Length)
+                ? playlistIndex[targetPlaylistIndex + 1]
+                : urls.Length;
+            var playlistTrackCount = playlistEnd - playlistIndex[targetPlaylistIndex];
+            if (trackIndex < 0 || trackIndex >= playlistTrackCount) return;
+            PlayFromIndex(playlistIndex[targetPlaylistIndex] + trackIndex);
+        }
+
         public DataList GetPlaylists()
         {
             return null;
@@ -99,21 +127,19 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
                 {
                     _currentIndex = -1;
                 }
+
                 return;
             }
 
-            PlayFromIndex(nextIndex);
+            if (controller.LoopMode == LoopMode.Playlist)
+                PlayFromIndex(nextIndex);
+            else
+                _currentIndex = -1;
         }
 
         public override void OnKinelQueueStart()
         {
             _currentIndex = -1;
-        }
-
-        public void Start()
-        {
-            if (controller != null)
-                controller.AddListener(this);
         }
     }
 }

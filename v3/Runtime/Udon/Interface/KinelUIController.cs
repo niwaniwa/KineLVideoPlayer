@@ -228,6 +228,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         #endregion
 
+        [SerializeField] private int _playlistSelectorOffset = 1;
+
         private int _selectedPlaylistIndex = 0;
         private int _selectedTrackIndex = 0;
 
@@ -489,11 +491,17 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             selectedPlaylist.transform.GetChild(_selectedTrackIndex).gameObject.SetActive(true);
             Log($"Track Select. index: {_selectedTrackIndex}");
 
-            var hoge = playlist.GetPlaylist(_selectedPlaylistIndex - 1)[_selectedTrackIndex];
+            // -1しているのはqueueが先頭に入っているので。
+            var track = playlist.GetTrackFromPlaylist(_selectedPlaylistIndex - _playlistSelectorOffset,
+                _selectedTrackIndex);
+            if (track == null)
+            {
+                LogWarning("Track is not found from playlist.");
+                return;
+            }
 
-            Log($"track index: {_selectedTrackIndex}, url: {hoge.Url()}, title: {hoge.Title()}");
-
-            PlayMedia(hoge.Url());
+            playlist.PlayFromPlaylist(_selectedPlaylistIndex - _playlistSelectorOffset, _selectedTrackIndex);
+            Log($"track index: {_selectedTrackIndex}, url: {track.Url()}, title: {track.Title()}");
         }
 
         public void OnQueueSelect()
