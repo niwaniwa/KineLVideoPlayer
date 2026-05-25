@@ -103,11 +103,19 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             return null;
         }
 
+        private void SetCurrentIndex(int value)
+        {
+            bool wasActive = _currentIndex >= 0;
+            _currentIndex = value;
+            if (wasActive != (_currentIndex >= 0))
+                controller.OnKinelPlaylistActiveChanged(_currentIndex >= 0);
+        }
+
         public void PlayFromIndex(int index)
         {
             var track = GetTrack(index);
             if (track == null) return;
-            _currentIndex = index;
+            SetCurrentIndex(index);
             controller.NowSelectedType = track.Type();
             controller.LoadUrl(track.Url());
         }
@@ -125,7 +133,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
                 }
                 else
                 {
-                    _currentIndex = -1;
+                    SetCurrentIndex(-1);
                 }
 
                 return;
@@ -134,12 +142,12 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             if (controller.LoopMode == LoopMode.Playlist)
                 PlayFromIndex(nextIndex);
             else
-                _currentIndex = -1;
+                SetCurrentIndex(-1);
         }
 
         public override void OnKinelQueueStart()
         {
-            _currentIndex = -1;
+            SetCurrentIndex(-1);
         }
     }
 }

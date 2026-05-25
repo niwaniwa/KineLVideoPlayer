@@ -232,6 +232,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         private int _selectedPlaylistIndex = 0;
         private int _selectedTrackIndex = 0;
+        private bool _isPlaylistActive;
 
         private GameObject _selectorParent;
 
@@ -566,6 +567,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnLoopToggle()
         {
             var next = (LoopMode)(((int)controller.LoopMode + 1) % 3);
+            if (next == LoopMode.Playlist && !_isPlaylistActive)
+                next = LoopMode.None;
             controller.SetLoopMode(next);
         }
 
@@ -578,6 +581,13 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
                 loopButtonIcon.sprite = loopPlaylistSprite;
             else
                 loopButtonIcon.sprite = loopNoneSprite;
+        }
+
+        public override void OnKinelPlaylistActiveChanged(bool isActive)
+        {
+            _isPlaylistActive = isActive;
+            if (!isActive && controller.LoopMode == LoopMode.Playlist)
+                controller.SetLoopMode(LoopMode.None);
         }
 
         public void OnPlaylistToggle()

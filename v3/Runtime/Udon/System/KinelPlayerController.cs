@@ -389,6 +389,14 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         #endregion
 
+        public override void OnKinelPlaylistActiveChanged(bool isActive)
+        {
+            foreach (var listener in Listeners)
+            {
+                listener.OnKinelPlaylistActiveChanged(isActive);
+            }
+        }
+
         /// <summary>
         /// 指定されたメディアタイプに切り替える
         /// </summary>

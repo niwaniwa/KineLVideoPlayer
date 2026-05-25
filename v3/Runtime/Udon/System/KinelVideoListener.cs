@@ -127,6 +127,13 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         {
         }
 
+        /// <summary>
+        /// KinelPlaylist の再生アクティブ状態が変化した際に発火する
+        /// </summary>
+        public virtual void OnKinelPlaylistActiveChanged(bool isActive)
+        {
+        }
+
         #endregion
 
         #region queue event
