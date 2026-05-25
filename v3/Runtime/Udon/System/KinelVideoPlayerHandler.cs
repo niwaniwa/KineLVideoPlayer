@@ -103,7 +103,16 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             VideoKinelVideoListener.OnKinelVideoEnd();
         }
 
-        public override bool IsPlaying() => _videoPlayer.IsPlaying;
+        public override bool IsPlaying()
+        {
+            if (_videoPlayer == null)
+            {
+                return false;
+            }
+
+            return _videoPlayer.IsPlaying;
+        }
+
         public override bool IsPaused() => _isPaused;
         public override float GetDuration() => _videoPlayer.GetDuration();
         public override float GetTime() => _videoPlayer.GetTime();
@@ -130,7 +139,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             this.resolution = Mathf.Clamp(resolution, 1, 8);
             Log($"Resolution Changed: {this.resolution}");
             if (_animator != null) _animator.SetInteger(resolutionAnimatorFlag, this.resolution);
-            
+
             if (!IsPlaying()) return;
             ReloadMedia();
         }
@@ -266,6 +275,12 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         }
 
         #region Video events
+
+        public override void OnVideoEnd() => base.OnVideoEnd();
+
+        public override void OnVideoLoop() => base.OnVideoLoop();
+
+        public override void OnVideoError(VideoError videoError) => base.OnVideoError(videoError);
 
         public override void OnVideoStart()
         {

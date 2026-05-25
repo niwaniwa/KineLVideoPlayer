@@ -114,9 +114,9 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         }
 
         /// <summary>
-        /// ループ設定が変更された際に発火する
+        /// ループモードが変更された際に発火する
         /// </summary>
-        public virtual void OnKinelLoopChanged(bool loop)
+        public virtual void OnKinelLoopModeChanged(LoopMode loopMode)
         {
         }
 
@@ -124,6 +124,13 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         /// 鏡反転無効（NoMirrorInversion）の設定が変更された際に発火する
         /// </summary>
         public virtual void OnKinelNoMirrorInversionChanged(bool value)
+        {
+        }
+
+        /// <summary>
+        /// KinelPlaylist の再生アクティブ状態が変化した際に発火する
+        /// </summary>
+        public virtual void OnKinelPlaylistActiveChanged(bool isActive)
         {
         }
 

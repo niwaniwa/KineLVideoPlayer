@@ -74,6 +74,11 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         [SerializeField, KinelUIEvent(nameof(OnLoopToggle), UIEventType.ButtonClick)]
         private Button loopToggleButton;
 
+        [SerializeField] private Image loopButtonIcon;
+        [SerializeField] private Sprite loopNoneSprite;
+        [SerializeField] private Sprite loopSingleSprite;
+        [SerializeField] private Sprite loopPlaylistSprite;
+
         [Header("Volume Control")] [SerializeField, KinelUIEvent(nameof(OnVolumeMute), UIEventType.ButtonClick)]
         private Button volumeMute;
 
@@ -223,8 +228,11 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         #endregion
 
+        [SerializeField] private int _playlistSelectorOffset = 1;
+
         private int _selectedPlaylistIndex = 0;
         private int _selectedTrackIndex = 0;
+        private bool _isPlaylistActive;
 
         private GameObject _selectorParent;
 
@@ -262,6 +270,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             ApplyPauseStateUI();
             ApplyMediaTypeUI();
             ApplyResolutionUI(controller.GetResolution());
+            OnKinelLoopModeChanged(controller.LoopMode);
 
             _selectorParent = playlistUI.transform.Find("Playlist Selector/Parent/Viewport/Content").gameObject;
         }
@@ -483,11 +492,17 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             selectedPlaylist.transform.GetChild(_selectedTrackIndex).gameObject.SetActive(true);
             Log($"Track Select. index: {_selectedTrackIndex}");
 
-            var hoge = playlist.GetPlaylist(_selectedPlaylistIndex - 1)[_selectedTrackIndex];
+            // -1しているのはqueueが先頭に入っているので。
+            var track = playlist.GetTrackFromPlaylist(_selectedPlaylistIndex - _playlistSelectorOffset,
+                _selectedTrackIndex);
+            if (track == null)
+            {
+                LogWarning("Track is not found from playlist.");
+                return;
+            }
 
-            Log($"track index: {_selectedTrackIndex}, url: {hoge.Url()}, title: {hoge.Title()}");
-
-            PlayMedia(hoge.Url());
+            playlist.PlayFromPlaylist(_selectedPlaylistIndex - _playlistSelectorOffset, _selectedTrackIndex);
+            Log($"track index: {_selectedTrackIndex}, url: {track.Url()}, title: {track.Title()}");
         }
 
         public void OnQueueSelect()
@@ -551,7 +566,28 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnLoopToggle()
         {
-            controller.SetLoop(!controller.Loop);
+            var next = (LoopMode)(((int)controller.LoopMode + 1) % 3);
+            if (next == LoopMode.Playlist && !_isPlaylistActive)
+                next = LoopMode.None;
+            controller.SetLoopMode(next);
+        }
+
+        public override void OnKinelLoopModeChanged(LoopMode loopMode)
+        {
+            if (loopButtonIcon == null) return;
+            if (loopMode == LoopMode.Single)
+                loopButtonIcon.sprite = loopSingleSprite;
+            else if (loopMode == LoopMode.Playlist)
+                loopButtonIcon.sprite = loopPlaylistSprite;
+            else
+                loopButtonIcon.sprite = loopNoneSprite;
+        }
+
+        public override void OnKinelPlaylistActiveChanged(bool isActive)
+        {
+            _isPlaylistActive = isActive;
+            if (!isActive && controller.LoopMode == LoopMode.Playlist)
+                controller.SetLoopMode(LoopMode.None);
         }
 
         public void OnPlaylistToggle()

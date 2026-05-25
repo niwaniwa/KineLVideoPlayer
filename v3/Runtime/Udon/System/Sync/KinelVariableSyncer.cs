@@ -47,8 +47,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         [UdonSynced, FieldChangeCallback(nameof(SyncedABLoopEnabled))]
         private bool _syncedABLoopEnabled;
 
-        [UdonSynced, FieldChangeCallback(nameof(SyncedLoop))]
-        private bool _syncedLoop;
+        [UdonSynced, FieldChangeCallback(nameof(SyncedLoopMode))]
+        private int _syncedLoopMode;
 
         // --- Local state ---
         private bool _isRemoteAction;
@@ -226,16 +226,16 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             }
         }
 
-        public bool SyncedLoop
+        public int SyncedLoopMode
         {
-            get => _syncedLoop;
+            get => _syncedLoopMode;
             set
             {
-                _syncedLoop = value;
+                _syncedLoopMode = value;
                 if (Networking.IsOwner(gameObject)) return;
 
                 _isRemoteAction = true;
-                controller.SetLoop(_syncedLoop);
+                controller.SetLoopMode((LoopMode)_syncedLoopMode);
                 _isRemoteAction = false;
             }
         }
@@ -499,15 +499,15 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             Log($"Synced: Seek, SyncedVideoStartGlobalTime: {SyncedVideoStartGlobalTime}, time: {time}");
         }
 
-        public override void OnKinelLoopChanged(bool loop)
+        public override void OnKinelLoopModeChanged(LoopMode loopMode)
         {
             if (_isRemoteAction) return;
             EnsureOwnership();
 
-            SyncedLoop = loop;
+            SyncedLoopMode = (int)loopMode;
             RequestSerialization();
 
-            Log($"Synced: LoopChanged to {loop}");
+            Log($"Synced: LoopModeChanged to {loopMode}");
         }
 
         #endregion
@@ -592,7 +592,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 _syncedABLoopEnabled = abLoop.IsABLoopEnabled;
             }
 
-            _syncedLoop = controller.Loop;
+            _syncedLoopMode = (int)controller.LoopMode;
         }
 
         /// <summary>
