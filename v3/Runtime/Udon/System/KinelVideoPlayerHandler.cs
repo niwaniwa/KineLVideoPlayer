@@ -276,24 +276,11 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         #region Video events
 
-        public override void OnVideoEnd()
-        {
-            Debug.Log($"{DebugPrefix} KinelVideoPlayerHandler.OnVideoEnd called directly, mediaType={mediaType}");
-            base.OnVideoEnd();
-        }
+        public override void OnVideoEnd() => base.OnVideoEnd();
 
-        public override void OnVideoLoop()
-        {
-            Debug.Log(
-                $"{DebugPrefix} KinelVideoPlayerHandler.OnVideoLoop called, mediaType={mediaType}, Loop={GetLoop()}");
-            base.OnVideoLoop();
-        }
+        public override void OnVideoLoop() => base.OnVideoLoop();
 
-        public override void OnVideoError(VideoError videoError)
-        {
-            Debug.Log($"{DebugPrefix} KinelVideoPlayerHandler.OnVideoError={videoError}, mediaType={mediaType}");
-            base.OnVideoError(videoError);
-        }
+        public override void OnVideoError(VideoError videoError) => base.OnVideoError(videoError);
 
         public override void OnVideoStart()
         {
