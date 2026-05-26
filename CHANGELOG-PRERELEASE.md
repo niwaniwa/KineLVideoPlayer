@@ -15,9 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
-- UIを非表示時に、PlaylistのUIなどを押せてしまい誤動作してしまう問題を修正 [#161](https://github.com/niwaniwa/KineLVideoPlayer/issues/161)
 
 ### Security
+
+## [3.1.1-beta.1] - 2026-05-26
+### Fixed
+- UIを非表示時に、PlaylistのUIなどを押せてしまい誤動作してしまう問題を修正 [#161](https://github.com/niwaniwa/KineLVideoPlayer/issues/161)
 
 ## [3.1.0] - 2026-05-25
 ### Fixed
