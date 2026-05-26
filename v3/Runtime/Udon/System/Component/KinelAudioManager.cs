@@ -11,8 +11,6 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         [SerializeField] private KinelPlayerController controller;
         [SerializeField] private AudioSource[] videoAudioSources;
         [SerializeField] private AudioSource seAudioSource;
-        [SerializeField] private AudioClip onVideoStartClip;
-        [SerializeField] private AudioClip onVideoEndClip;
 
         private float _masterVolume = 1f;
         private bool _isMuted = false;
