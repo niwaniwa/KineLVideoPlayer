@@ -5047,6 +5047,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 816314834437228909, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 979283743431795058, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: serializedProgramAsset
       value: 
