@@ -46,6 +46,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             controller.AddListener(this);
         }
 
+        // volumeScaleは呼び出し元が制御
+        // 現時点でSEは動画音量に追従しない
         public void PlaySE(AudioClip clip, float volumeScale = 1f)
         {
             if (seAudioSource == null || clip == null) return;
