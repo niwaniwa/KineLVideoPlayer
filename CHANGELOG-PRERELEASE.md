@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- audio moduleを追加 [#167](https://github.com/niwaniwa/KineLVideoPlayer/issues/167)
 
 ### Changed
 
