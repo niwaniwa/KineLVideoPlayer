@@ -26,6 +26,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         #region Udon
 
         [SerializeField] private KinelPlayerController controller;
+        [SerializeField] private KinelAudioManager audioManager;
         [SerializeField] private KinelPlaylist playlist;
         [SerializeField] private KinelQueueList queueList;
         [SerializeField] private KinelYttlBridge yttlBridge;
@@ -265,7 +266,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
             controller.AddListener(this);
             // controller.Volume = volumeSlider.value;
-            volumeSlider.value = controller.Volume;
+            volumeSlider.value = audioManager != null ? audioManager.MasterVolume : 1f;
 
             ApplyPauseStateUI();
             ApplyMediaTypeUI();
@@ -818,13 +819,13 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnVolumeMute()
         {
-            controller.Mute = true;
+            if (audioManager != null) audioManager.Mute = true;
             ApplyVolumeMute();
         }
 
         public void OnVolumeUnMute()
         {
-            controller.Mute = false;
+            if (audioManager != null) audioManager.Mute = false;
             ApplyVolumeUnMute();
         }
 
@@ -879,9 +880,9 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnVolumeChanged()
         {
-            controller.SetVolume(volumeSlider.value);
+            if (audioManager != null) audioManager.MasterVolume = volumeSlider.value;
 
-            if (controller.Mute) return;
+            if (audioManager != null && audioManager.Mute) return;
 
             if (volumeSlider.value <= 0f)
                 ApplyVolumeZero();

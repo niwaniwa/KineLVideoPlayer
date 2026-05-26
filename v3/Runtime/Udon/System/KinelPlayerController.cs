@@ -9,7 +9,6 @@ namespace Kinel.VideoPlayer.V3.Udon.System
     public class KinelPlayerController : KinelVideoListener
     {
         [SerializeField] private KinelMediaBase[] mediaModule;
-        [SerializeField] private AudioSource audioSource;
         [SerializeField] private KinelMediaType nowSelectedType;
 
         [SerializeField] private int maxRetryCount = 3;
@@ -54,19 +53,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
 
         public KinelMediaInfo NowPlayingMediaInfo { get; private set; }
 
-        public bool Mute
-        {
-            get => audioSource.mute;
-            set => audioSource.mute = value;
-        }
-
         #region Media Status
-
-        public float Volume
-        {
-            get => audioSource.volume;
-            set => audioSource.volume = value;
-        }
 
         public bool IsPlaying() => NowSelectedMediaModule.IsPlaying();
         public bool IsPaused() => NowSelectedMediaModule.IsPaused();
@@ -120,11 +107,6 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             OnKinelPostUrlInput(url);
             Debug.Log($"{DebugPrefix} Now selected mode: {nowSelectedType}");
             NowSelectedMediaModule.LoadUrl(url);
-        }
-
-        public void SetVolume(float volume)
-        {
-            audioSource.volume = Mathf.Clamp(volume, 0, 1);
         }
 
         public void ResetSystem()
