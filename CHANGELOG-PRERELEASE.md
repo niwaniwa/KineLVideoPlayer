@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- audio moduleを追加 [#167](https://github.com/niwaniwa/KineLVideoPlayer/issues/167)
-- Tooltipを追加
 
 ### Changed
 
@@ -19,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [3.2.0] - 2026-05-28
+### Added
+- audio moduleを追加 [#167](https://github.com/niwaniwa/KineLVideoPlayer/issues/167)
+- Tooltipを追加
 
 ## [3.1.1-beta.1] - 2026-05-26
 ### Fixed
