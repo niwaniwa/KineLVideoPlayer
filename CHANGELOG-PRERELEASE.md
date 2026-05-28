@@ -7,10 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- ModuleをPrefab化 [a48633f](https://github.com/niwaniwa/KineLVideoPlayer/commit/a48633f16d5ba9f9842ed8a993be4b1c14ce0c50)
 
 ### Changed
-- デフォルト値を設定 [a8815bf](https://github.com/niwaniwa/KineLVideoPlayer/commit/a8815bfb0f1ef2cfc3e35beb254c21fcfb8e5e7a)
 
 ### Deprecated
 
@@ -19,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [3.3.0-beta.2] - 2026-05-28
+### Added
+- ModuleをPrefab化 [a48633f](https://github.com/niwaniwa/KineLVideoPlayer/commit/a48633f16d5ba9f9842ed8a993be4b1c14ce0c50)
+
+### Changed
+- デフォルト値を設定 [a8815bf](https://github.com/niwaniwa/KineLVideoPlayer/commit/a8815bfb0f1ef2cfc3e35beb254c21fcfb8e5e7a)
 
 ## [3.3.0-beta.1] - 2026-05-28
 ### Added
