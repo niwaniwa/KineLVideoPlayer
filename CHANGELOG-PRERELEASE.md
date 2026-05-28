@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- ミラー反転UIの修正 [#173](https://github.com/niwaniwa/KineLVideoPlayer/pull/173)
+- Loop反映タイミングによってUIのLoop状態表示が正しくない問題を修正 [#174](https://github.com/niwaniwa/KineLVideoPlayer/pull/174)
+- TooltipsがUI非表示時にも表示される問題を修正 [#175](https://github.com/niwaniwa/KineLVideoPlayer/issues/175)
 
 ### Security
 
