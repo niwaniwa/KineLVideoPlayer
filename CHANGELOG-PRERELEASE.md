@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- tooltip用のEditor拡張を追加
 
 ### Changed
 
@@ -18,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## [3.3.0-beta.1] - 2026-05-28
+### Added
+- tooltip用のEditor拡張を追加
 
 ## [3.2.1-beta.1] - 2026-05-28
 ### Fixed
