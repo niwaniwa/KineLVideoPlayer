@@ -1274,6 +1274,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8898245330345819002}
     - target: {fileID: 9106567748614673844, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
+      propertyPath: tooltipOffset.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9106567748614673844, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 9106567748614673844, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
