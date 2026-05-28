@@ -89,6 +89,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         public void Start()
         {
             Initialize();
+            SendCustomEventDelayedFrames(nameof(_ApplyInitialLoopMode), 1);
         }
 
         public void Initialize()
@@ -350,6 +351,11 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             {
                 listener.OnKinelLoopModeChanged(loopMode);
             }
+        }
+
+        public void _ApplyInitialLoopMode()
+        {
+            SetLoopMode(_loopMode);
         }
 
         #endregion
