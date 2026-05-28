@@ -15,10 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
-- queueモードの修正
-  - 次の動画へ遷移する際に再生していた動画をサイド読み込みしてしまう問題を修正 [#150](https://github.com/niwaniwa/KineLVideoPlayer/issues/150)
 
 ### Security
+
+## [3.2.1-beta.1] - 2026-05-28
+### Fixed
+- queueモードの修正
+  - 次の動画へ遷移する際に再生していた動画をサイド読み込みしてしまう問題を修正 [#150](https://github.com/niwaniwa/KineLVideoPlayer/issues/150)
 
 ## [3.2.0] - 2026-05-28
 ### Added
