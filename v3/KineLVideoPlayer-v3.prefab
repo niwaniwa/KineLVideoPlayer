@@ -2046,6 +2046,10 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 4875834145683704038, guid: 9f224492eef2e03469214c77ce9f2788, type: 3}
+    - target: {fileID: 7006422299999902049, guid: 9f224492eef2e03469214c77ce9f2788, type: 3}
+      propertyPath: playlistUrl
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 9142705051516598721, guid: 9f224492eef2e03469214c77ce9f2788, type: 3}
       propertyPath: m_Name
       value: Playlist
