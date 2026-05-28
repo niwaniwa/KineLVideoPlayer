@@ -154,12 +154,12 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             if (!Networking.IsOwner(gameObject)) return;
             if (controller == null || _urls.Length == 0) return;
 
-            var url = _urls[0];
-            var type = _types[0];
             _urls = RemoveAtUrl(_urls, 0);
             _titles = RemoveAtString(_titles, 0);
             _types = RemoveAtInt(_types, 0);
             _addedBy = RemoveAtString(_addedBy, 0);
+            var url = _urls[0];
+            var type = _types[0];
             RequestSerialization();
             controller.OnKinelQueueRemoved();
             controller.OnKinelQueueStart();
