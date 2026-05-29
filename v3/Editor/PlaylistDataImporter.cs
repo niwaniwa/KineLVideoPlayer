@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Editor
+namespace Kinel.VideoPlayer.V3.Editor
 {
     public class PlaylistDataImporter
     {
