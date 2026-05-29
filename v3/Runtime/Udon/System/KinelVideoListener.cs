@@ -154,5 +154,19 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         }
 
         #endregion
+
+        #region lock event
+
+        /// <summary>ロックされた際に発火する</summary>
+        public virtual void OnKinelLocked()
+        {
+        }
+
+        /// <summary>ロックが解除された際に発火する</summary>
+        public virtual void OnKinelUnlocked()
+        {
+        }
+
+        #endregion
     }
 }
