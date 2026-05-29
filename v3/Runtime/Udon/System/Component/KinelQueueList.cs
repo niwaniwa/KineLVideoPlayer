@@ -93,15 +93,16 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             if (!IsLocalMode) return;
             if (controller == null || _localUrls.Length == 0) return;
 
-            var url = _localUrls[0];
-            var type = _localTypes[0];
             _localUrls = KinelUtilities.RemoveAtArray(_localUrls, 0);
             _localTitles = KinelUtilities.RemoveAtArray(_localTitles, 0);
             _localTypes = KinelUtilities.RemoveAtArray(_localTypes, 0);
-
             controller.OnKinelQueueRemoved();
-            controller.OnKinelQueueStart();
 
+            if (_localUrls.Length == 0) return;
+
+            var url = _localUrls[0];
+            var type = _localTypes[0];
+            controller.OnKinelQueueStart();
             controller.NowSelectedType = type;
             controller.LoadUrl(url);
         }
