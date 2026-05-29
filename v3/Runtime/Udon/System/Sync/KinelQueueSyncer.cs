@@ -158,12 +158,14 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             _titles = RemoveAtString(_titles, 0);
             _types = RemoveAtInt(_types, 0);
             _addedBy = RemoveAtString(_addedBy, 0);
-            var url = _urls[0];
-            var type = _types[0];
             RequestSerialization();
             controller.OnKinelQueueRemoved();
-            controller.OnKinelQueueStart();
 
+            if (_urls.Length == 0) return;
+
+            var url = _urls[0];
+            var type = _types[0];
+            controller.OnKinelQueueStart();
             controller.NowSelectedType = (KinelMediaType)type;
             controller.LoadUrl(url);
         }
