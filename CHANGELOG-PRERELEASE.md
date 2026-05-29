@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ミラー反転UIの修正 [#173](https://github.com/niwaniwa/KineLVideoPlayer/pull/173)
 - Loop反映タイミングによってUIのLoop状態表示が正しくない問題を修正 [#174](https://github.com/niwaniwa/KineLVideoPlayer/pull/174)
 - TooltipsがUI非表示時にも表示される問題を修正 [#175](https://github.com/niwaniwa/KineLVideoPlayer/issues/175)
+- `PlaylistDataImporter` のルート名前空間 `Editor` が `UnityEditor.Editor` と衝突し、他アセット導入時にコンパイルエラーが発生する問題を修正 [#181](https://github.com/niwaniwa/KineLVideoPlayer/issues/181)
+  - 名前空間を `Kinel.VideoPlayer.V3.Editor` に変更
 
 ### Security
 
