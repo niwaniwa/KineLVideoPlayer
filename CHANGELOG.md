@@ -7,15 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.3.0] - 2026-05-29
+### Added
 - tooltip用のEditor拡張を追加
 - ModuleをPrefab化 [a48633f](https://github.com/niwaniwa/KineLVideoPlayer/commit/a48633f16d5ba9f9842ed8a993be4b1c14ce0c50)
 
 ### Changed
 - デフォルト値を設定 [a8815bf](https://github.com/niwaniwa/KineLVideoPlayer/commit/a8815bfb0f1ef2cfc3e35beb254c21fcfb8e5e7a)
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 - queueモードの修正
@@ -25,8 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TooltipsがUI非表示時にも表示される問題を修正 [#175](https://github.com/niwaniwa/KineLVideoPlayer/issues/175)
 - `PlaylistDataImporter` のルート名前空間 `Editor` が `UnityEditor.Editor` と衝突し、他アセット導入時にコンパイルエラーが発生する問題を修正 [#181](https://github.com/niwaniwa/KineLVideoPlayer/issues/181)
   - 名前空間を `Kinel.VideoPlayer.V3.Editor` に変更
-
-### Security
 
 ## [3.2.0] - 2026-05-28
 ### Added
