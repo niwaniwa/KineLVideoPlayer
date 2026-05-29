@@ -45,7 +45,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
                 if (nowSelectedType == value) return;
                 var oldMedia = GetMediaByType(nowSelectedType);
                 nowSelectedType = value;
-                oldMedia.ResetMedia();
+                if (oldMedia != null) oldMedia.ResetMedia();
                 NowSelectedMediaModule.OnKinelMediaEnabled();
                 OnKinelMediaTypeChanged();
             }
