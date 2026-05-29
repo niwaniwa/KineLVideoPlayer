@@ -1,0 +1,51 @@
+name: バグ報告
+description: 動作不具合を報告する
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグ報告ありがとうございます。以下の項目を記入してください。
+
+  - type: input
+    id: kvp-version
+    attributes:
+      label: KineLVideoPlayerバージョン
+      placeholder: "例: 3.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 概要・再現手順
+      description: 問題の概要や手順を再現するための手順を記載してください。
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作
+      description: 本来どのように動作するべきか説明してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      description: 実際にどのような動作が起きているか説明してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ / スクリーンショット（任意）
+      description: エラーログや再現画像があれば貼り付けてください。
