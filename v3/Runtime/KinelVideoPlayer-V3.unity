@@ -689,15 +689,15 @@ PrefabInstance:
     - target: {fileID: 8231080221225913914, guid: f763597945aa0d548ac95350130b7b81, type: 3}
       propertyPath: DynamicMaterials.Array.data[0]
       value: 
-      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 2100000, guid: ab21a411c0390164cab5f68ec2ee256d, type: 2}
     - target: {fileID: 8231080221225913914, guid: f763597945aa0d548ac95350130b7b81, type: 3}
       propertyPath: DynamicMaterials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: ab21a411c0390164cab5f68ec2ee256d, type: 2}
+      objectReference: {fileID: 2100000, guid: c815f7613a04b724089c206857e57c6a, type: 2}
     - target: {fileID: 8231080221225913914, guid: f763597945aa0d548ac95350130b7b81, type: 3}
       propertyPath: DynamicMaterials.Array.data[2]
       value: 
-      objectReference: {fileID: 2100000, guid: c815f7613a04b724089c206857e57c6a, type: 2}
+      objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 8231080221225913914, guid: f763597945aa0d548ac95350130b7b81, type: 3}
       propertyPath: DynamicMaterials.Array.data[3]
       value: 
@@ -3499,17 +3499,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6437916667294305527, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
   m_PrefabInstance: {fileID: 2413738114510700131}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1547825498 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 639157390865403303, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
-  m_PrefabInstance: {fileID: 2413738114510700131}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1613228426 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1579941074769814955, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
@@ -5263,7 +5252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3161390613980443433, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 615
       objectReference: {fileID: 0}
     - target: {fileID: 3161390613980443433, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -5273,6 +5262,10 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 3415481214941225249, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
+    - target: {fileID: 3483061003433216518, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
+      propertyPath: _initialLock
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3483061003433216518, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: serializationData.Prefab
       value: 
@@ -5333,10 +5326,6 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 4050911674194380975, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
-    - target: {fileID: 4312850450259733594, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
-      propertyPath: lockButtonIcon
-      value: 
-      objectReference: {fileID: 1547825498}
     - target: {fileID: 4312850450259733594, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: serializationData.Prefab
       value: 
@@ -5440,10 +5429,6 @@ PrefabInstance:
     - target: {fileID: 6270053574591416827, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6351046508364085972, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
-      propertyPath: m_Name
-      value: Lock
       objectReference: {fileID: 0}
     - target: {fileID: 6377250963620018559, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
       propertyPath: m_AnchorMax.y
@@ -5622,8 +5607,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8666007012698763136, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 777e2769aed4414da3005f8bd03e17ae, type: 3}
