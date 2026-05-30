@@ -1,4 +1,5 @@
 ﻿using System;
+using Kinel.VideoPlayer.V3.Udon.System.Component;
 using UnityEngine;
 using UnityEngine.Serialization;
 using VRC.SDK3.Components.Video;
@@ -356,6 +357,36 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         public void _ApplyInitialLoopMode()
         {
             SetLoopMode(_loopMode);
+        }
+
+        #endregion
+
+        #region Lock
+
+        [SerializeField] private KinelPermissionProviderBase permissionProvider;
+        private bool _isLock;
+
+        public bool IsLock => _isLock;
+
+        /// <summary>
+        /// 指定プレイヤーが操作権限を持つかを判定
+        /// 内部ロジックについてはPermissionProviderに委譲する。
+        /// </summary>
+        public bool CanOperate(VRCPlayerApi player)
+        {
+            if (permissionProvider != null)
+                return permissionProvider.CanOperate(player);
+            return player != null && player.IsValid() && player.isMaster;
+        }
+
+        public void SetLock(bool isLock)
+        {
+            _isLock = isLock;
+            foreach (var listener in Listeners)
+            {
+                if (isLock) listener.OnKinelLocked();
+                else listener.OnKinelUnlocked();
+            }
         }
 
         #endregion
