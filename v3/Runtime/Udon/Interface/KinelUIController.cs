@@ -80,6 +80,13 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         [SerializeField] private Sprite loopSingleSprite;
         [SerializeField] private Sprite loopPlaylistSprite;
 
+        [SerializeField, KinelUIEvent(nameof(OnLockToggle), UIEventType.ButtonClick)]
+        private Button lockButton;
+
+        [SerializeField] private Image lockButtonIcon;
+        [SerializeField] private Sprite lockedSprite;
+        [SerializeField] private Sprite unlockedSprite;
+
         [Header("Volume Control")] [SerializeField, KinelUIEvent(nameof(OnVolumeMute), UIEventType.ButtonClick)]
         private Button volumeMute;
 
@@ -272,6 +279,9 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             ApplyMediaTypeUI();
             ApplyResolutionUI(controller.GetResolution());
             OnKinelLoopModeChanged(controller.LoopMode);
+
+            if (controller.IsLock) OnKinelLocked();
+            else OnKinelUnlocked();
 
             _selectorParent = playlistUI.transform.Find("Playlist Selector/Parent/Viewport/Content").gameObject;
         }
@@ -573,6 +583,12 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             controller.SetLoopMode(next);
         }
 
+        public void OnLockToggle()
+        {
+            if (!controller.CanOperate(Networking.LocalPlayer)) return;
+            controller.SetLock(!controller.IsLock);
+        }
+
         public override void OnKinelLoopModeChanged(LoopMode loopMode)
         {
             if (loopButtonIcon == null) return;
@@ -589,6 +605,25 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             _isPlaylistActive = isActive;
             if (!isActive && controller.LoopMode == LoopMode.Playlist)
                 controller.SetLoopMode(LoopMode.None);
+        }
+
+        public override void OnKinelLocked()
+        {
+            SetLockIcon(true);
+            if (controller.CanOperate(Networking.LocalPlayer)) return; // 権限者は操作可能のまま
+            Lock();
+        }
+
+        public override void OnKinelUnlocked()
+        {
+            SetLockIcon(false);
+            UnLock();
+        }
+
+        private void SetLockIcon(bool locked)
+        {
+            if (lockButtonIcon == null) return;
+            lockButtonIcon.sprite = locked ? lockedSprite : unlockedSprite;
         }
 
         public void OnPlaylistToggle()
@@ -1004,12 +1039,13 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         private void SetInteractable(bool isInteractable)
         {
+            // ロック対象はネットワーク同期に影響する操作のみ
+            // ローカル操作（Audio・TimeOffset・Resolution・Reload・UI panel toggle）は対象外
             if (pauseButton != null) pauseButton.interactable = isInteractable;
             if (resumeButton != null) resumeButton.interactable = isInteractable;
             if (previousButton != null) previousButton.interactable = isInteractable;
             if (nextButton != null) nextButton.interactable = isInteractable;
             if (inputField != null) inputField.interactable = isInteractable;
-            if (playlistButton != null) playlistButton.interactable = isInteractable;
             if (inputFieldButton != null) inputFieldButton.interactable = isInteractable;
             if (mediaTypeUnityVideoButton != null) mediaTypeUnityVideoButton.interactable = isInteractable;
             if (mediaTypeStreamButton != null) mediaTypeStreamButton.interactable = isInteractable;

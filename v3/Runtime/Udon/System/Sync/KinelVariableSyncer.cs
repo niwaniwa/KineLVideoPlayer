@@ -50,6 +50,9 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         [UdonSynced, FieldChangeCallback(nameof(SyncedLoopMode))]
         private int _syncedLoopMode;
 
+        [UdonSynced, FieldChangeCallback(nameof(SyncedLock))]
+        private bool _syncedLock;
+
         // --- Local state ---
         private bool _isRemoteAction;
         private bool _isRemoteLoad; // リモート起因のロード中フラグ (非同期対応用)
@@ -236,6 +239,20 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
                 _isRemoteAction = true;
                 controller.SetLoopMode((LoopMode)_syncedLoopMode);
+                _isRemoteAction = false;
+            }
+        }
+
+        public bool SyncedLock
+        {
+            get => _syncedLock;
+            set
+            {
+                _syncedLock = value;
+                if (Networking.IsOwner(gameObject)) return;
+
+                _isRemoteAction = true;
+                controller.SetLock(_syncedLock);
                 _isRemoteAction = false;
             }
         }
@@ -510,6 +527,28 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             Log($"Synced: LoopModeChanged to {loopMode}");
         }
 
+        public override void OnKinelLocked()
+        {
+            if (_isRemoteAction) return;
+            EnsureOwnership();
+
+            SyncedLock = true;
+            RequestSerialization();
+
+            Log("Synced: Locked");
+        }
+
+        public override void OnKinelUnlocked()
+        {
+            if (_isRemoteAction) return;
+            EnsureOwnership();
+
+            SyncedLock = false;
+            RequestSerialization();
+
+            Log("Synced: Unlocked");
+        }
+
         #endregion
 
         #region VRChat Callbacks
@@ -521,6 +560,16 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
             Log("Ownership transferred to local player, snapshotting state");
             SnapshotCurrentState();
             RequestSerialization();
+        }
+
+        /// <summary>
+        /// ロック中は権限者以外の所有権奪取を拒否する
+        /// requester/owner 双方でローカル評価されるため CanOperate は純粋関数
+        /// </summary>
+        public override bool OnOwnershipRequest(VRCPlayerApi requestingPlayer, VRCPlayerApi newOwner)
+        {
+            if (!_syncedLock) return true;
+            return controller.CanOperate(newOwner);
         }
 
         #endregion
