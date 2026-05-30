@@ -647,7 +647,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3692779195696961621, guid: 0c2f2569a7d0b7647ad93e448afec9de, type: 3}
       propertyPath: m_Name
-      value: LockModule
+      value: PermissionProviderModule
       objectReference: {fileID: 0}
     - target: {fileID: 4785655526414120126, guid: 0c2f2569a7d0b7647ad93e448afec9de, type: 3}
       propertyPath: serializationData.Prefab
@@ -879,6 +879,10 @@ PrefabInstance:
       propertyPath: audioManager
       value: 
       objectReference: {fileID: 8898245330345819002}
+    - target: {fileID: 1216245562478197597, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
+      propertyPath: lockButtonIcon
+      value: 
+      objectReference: {fileID: 639157390865403303}
     - target: {fileID: 1216245562478197597, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
       propertyPath: serializationData.Prefab
       value: 
@@ -1315,6 +1319,10 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 7055549971482859960, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
+    - target: {fileID: 8293899199904460243, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
+      propertyPath: m_Name
+      value: Lock
+      objectReference: {fileID: 0}
     - target: {fileID: 8339014708084584056, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1408,10 +1416,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9106567748614673844, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6014976430406973575, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
+--- !u!114 &639157390865403303 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2586214100949015200, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
+  m_PrefabInstance: {fileID: 3114989316182710023}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!23 &7547395443125846635 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 4865882582369047916, guid: b71b01147eacc1347a92766d23e078fd, type: 3}
