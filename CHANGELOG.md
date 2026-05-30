@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 ## [3.4.0] - 2026-05-30
+### Added
+- Master/InstanceOwnerによる動画プレイヤーの操作権限制御を追加 [#177](https://github.com/niwaniwa/KineLVideoPlayer/issues/177)
+
 ## [3.3.0] - 2026-05-29
 ### Added
 - tooltip用のEditor拡張を追加
