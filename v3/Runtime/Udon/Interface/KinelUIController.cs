@@ -280,6 +280,9 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             ApplyResolutionUI(controller.GetResolution());
             OnKinelLoopModeChanged(controller.LoopMode);
 
+            if (controller.IsLock) OnKinelLocked();
+            else OnKinelUnlocked();
+
             _selectorParent = playlistUI.transform.Find("Playlist Selector/Parent/Viewport/Content").gameObject;
         }
 
@@ -1036,12 +1039,13 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         private void SetInteractable(bool isInteractable)
         {
+            // ロック対象はネットワーク同期に影響する操作のみ
+            // ローカル操作（Audio・TimeOffset・Resolution・Reload・UI panel toggle）は対象外
             if (pauseButton != null) pauseButton.interactable = isInteractable;
             if (resumeButton != null) resumeButton.interactable = isInteractable;
             if (previousButton != null) previousButton.interactable = isInteractable;
             if (nextButton != null) nextButton.interactable = isInteractable;
             if (inputField != null) inputField.interactable = isInteractable;
-            if (playlistButton != null) playlistButton.interactable = isInteractable;
             if (inputFieldButton != null) inputFieldButton.interactable = isInteractable;
             if (mediaTypeUnityVideoButton != null) mediaTypeUnityVideoButton.interactable = isInteractable;
             if (mediaTypeStreamButton != null) mediaTypeStreamButton.interactable = isInteractable;

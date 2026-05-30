@@ -91,11 +91,13 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         {
             Initialize();
             SendCustomEventDelayedFrames(nameof(_ApplyInitialLoopMode), 1);
+            SendCustomEventDelayedFrames(nameof(_ApplyInitialLock), 1);
         }
 
         public void Initialize()
         {
             _loopMode = _initialLoopMode;
+            _isLock = _initialLock;
             foreach (var module in mediaModule)
             {
                 module.VideoKinelVideoListener = this;
@@ -364,6 +366,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         #region Lock
 
         [SerializeField] private KinelPermissionProviderBase permissionProvider;
+        [SerializeField] private bool _initialLock = false;
         private bool _isLock;
 
         public bool IsLock => _isLock;
@@ -387,6 +390,11 @@ namespace Kinel.VideoPlayer.V3.Udon.System
                 if (isLock) listener.OnKinelLocked();
                 else listener.OnKinelUnlocked();
             }
+        }
+
+        public void _ApplyInitialLock()
+        {
+            SetLock(_isLock);
         }
 
         #endregion
