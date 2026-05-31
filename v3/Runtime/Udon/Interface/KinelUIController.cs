@@ -398,6 +398,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnURLChanged()
         {
+            if (IsLockedForLocal()) return;
             var url = inputField.GetUrl();
 
             if (url.Equals(VRCUrl.Empty))
@@ -422,18 +423,21 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnPaused()
         {
+            if (IsLockedForLocal()) return;
             controller.NowSelectedMediaModule.Pause();
             ApplyPauseStateUI();
         }
 
         public void OnResumed()
         {
+            if (IsLockedForLocal()) return;
             controller.NowSelectedMediaModule.Play();
             ApplyPlayStateUI();
         }
 
         public void OnPrevious()
         {
+            if (IsLockedForLocal()) return;
             float newTime = controller.GetTime() - seekTimeIncrement;
             controller.SetTime(newTime);
             controller.OnKinelSeek(newTime);
@@ -441,6 +445,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnNext()
         {
+            if (IsLockedForLocal()) return;
             float newTime = controller.GetTime() + seekTimeIncrement;
             controller.SetTime(newTime);
             controller.OnKinelSeek(newTime);
@@ -523,6 +528,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnQueueAdd()
         {
+            if (IsLockedForLocal()) return;
             var url = queueInputField.GetUrl();
             bool added = queueList.AddTrack(url, url.ToString(), controller.NowSelectedType);
             queueInputField.SetUrl(VRCUrl.Empty);
@@ -532,6 +538,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnQueuePlayByIndex(int index)
         {
+            if (IsLockedForLocal()) return;
             if (index < 0) return;
             controller.LoadUrl(queueList.Urls[index]);
         }
@@ -577,6 +584,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnLoopToggle()
         {
+            if (IsLockedForLocal()) return;
             var next = (LoopMode)(((int)controller.LoopMode + 1) % 3);
             if (next == LoopMode.Playlist && !_isPlaylistActive)
                 next = LoopMode.None;
@@ -587,6 +595,15 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         {
             if (!controller.CanOperate(Networking.LocalPlayer)) return;
             controller.SetLock(!controller.IsLock);
+        }
+
+        /// <summary>
+        /// ロック中かつ非権限者なら同期操作をブロックする。
+        /// interactable 制御の保険（多層防御）として同期操作ハンドラ冒頭で使う。
+        /// </summary>
+        private bool IsLockedForLocal()
+        {
+            return controller.IsLock && !controller.CanOperate(Networking.LocalPlayer);
         }
 
         public override void OnKinelLoopModeChanged(LoopMode loopMode)
@@ -663,24 +680,28 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnIncreaseSpeedLargeClick()
         {
+            if (IsLockedForLocal()) return;
             controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() +
                                                                speedIncrementLarge);
         }
 
         public void OnDecreaseSpeedLargeClick()
         {
+            if (IsLockedForLocal()) return;
             controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() -
                                                                speedIncrementLarge);
         }
 
         public void OnIncreaseSpeedSmallClick()
         {
+            if (IsLockedForLocal()) return;
             controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() +
                                                                speedIncrementSmall);
         }
 
         public void OnDecreaseSpeedSmallClick()
         {
+            if (IsLockedForLocal()) return;
             controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() -
                                                                speedIncrementSmall);
         }
@@ -748,6 +769,7 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnSliderDrop()
         {
+            if (IsLockedForLocal()) return;
             Log($"On Slider Drop {seekSlider.value}");
             controller.SetTime(seekSlider.value);
             controller.OnKinelSeek(seekSlider.value);
@@ -1035,12 +1057,14 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         private void UnLock()
         {
             SetInteractable(true);
+            // SetInteractable(true) が mediaType ボタンの「選択中グレーアウト」を潰すため復元する
+            ApplyMediaTypeUI();
         }
 
         private void SetInteractable(bool isInteractable)
         {
             // ロック対象はネットワーク同期に影響する操作のみ
-            // ローカル操作（Audio・TimeOffset・Resolution・Reload・UI panel toggle）は対象外
+            // ローカル操作（Audio・TimeOffset・Resolution・Reload・MirrorInversion・UI panel toggle）は対象外
             if (pauseButton != null) pauseButton.interactable = isInteractable;
             if (resumeButton != null) resumeButton.interactable = isInteractable;
             if (previousButton != null) previousButton.interactable = isInteractable;
@@ -1050,6 +1074,15 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
             if (mediaTypeUnityVideoButton != null) mediaTypeUnityVideoButton.interactable = isInteractable;
             if (mediaTypeStreamButton != null) mediaTypeStreamButton.interactable = isInteractable;
             if (mediaTypeImageButton != null) mediaTypeImageButton.interactable = isInteractable;
+            // seek / loop / 速度 / queue 追加もネットワーク同期を伴うためロック対象に含める
+            if (seekSlider != null) seekSlider.interactable = isInteractable;
+            if (loopToggleButton != null) loopToggleButton.interactable = isInteractable;
+            if (increaseSpeedLargeButton != null) increaseSpeedLargeButton.interactable = isInteractable;
+            if (decreaseSpeedLargeButton != null) decreaseSpeedLargeButton.interactable = isInteractable;
+            if (increaseSpeedSmallButton != null) increaseSpeedSmallButton.interactable = isInteractable;
+            if (decreaseSpeedSmallButton != null) decreaseSpeedSmallButton.interactable = isInteractable;
+            if (queueAddButton != null) queueAddButton.interactable = isInteractable;
+            if (queueInputField != null) queueInputField.interactable = isInteractable;
         }
 
         #endregion
@@ -1058,18 +1091,21 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
 
         public void OnSelectUnityVideo()
         {
+            if (IsLockedForLocal()) return;
             Log("change media: UnityVideo");
             controller.SwitchMediaType(KinelMediaType.UnityVideo);
         }
 
         public void OnSelectStream()
         {
+            if (IsLockedForLocal()) return;
             Log("change media: Stream");
             controller.SwitchMediaType(KinelMediaType.AvPro);
         }
 
         public void OnSelectImage()
         {
+            if (IsLockedForLocal()) return;
             Log("change media: Image");
             controller.SwitchMediaType(KinelMediaType.Image);
         }
