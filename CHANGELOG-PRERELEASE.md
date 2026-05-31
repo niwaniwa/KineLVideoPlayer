@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - UI周りで設定値や表示を修正
+- fix: lockがnetworkを利用する一部のコンポーネントに対応していなかったので対応 [#185](https://github.com/niwaniwa/KineLVideoPlayer/pull/185)
 
 ### Security
 
