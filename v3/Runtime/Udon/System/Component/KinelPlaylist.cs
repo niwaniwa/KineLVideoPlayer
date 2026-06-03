@@ -116,6 +116,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
                 else
                     hi = mid - 1;
             }
+
             return playlistIndex[lo] <= globalIndex ? lo : -1;
         }
 
@@ -139,6 +140,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 
         public override void OnKinelVideoEnd()
         {
+            if (controller.IsReloading) return; // reloadに伴うStop()のOnKinelVideoEndではpop(次へ再生)しない
             if (_currentIndex < 0) return;
 
             var nextIndex = _currentIndex + 1;

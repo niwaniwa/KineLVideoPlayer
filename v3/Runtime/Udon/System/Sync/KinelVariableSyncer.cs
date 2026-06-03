@@ -185,7 +185,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
                 Log($"Remote speed changed: {_syncedSpeed}");
                 _isRemoteAction = true;
-                controller.NowSelectedMediaModule.SetPlaybackSpeed(_syncedSpeed);
+                controller.SetPlaybackSpeed(_syncedSpeed);
                 _isRemoteAction = false;
             }
         }
@@ -316,7 +316,19 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 return;
             }
 
-            if (controller.IsReloading) return;
+            if (controller.IsReloading)
+            {
+                // reload後は同期位置へ復帰させる。
+                // ownerはDriftCheckが走らないため、ここで明示的にseekする必要がある。
+                if (!controller.IsStream() && _syncedState == STATE_PLAYING)
+                {
+                    float expected = CalcExpectedPosition();
+                    controller.SetTime(Mathf.Clamp(expected, 0, controller.GetDuration()));
+                    Log($"Reload seek: expected={expected:F2}");
+                }
+
+                return;
+            }
 
             if (!Networking.IsOwner(gameObject)) return;
 

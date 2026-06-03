@@ -46,6 +46,36 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
             controller.AddListener(this);
         }
 
+        public override void OnKinelVideoSpeedChanged(float speed)
+        {
+            _ApplyPitch();
+        }
+
+        public override void OnKinelVideoStart()
+        {
+            // AVPro の reload 後などに AudioSource.pitch が戻ることがあるため再適用する
+            _ApplyPitch();
+        }
+
+        public override void OnKinelMediaTypeChanged()
+        {
+            _ApplyPitch();
+        }
+
+        /// <summary>
+        /// AVPro はネイティブで音声ピッチを変えないので、AudioSource.pitch で speed に追従させる。
+        /// これをしないと低速時に音が引き伸ばされず原音ピッチのまま細切れに聞こえる。
+        /// </summary>
+        private void _ApplyPitch()
+        {
+            if (controller == null || videoAudioSources == null) return;
+            bool isAvPro = controller.NowSelectedType == KinelMediaType.AvPro; // AvProだけに絞ってるがUnityVideoでも...?
+            float pitch = isAvPro ? controller.NowSelectedMediaModule.GetPlaybackSpeed() : 1f;
+            foreach (var src in videoAudioSources)
+                if (src != null)
+                    src.pitch = pitch;
+        }
+
         // volumeScaleは呼び出し元が制御
         // 現時点でSEは動画音量に追従しない
         public void PlaySE(AudioClip clip, float volumeScale = 1f)

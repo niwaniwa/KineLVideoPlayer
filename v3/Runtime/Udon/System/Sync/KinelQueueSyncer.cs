@@ -18,6 +18,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
         [UdonSynced, FieldChangeCallback(nameof(Titles))]
         private string[] _titles = new string[0];
+
         [UdonSynced] private int[] _types = new int[0];
         [UdonSynced] private string[] _addedBy = new string[0];
 
@@ -153,6 +154,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         {
             if (!Networking.IsOwner(gameObject)) return;
             if (controller == null || _urls.Length == 0) return;
+            if (controller.IsReloading) return; // reloadに伴うStop()のOnKinelVideoEndではpop(次へ再生)しない
 
             _urls = RemoveAtUrl(_urls, 0);
             _titles = RemoveAtString(_titles, 0);

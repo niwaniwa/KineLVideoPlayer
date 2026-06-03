@@ -681,29 +681,25 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnIncreaseSpeedLargeClick()
         {
             if (IsLockedForLocal()) return;
-            controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() +
-                                                               speedIncrementLarge);
+            controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() + speedIncrementLarge);
         }
 
         public void OnDecreaseSpeedLargeClick()
         {
             if (IsLockedForLocal()) return;
-            controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() -
-                                                               speedIncrementLarge);
+            controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() - speedIncrementLarge);
         }
 
         public void OnIncreaseSpeedSmallClick()
         {
             if (IsLockedForLocal()) return;
-            controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() +
-                                                               speedIncrementSmall);
+            controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() + speedIncrementSmall);
         }
 
         public void OnDecreaseSpeedSmallClick()
         {
             if (IsLockedForLocal()) return;
-            controller.NowSelectedMediaModule.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() -
-                                                               speedIncrementSmall);
+            controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() - speedIncrementSmall);
         }
 
         public void OnTimeOffsetPlus()
