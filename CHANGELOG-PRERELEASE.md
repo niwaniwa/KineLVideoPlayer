@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- AvPro再生時、速度変更操作を行っても適用されない問題を修正 [#189](https://github.com/niwaniwa/KineLVideoPlayer/issues/189)
 
 ### Security
 

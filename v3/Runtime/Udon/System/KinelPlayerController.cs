@@ -461,6 +461,47 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             _isReloading = false;
         }
 
+        #region Playback Speed
+
+        private float _lastSpeedChangeTime;
+        private bool _speedReloadPending;
+        private const float SpeedReloadDebounce = 0.4f;
+
+        /// <summary>
+        /// 再生速度を変更する集約 API。
+        /// AVPro はフィールド書き込みだけでは反映されないため、再生中なら reload で適用する
+        /// ただリロードしなくても反映されたので謎かも...
+        /// </summary>
+        public void SetPlaybackSpeed(float speed)
+        {
+            NowSelectedMediaModule.SetPlaybackSpeed(speed);
+            if (NowSelectedMediaModule.MediaType == KinelMediaType.AvPro && IsPlaying() && !IsStream())
+                ScheduleSpeedReload();
+        }
+
+        private void ScheduleSpeedReload()
+        {
+            _lastSpeedChangeTime = Time.time;
+            if (_speedReloadPending) return;
+            _speedReloadPending = true;
+            SendCustomEventDelayedSeconds(nameof(_DoSpeedReload), SpeedReloadDebounce);
+        }
+
+        public void _DoSpeedReload()
+        {
+            if (Time.time - _lastSpeedChangeTime < SpeedReloadDebounce - 0.01f)
+            {
+                SendCustomEventDelayedSeconds(nameof(_DoSpeedReload), SpeedReloadDebounce);
+                return;
+            }
+
+            _speedReloadPending = false;
+            if (NowSelectedMediaModule.MediaType == KinelMediaType.AvPro && IsPlaying() && !IsStream())
+                ReloadMedia();
+        }
+
+        #endregion
+
         public KinelMediaBase GetMediaByType(KinelMediaType type)
         {
             for (int i = 0; i < mediaModule.Length; i++)

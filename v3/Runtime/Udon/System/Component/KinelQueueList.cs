@@ -92,6 +92,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         {
             if (!IsLocalMode) return;
             if (controller == null || _localUrls.Length == 0) return;
+            if (controller.IsReloading) return; // reloadに伴うStop()のOnKinelVideoEndではpop(次へ再生)しない
 
             _localUrls = KinelUtilities.RemoveAtArray(_localUrls, 0);
             _localTitles = KinelUtilities.RemoveAtArray(_localTitles, 0);

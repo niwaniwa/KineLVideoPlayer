@@ -39,13 +39,25 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             get => speed;
             set
             {
-                speed = Mathf.Clamp(value, 0.01f, 2f);
+                // AVPro の推奨レート下限は 0.25。UnityVideo はより低い値も許容
+                float min = mediaType == KinelMediaType.AvPro ? 0.25f : 0.01f;
+                speed = Mathf.Clamp(value, min, 2f);
                 Log($"Speed Changed: {speed}");
                 VideoKinelVideoListener.OnKinelVideoSpeedChanged(speed);
-                if (_animator != null) _animator.SetFloat(speedAnimatorFlag, speed);
+                ApplySpeedToAnimator();
             }
         }
 
+        /// <summary>
+        /// Animator に現在のspeedを書き込み、Update(0) でアニメーションを即座に。(詳しい検証はしていないので無くても動くとは思う)
+        /// AVProはLoadURL時にこのフィールドを読むのでLoadUrl直前にも呼ぶ必要がある。
+        /// </summary>
+        private void ApplySpeedToAnimator()
+        {
+            if (_animator == null) return;
+            _animator.SetFloat(speedAnimatorFlag, speed);
+            _animator.Update(0f);
+        }
 
         public void OnEnable()
         {
@@ -60,7 +72,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System
             if (managedRenderers != null)
                 for (int i = 0; i < managedRenderers.Length; i++)
                     RegisterRenderer(managedRenderers[i]);
+        }
 
+        public void Start()
+        {
             if (_animator != null)
                 _animator.Rebind();
         }
@@ -75,6 +90,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         {
             if (!IsValidProtocol(url)) return;
             Debug.Log($"{DebugPrefix} Loading URL: {url}");
+            // AVPro は open 時に _playbackRate を読むため、LoadURL の直前に速度を同期書き込みする（VVMW と同手法）
+            ApplySpeedToAnimator();
             _videoPlayer.LoadURL(url);
             SourceUrl = url;
             VideoKinelVideoListener.OnKinelLoadUrl(url);
