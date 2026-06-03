@@ -15,11 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+### Security
+
+## [3.4.1] - 2026-06-03
+### Fixed
 - UI周りで設定値や表示を修正
 - fix: lockがnetworkを利用する一部のコンポーネントに対応していなかったので対応 [#185](https://github.com/niwaniwa/KineLVideoPlayer/pull/185)
 - AvPro再生時、速度変更操作を行っても適用されない問題を修正 [#189](https://github.com/niwaniwa/KineLVideoPlayer/issues/189)
-
-### Security
 
 ## [3.4.0] - 2026-05-30
 ### Added
