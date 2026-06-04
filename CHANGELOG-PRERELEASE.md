@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- デフォルト音量をInspectorから設定できるように [#188](https://github.com/niwaniwa/KineLVideoPlayer/issues/188)
 
 ### Changed
 
