@@ -12,7 +12,7 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
         [SerializeField] private AudioSource[] videoAudioSources;
         [SerializeField] private AudioSource seAudioSource;
 
-        private float _masterVolume = 1f;
+        [SerializeField, Range(0f, 1f)] private float _masterVolume = 1f;
         private bool _isMuted = false;
 
         public float MasterVolume
@@ -37,6 +37,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Component
 
         public void Start()
         {
+            _ApplyVolumeToAll(); // Inspector で設定した既定音量を起動時に AudioSource へ反映する
+
             if (controller == null)
             {
                 LogWarning("KinelAudioManager: controller is null");
