@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- 後から入ってきた場合に再生がリセットされてしまう問題を修正 [#190](https://github.com/niwaniwa/KineLVideoPlayer/issues/190)
 
 ### Security
 

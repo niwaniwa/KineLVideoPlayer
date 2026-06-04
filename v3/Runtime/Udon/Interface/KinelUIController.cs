@@ -585,6 +585,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnLoopToggle()
         {
             if (IsLockedForLocal()) return;
+            // 初期化/メディアコールバックでは所有権を奪わない設計のため、ユーザー操作の loop 変更は明示的に所有権取得する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             var next = (LoopMode)(((int)controller.LoopMode + 1) % 3);
             if (next == LoopMode.Playlist && !_isPlaylistActive)
                 next = LoopMode.None;
@@ -594,6 +596,10 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnLockToggle()
         {
             if (!controller.CanOperate(Networking.LocalPlayer)) return;
+            // ユーザー操作の lock 変更は明示的に所有権取得する。
+            // ロック中(_syncedLock=true)でも、冒頭の CanOperate(LocalPlayer) を通過済みのため
+            // OnOwnershipRequest の CanOperate(newOwner) も通過する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.SetLock(!controller.IsLock);
         }
 
