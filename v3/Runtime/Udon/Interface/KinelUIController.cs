@@ -424,6 +424,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnPaused()
         {
             if (IsLockedForLocal()) return;
+            // メディアコールバックでは所有権を奪わない設計のため、ユーザー操作の pause は明示的に所有権取得する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.NowSelectedMediaModule.Pause();
             ApplyPauseStateUI();
         }
@@ -431,6 +433,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnResumed()
         {
             if (IsLockedForLocal()) return;
+            // メディアコールバックでは所有権を奪わない設計のため、ユーザー操作の resume は明示的に所有権取得する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.NowSelectedMediaModule.Play();
             ApplyPlayStateUI();
         }
@@ -585,6 +589,8 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnLoopToggle()
         {
             if (IsLockedForLocal()) return;
+            // メディア/初期化コールバックでは所有権を奪わない設計のため、ユーザー操作の loop 変更は明示的に所有権取得する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             var next = (LoopMode)(((int)controller.LoopMode + 1) % 3);
             if (next == LoopMode.Playlist && !_isPlaylistActive)
                 next = LoopMode.None;
@@ -594,6 +600,10 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnLockToggle()
         {
             if (!controller.CanOperate(Networking.LocalPlayer)) return;
+            // ユーザー操作の lock 変更は明示的に所有権取得する。
+            // ロック中(_syncedLock=true)でも、冒頭の CanOperate(LocalPlayer) を通過済みのため
+            // OnOwnershipRequest の CanOperate(newOwner) も通過する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.SetLock(!controller.IsLock);
         }
 
@@ -681,24 +691,29 @@ namespace Kinel.VideoPlayer.V3.Udon.Interface
         public void OnIncreaseSpeedLargeClick()
         {
             if (IsLockedForLocal()) return;
+            // メディアコールバックでは所有権を奪わない設計のため、ユーザー操作の速度変更は明示的に所有権取得する。
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() + speedIncrementLarge);
         }
 
         public void OnDecreaseSpeedLargeClick()
         {
             if (IsLockedForLocal()) return;
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() - speedIncrementLarge);
         }
 
         public void OnIncreaseSpeedSmallClick()
         {
             if (IsLockedForLocal()) return;
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() + speedIncrementSmall);
         }
 
         public void OnDecreaseSpeedSmallClick()
         {
             if (IsLockedForLocal()) return;
+            if (syncer != null) syncer.RequestOwnershipForUserAction();
             controller.SetPlaybackSpeed(controller.NowSelectedMediaModule.GetPlaybackSpeed() - speedIncrementSmall);
         }
 

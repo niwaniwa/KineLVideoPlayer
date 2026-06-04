@@ -474,8 +474,24 @@ namespace Kinel.VideoPlayer.V3.Udon.System
         /// </summary>
         public void SetPlaybackSpeed(float speed)
         {
+            ApplyPlaybackSpeed(speed, true);
+        }
+
+        /// <summary>
+        /// reload を発火させずに速度を適用する。リモート同期由来の速度適用専用。
+        /// 非 owner(late-joiner) で reload が走ると、reload 後の speed コールバックが
+        /// EnsureOwnership を呼び所有権を奪取して再生を破壊するため、それを防ぐ。
+        /// (UdonSharp はオーバーロード/デフォルト引数を正式サポートしないため別メソッドにする)
+        /// </summary>
+        public void SetPlaybackSpeedNoReload(float speed)
+        {
+            ApplyPlaybackSpeed(speed, false);
+        }
+
+        private void ApplyPlaybackSpeed(float speed, bool allowReload)
+        {
             NowSelectedMediaModule.SetPlaybackSpeed(speed);
-            if (NowSelectedMediaModule.MediaType == KinelMediaType.AvPro && IsPlaying() && !IsStream())
+            if (allowReload && NowSelectedMediaModule.MediaType == KinelMediaType.AvPro && IsPlaying() && !IsStream())
                 ScheduleSpeedReload();
         }
 

@@ -185,7 +185,9 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
                 Log($"Remote speed changed: {_syncedSpeed}");
                 _isRemoteAction = true;
-                controller.SetPlaybackSpeed(_syncedSpeed);
+                // reload なし版を使う。非 owner で reload が走ると 0.4 秒後の遅延コールバックが
+                // OnKinelVideoSpeedChanged -> EnsureOwnership で所有権を奪取してしまうため。
+                controller.SetPlaybackSpeedNoReload(_syncedSpeed);
                 _isRemoteAction = false;
             }
         }
@@ -373,7 +375,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
 
             if (controller.IsReloading) return;
 
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // (late-joiner のロード完了に伴う自律 Play (OnKinelVideoReady -> Play 由来) を構造的に無視する。
+            //  ユーザーの意図的な resume は KinelUIController.OnResumed が事前に所有権取得済み)
+            if (!Networking.IsOwner(gameObject)) return;
 
             if (SyncedState == STATE_PAUSED)
             {
@@ -402,7 +407,16 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 return;
             }
 
-            EnsureOwnership();
+            // リモートロード中のバッファリング等で発火する pause は所有権を奪わない。
+            // (late-joiner が owner になり、ロード未確定の状態を配信して再生を破壊するのを防ぐ)
+            // OnKinelVideoPlay と対称にガードする。
+            if (_isRemoteLoad) return;
+
+            if (controller.IsReloading) return;
+
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // ユーザーの意図的な pause は KinelUIController.OnPaused が事前に所有権取得済み。
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedPausedTime = Networking.GetServerTimeInSeconds();
             SyncedState = STATE_PAUSED;
@@ -477,7 +491,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
                 return;
             }
 
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // (reload 等の遅延コールバックで late-joiner が所有権を奪取するのを構造的に防ぐ。
+            //  ユーザーの意図的な速度変更は KinelUIController の speed ボタンが事前に所有権取得済み)
+            if (!Networking.IsOwner(gameObject)) return;
 
             float currentPos = controller.GetTime();
             SyncedVideoStartGlobalTime = Networking.GetServerTimeInSeconds() - currentPos / speed;
@@ -531,7 +548,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnKinelLoopModeChanged(LoopMode loopMode)
         {
             if (_isRemoteAction) return;
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // (late-joiner の _ApplyInitialLoopMode 初期ブロードキャストで所有権を奪取するのを防ぐ。
+            //  ユーザーの意図的な loop 変更は KinelUIController.OnLoopToggle が事前に所有権取得済み)
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedLoopMode = (int)loopMode;
             RequestSerialization();
@@ -542,7 +562,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnKinelLocked()
         {
             if (_isRemoteAction) return;
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // (late-joiner の _ApplyInitialLock 初期ブロードキャストで所有権を奪取するのを防ぐ。
+            //  ユーザーの意図的な lock 変更は KinelUIController.OnLockToggle が事前に所有権取得済み)
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedLock = true;
             RequestSerialization();
@@ -553,7 +576,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnKinelUnlocked()
         {
             if (_isRemoteAction) return;
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedLock = false;
             RequestSerialization();
@@ -568,6 +592,15 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
             if (!player.isLocal) return;
+
+            // ロード中に owner になった場合、ローカルはまだ IsPlaying()=false の過渡状態にある。
+            // ここで SnapshotCurrentState すると STATE_IDLE / startTime=0 を全体へ配信し、
+            // 再生中インスタンスの状態を破壊してしまうため抑止する。
+            if (_isRemoteLoad)
+            {
+                Log("Ownership transferred during remote load, skipping snapshot");
+                return;
+            }
 
             Log("Ownership transferred to local player, snapshotting state");
             SnapshotCurrentState();
@@ -585,6 +618,19 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         }
 
         #endregion
+
+        /// <summary>
+        /// ユーザーの意図的な操作(UI からの pause/resume)で所有権を取得する。
+        /// メディアコールバック由来の自律 Play/Pause では所有権を奪わない方針のため、
+        /// UI 操作はこのメソッドで明示的に所有権を取得してから pause/resume を行う。
+        /// ロック中の権限判定は OnOwnershipRequest が評価する。
+        /// </summary>
+        public void RequestOwnershipForUserAction()
+        {
+            if (Networking.IsOwner(gameObject)) return;
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            Log("Ownership requested for user action");
+        }
 
         public void _ClearRemoteLoad()
         {
