@@ -594,15 +594,16 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         #endregion
 
         /// <summary>
-        /// ユーザーの意図的な UI 操作(loop/lock 切替)で所有権を取得する。
-        /// メディア/初期化コールバックでは所有権を奪わない方針のため、UI 操作はここで明示取得する。
+        /// ユーザーの意図的な UI 操作で所有権を取得する。
+        /// メディア/初期化コールバックでは所有権を奪わない方針
+        /// UI 操作はここで明示取得する。
         /// ロック中の権限判定は OnOwnershipRequest が評価する。
+        ///
+        /// owner のときだけ同期書き込みする listener(OnKinelLoopModeChanged / OnKinelLocked / OnKinelUnlocked など)を発火させるユーザー起点の入口を新設する場合, 必ず本メソッドを呼ぶ。呼び忘れると非 owner では所有権を取得できず、同期がスキップされる(ローカル反映のみになる)。
         /// </summary>
         public void RequestOwnershipForUserAction()
         {
-            if (Networking.IsOwner(gameObject)) return;
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            Log("Ownership requested for user action");
+            EnsureOwnership();
         }
 
         public void _ClearRemoteLoad()
