@@ -531,7 +531,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnKinelLoopModeChanged(LoopMode loopMode)
         {
             if (_isRemoteAction) return;
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // (late-joiner の _ApplyInitialLoopMode 初期ブロードキャストで所有権を奪取するのを防ぐ。
+            //  ユーザーの意図的な loop 変更は KinelUIController.OnLoopToggle が事前に所有権取得済み)
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedLoopMode = (int)loopMode;
             RequestSerialization();
@@ -542,7 +545,10 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnKinelLocked()
         {
             if (_isRemoteAction) return;
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            // (late-joiner の _ApplyInitialLock 初期ブロードキャストで所有権を奪取するのを防ぐ。
+            //  ユーザーの意図的な lock 変更は KinelUIController.OnLockToggle が事前に所有権取得済み)
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedLock = true;
             RequestSerialization();
@@ -553,7 +559,8 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         public override void OnKinelUnlocked()
         {
             if (_isRemoteAction) return;
-            EnsureOwnership();
+            // 所有権は奪わない。owner のときだけ同期書き込みする。
+            if (!Networking.IsOwner(gameObject)) return;
 
             SyncedLock = false;
             RequestSerialization();
@@ -585,6 +592,18 @@ namespace Kinel.VideoPlayer.V3.Udon.System.Sync
         }
 
         #endregion
+
+        /// <summary>
+        /// ユーザーの意図的な UI 操作(loop/lock 切替)で所有権を取得する。
+        /// メディア/初期化コールバックでは所有権を奪わない方針のため、UI 操作はここで明示取得する。
+        /// ロック中の権限判定は OnOwnershipRequest が評価する。
+        /// </summary>
+        public void RequestOwnershipForUserAction()
+        {
+            if (Networking.IsOwner(gameObject)) return;
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            Log("Ownership requested for user action");
+        }
 
         public void _ClearRemoteLoad()
         {
